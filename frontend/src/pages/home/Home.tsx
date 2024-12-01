@@ -1,11 +1,13 @@
+import { FC } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button, Container, Stack, Typography } from '@mui/material';
 
-export const HomePage = () => {
+/** Home Page */
+export const HomePage: FC = () => {
   return (
     <Container maxWidth="sm">
-      <Typography variant="h1" sx={{ my: 2, fontSize: '2rem', fontWeight: 'bold' }}>Pseudo</Typography>
+      <Typography component="h1" variant="h4" marginY={2}>Pseudo</Typography>
       <Stack direction="row" spacing={2}>
         <Button variant="contained" sx={{ whiteSpace: 'nowrap' }} component={Link} to="/login">
           Log In

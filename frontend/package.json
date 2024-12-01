@@ -5,12 +5,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "vite preview --host",
     "dev": "vite --host",
     "build": "tsc --build && vite build",
     "lint": "eslint ./src",
-    "preview": "vite preview --host",
     "storybook": "storybook dev --port 6006",
-    "build-storybook": "storybook build"
+    "storybook-build": "storybook build"
   },
   "dependencies": {
     "@emotion/react": "11.13.5",
