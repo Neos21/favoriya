@@ -1,0 +1,13 @@
+{
+  // Formatter は使わない (垂直アラインメントが崩される)
+  "editor.formatOnSave": false,
+  
+  // ESLint
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  
+  // TS Import Sorter
+  "importSorter.generalConfiguration.sortOnBeforeSave": true,
+  "importSorter.importStringConfiguration.quoteMark": "single"
+}
