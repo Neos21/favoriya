@@ -1,5 +1,10 @@
-export default function App() {
-  return (
-    <h1>Pseudo</h1>
-  );
-}
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Home } from './pages/home/Home';
+
+export const App = () => (
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Home />}></Route>
+    </Routes>
+  </BrowserRouter>
+);
