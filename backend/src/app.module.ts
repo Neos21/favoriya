@@ -4,6 +4,7 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -34,6 +35,22 @@ import { SharedModule } from './shared/shared.module';
       useFactory: () => [{
         rootPath: path.resolve(__dirname, '../../frontend/dist')
       }]
+    }),
+    // TypeORM
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('dbHost'),
+        port: configService.get<number>('dbPort'),
+        username: configService.get<string>('dbUser'),
+        password: configService.get<string>('dbPass'),
+        database: configService.get<string>('dbName'),
+        entities: [`${__dirname}/**/*.entity{.ts,.js}`],
+        synchronize: true,  // スキーマを自動同期する
+        logging: true,
+        autoLoadEntities: true  // forFeature() をなくす
+      })
     }),
     
     SharedModule,

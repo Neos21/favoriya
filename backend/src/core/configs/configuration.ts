@@ -53,5 +53,10 @@ const getBooleanValue = (envName: string): boolean => {
 export const configuration = (): { [key: string]: string | number | boolean } => ({
   port     : getNumberValue ('PSEUDO_PORT'      , 6216         ),  // ポート番号
   jwtSecret: getStringValue ('PSEUDO_JWT_SECRET', 'CHANGE-THIS'),  // JWT 認証のシークレット
+  dbHost   : getStringValue ('PSEUDO_DB_HOST'   , 'localhost'  ),  // DB ホスト
+  dbPort   : getNumberValue ('PSEUDO_DB_PORT'   , 5432         ),  // DB ポート
+  dbUser   : getStringValue ('PSEUDO_DB_USER'   , 'CHANGE-THIS'),  // DB ユーザ名
+  dbPass   : getStringValue ('PSEUDO_DB_PASS'   , 'CHANGE-THIS'),  // DB パスワード
+  dbName   : getStringValue ('PSEUDO_DB_NAME'   , 'CHANGE-THIS'),  // DB データベース名
   noColour : getBooleanValue('NO_COLOR'                        )   // ロガーの色付けをしない : NestJS のロガー `cli-colors.util.js` と同じ環境変数名・確認のため宣言
 });
