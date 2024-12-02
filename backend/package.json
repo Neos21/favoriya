@@ -8,8 +8,8 @@
     "dev": "nest start --watch",
     "lint": "eslint \"{src,apps,libs,tests}/**/*.ts\"",
     "build": "nest build",
-    "test": "jest",
-    "test-coverage": "jest --coverage",
+    "test": "jest --maxWorkers 4",
+    "test-coverage": "jest --maxWorkers 4 --coverage",
     "test-debug": "node --inspect-brk --require tsconfig-paths/register --require ts-node/register node_modules/.bin/jest --runInBand",
     "test-e2e": "jest --config ./tests/jest-e2e.json",
     "nest": "nest"

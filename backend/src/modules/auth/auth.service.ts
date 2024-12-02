@@ -3,6 +3,8 @@ import * as bcryptjs from 'bcryptjs';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
+import { User } from '../../shared/types/user';
+
 /** Auth Service */
 @Injectable()
 export class AuthService {
@@ -14,7 +16,7 @@ export class AuthService {
     {
       userId: 'anonymous',
       passwordHash: bcryptjs.hashSync('anonymous', bcryptjs.genSaltSync(this.saltRounds)),
-      userName: 'ななし',
+      userName: '名無し',
       role: 'Anonymous'
     },
     {
@@ -28,7 +30,7 @@ export class AuthService {
   constructor(private readonly jwtService: JwtService) { }
   
   /** ログイン認証する */
-  public async login(userId: string, password: string): Promise<Record<string, string>> {
+  public async login(userId: string, password: string): Promise<User> {
     // TODO : 認証ロジックを追加する
     const user = this.dummyUsers.find(dummyUser => dummyUser.userId === userId);
     if(user == null) throw new UnauthorizedException();  // ユーザ名誤り
@@ -36,16 +38,16 @@ export class AuthService {
     const isValidPassword = await bcryptjs.compare(password, user.passwordHash);
     if(!isValidPassword) throw new UnauthorizedException();  // パスワード誤り
     
-    const jwtPayload = {  // `JwtAuthGuard` の設定により、コレが `request.user` に入る
+    const jwtPayload = {  // `JwtAuthGuard` の設定によりコレが `request.user` に入る
       sub : user.userId,
       role: user.role
     };
-    const result = {
-      userId     : user.userId,
-      userName   : user.userName,
-      role       : user.role,
-      accessToken: await this.jwtService.signAsync(jwtPayload).catch(e => { console.error(e); return ''; })
+    const userInfo: User = {  // レスポンスの元となるデータ
+      userId  : user.userId,
+      userName: user.userName,
+      role    : user.role,
+      token   : await this.jwtService.signAsync(jwtPayload)
     };
-    return result;
+    return userInfo;
   }
 }

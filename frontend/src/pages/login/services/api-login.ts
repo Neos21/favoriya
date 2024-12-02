@@ -3,7 +3,8 @@
  * 
  * @param userId ユーザ ID
  * @param password パスワード
- * @return レスポンス
+ * @return ユーザ情報
+ * @throws ログイン失敗時
  */
 export const apiLogin = async (userId: string, password: string) => {
   const response = await fetch('/api/auth/login', {
