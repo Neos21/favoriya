@@ -51,7 +51,7 @@ const getBooleanValue = (envName: string): boolean => {
 
 /** 環境変数のオブジェクトを返す : この関数内にオブジェクトを定義しないと環境変数が読み込まれない */
 export const configuration = (): { [key: string]: string | number | boolean } => ({
-  port     : getNumberValue ('PSEUDO_PORT'      , 6666         ),  // ポート番号
+  port     : getNumberValue ('PSEUDO_PORT'      , 6216         ),  // ポート番号
   jwtSecret: getStringValue ('PSEUDO_JWT_SECRET', 'CHANGE-THIS'),  // JWT 認証のシークレット
   noColour : getBooleanValue('NO_COLOR'                        )   // ロガーの色付けをしない : NestJS のロガー `cli-colors.util.js` と同じ環境変数名・確認のため宣言
 });

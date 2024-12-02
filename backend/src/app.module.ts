@@ -32,7 +32,7 @@ import { SharedModule } from './shared/shared.module';
     // 静的ファイル (クライアント) を配信する
     ServeStaticModule.forRootAsync({
       useFactory: () => [{
-        rootPath: path.resolve(__dirname, '../frontend/dist')
+        rootPath: path.resolve(__dirname, '../../frontend/dist')
       }]
     }),
     

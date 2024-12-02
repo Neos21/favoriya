@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import { Box, Button, Container, TextField, Typography } from '@mui/material';
 
@@ -9,6 +10,7 @@ import { apiLogin } from './services/api-login';
 /** Login Page */
 export const LoginPage: FC = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   
   /** On Submit */
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -21,6 +23,7 @@ export const LoginPage: FC = () => {
       localStorage.setItem('user', JSON.stringify(user));  // 初期起動時に参照する LocalStorage
       dispatch(setUser(user));  // Store に保存する
       console.log('ログイン成功', user);
+      navigate('/');
     }
     catch(error) {
       alert(`ログイン失敗 : ${error}`);  // TODO : MUI っぽいエラー表示にしたい
