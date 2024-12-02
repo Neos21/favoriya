@@ -1,11 +1,15 @@
 import React, { FC } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { Box, Button, Container, TextField, Typography } from '@mui/material';
 
+import { setUser } from '../../shared/stores/user-slice';
 import { apiLogin } from './services/api-login';
 
 /** Login Page */
 export const LoginPage: FC = () => {
+  const dispatch = useDispatch();
+  
   /** On Submit */
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -13,11 +17,14 @@ export const LoginPage: FC = () => {
     const userId   = data.get('userId')!.toString();
     const password = data.get('password')!.toString();
     try {
-      const result = await apiLogin(userId, password);
-      alert(`ログイン成功 : ${JSON.stringify(result)}`);
+      const user = await apiLogin(userId, password);  // ログイン認証してユーザ情報を返してもらう
+      localStorage.setItem('user', JSON.stringify(user));  // 初期起動時に参照する LocalStorage
+      dispatch(setUser(user));  // Store に保存する
+      console.log('ログイン成功', user);
     }
     catch(error) {
-      alert(`ログイン失敗 : ${error}`);
+      alert(`ログイン失敗 : ${error}`);  // TODO : MUI っぽいエラー表示にしたい
+      console.warn('ログイン失敗', error);
     }
   };
   

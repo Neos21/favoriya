@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { HomePage } from './Home';
 
 const meta = {
+  title: 'Home',
   component: HomePage,
   parameters: {
     // More on how to position stories at : https://storybook.js.org/docs/configure/story-layout

@@ -10,7 +10,13 @@ const camelCaseObject = {
   ],
   exampleObject: {
     exampleChildOne: 'exampleValue 1',
-    exampleChildTwo: 'exampleValue 2'
+    exampleChildTwo: 'exampleValue 2',
+    exampleThird: {
+      exampleGrandChild: 'exampleValue',
+      exampleGrandArray: [
+        { exampleItem: 'exampleValue' }
+      ]
+    }
   }
 };
 
@@ -24,7 +30,13 @@ const snakeCaseObject = {
   ],
   example_object: {
     example_child_one: 'exampleValue 1',
-    example_child_two: 'exampleValue 2'
+    example_child_two: 'exampleValue 2',
+    example_third: {
+      example_grand_child: 'exampleValue',
+      example_grand_array: [
+        { example_item: 'exampleValue' }
+      ]
+    }
   }
 };
 
@@ -36,8 +48,8 @@ describe('Convert Case Helper', () => {
   });
   
   describe('camelToSnakeCaseObject()', () => {
-    it.skip('camelCase → snake_case オブジェクト', () => {
-      expect(camelToSnakeCaseObject(camelCaseObject)).toBe(snakeCaseObject);
+    it('camelCase → snake_case オブジェクト', () => {
+      expect(camelToSnakeCaseObject(camelCaseObject)).toEqual(snakeCaseObject);
     });
   });
   
@@ -48,8 +60,8 @@ describe('Convert Case Helper', () => {
   });
   
   describe('snakeToCamelCaseObject()', () => {
-    it.skip('snake_case → camelCase オブジェクト', () => {
-      expect(snakeToCamelCaseObject(snakeCaseObject)).toBe(camelCaseObject);
+    it('snake_case → camelCase オブジェクト', () => {
+      expect(snakeToCamelCaseObject(snakeCaseObject)).toEqual(camelCaseObject);
     });
   });
 });
