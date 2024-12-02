@@ -11,7 +11,7 @@ export class AuthController {
     const userName = loginDto.user_name;
     const password = loginDto.password;
     
-    // TODO : 認証ロジックをここに追加
+    // TODO : 認証ロジックを追加する
     if(userName === 'user' && password === 'pass') {
       return response.status(HttpStatus.OK).json({ message: 'ログイン成功', token: 'dummy-jwt-token' });
     }

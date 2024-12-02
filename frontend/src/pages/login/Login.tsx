@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 import { Box, Button, Container, TextField, Typography } from '@mui/material';
 
-import { login } from './services/api-login';
+import { apiLogin } from './services/api-login';
 
 /** Login Page */
 export const LoginPage: FC = () => {
@@ -13,7 +13,7 @@ export const LoginPage: FC = () => {
     const userName = data.get('userName')!.toString();
     const password = data.get('password')!.toString();
     try {
-      const response = await login(userName, password);
+      const response = await apiLogin(userName, password);
       alert(`ログイン成功 : ${response.token}`);
     }
     catch(error) {

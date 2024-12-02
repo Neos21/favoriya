@@ -5,7 +5,7 @@
  * @param password パスワード
  * @return レスポンス
  */
-export const login = async (userName: string, password: string) => {
+export const apiLogin = async (userName: string, password: string) => {
   const response = await fetch('/api/auth/login', {
     method: 'POST',
     headers: {
