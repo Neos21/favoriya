@@ -19,7 +19,7 @@ export const HomePage: FC = () => {
     const userStringified = localStorage.getItem('user');
     if(userStringified != null) {
       const user: User = JSON.parse(userStringified);
-      console.log(user);
+      console.log('LocalStorage よりユーザ情報を復元', user);
       dispatch(setUser(user));
     }
     setIsLoggedIn(userStringified != null);
