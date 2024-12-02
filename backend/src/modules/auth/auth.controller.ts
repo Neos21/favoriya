@@ -1,22 +1,28 @@
-import { Response } from 'express';
-
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+
+import { ConvertDtoService } from '../../shared/services/convert-dto.service';
+import { AuthService } from './auth.service';
+
+import type { Response } from 'express';
 
 /** Auth Controller */
 @Controller('/api/auth')
 export class AuthController {
-  /** Log In */
+  constructor(
+    private readonly convertDtoService: ConvertDtoService,
+    private readonly authService: AuthService,
+  ) { }
+  
+  /** ログイン認証する */
   @Post('login')
-  public async login(@Body() loginDto: { user_name: string; password: string }, @Res() response: Response) {
-    const userName = loginDto.user_name;
-    const password = loginDto.password;
-    
-    // TODO : 認証ロジックを追加する
-    if(userName === 'user' && password === 'pass') {
-      return response.status(HttpStatus.OK).json({ message: 'ログイン成功', token: 'dummy-jwt-token' });
+  public async login(@Body('user_id') userId: string, @Body('password') password: string, @Res() response: Response) {
+    try {
+      const userInfo = await this.authService.login(userId, password);
+      const responseUserInfo = this.convertDtoService.camelCaseToSnakeCase(userInfo);
+      return response.status(HttpStatus.OK).json(responseUserInfo);
     }
-    else {
-      return response.status(HttpStatus.UNAUTHORIZED).json({ message: 'ログイン失敗', error: '無効な認証情報' });
+    catch(_error) {
+      return response.status(HttpStatus.UNAUTHORIZED).json({ error: 'ユーザ名・パスワードが正しくありません' });
     }
   }
 }
