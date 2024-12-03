@@ -16,7 +16,7 @@ export const LoginPage: FC = () => {
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data     = new FormData(event.currentTarget);
-    const userId   = data.get('userId')!.toString();
+    const userId   = data.get('user-id')!.toString();
     const password = data.get('password')!.toString();
     try {
       const user = await apiLogin(userId, password);  // ログイン認証してユーザ情報を返してもらう
@@ -36,7 +36,7 @@ export const LoginPage: FC = () => {
       <Typography component="h1" variant="h4" marginY={2}>Log In</Typography>
       <Box component="form" onSubmit={onSubmit}>
         <TextField
-          type="text" name="userId" label="User ID"
+          type="text" name="user-id" label="User ID"
           required autoFocus
           fullWidth margin="normal"
         />

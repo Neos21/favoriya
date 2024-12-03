@@ -6,6 +6,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import { theme } from './core/theme';
 import { HomePage } from './pages/home/Home';
 import { LoginPage } from './pages/login/Login';
+import { SignupPage } from './pages/signup/Signup';
 import { store } from './shared/stores/store';
 
 export const App = () => (
@@ -14,8 +15,9 @@ export const App = () => (
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Routes>
-          <Route path="/login" element={<LoginPage />}></Route>
-          <Route path="/"      element={<HomePage  />}></Route>
+          <Route path="/signup" element={<SignupPage />}></Route>
+          <Route path="/login"  element={<LoginPage  />}></Route>
+          <Route path="/"       element={<HomePage   />}></Route>
         </Routes>
       </ThemeProvider>
     </Provider>
