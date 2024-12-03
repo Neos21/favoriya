@@ -6,10 +6,10 @@ import { UserApi } from '../../../shared/types/user';
  * 
  * @param userId ユーザ ID
  * @param password パスワード
- * @return ユーザ情報
- * @throws ログイン失敗時
+ * @return エラーメッセージ
+ * @throws API エラー時
  */
-export const apiSignup = async (userId: string, password: string): Promise<any> => {
+export const apiSignup = async (userId: string, password: string): Promise<{ error?: string }> => {
   const requestUserApi: UserApi = camelToSnakeCaseObject({ userId, password });
   const response = await fetch('/api/users', {  // TODO : API を作る
     method: 'POST',
@@ -19,9 +19,8 @@ export const apiSignup = async (userId: string, password: string): Promise<any> 
   
   if(!response.ok) {
     const error = await response.json();  // Throws
-    throw new Error(error.error ?? 'ユーザ登録に失敗しました');
+    return { error: error.error };
   }
   
-  const result = await response.json();  // Throws
-  return result;
+  return {};
 };

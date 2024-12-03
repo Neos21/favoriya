@@ -20,5 +20,6 @@
     
     // express-list-endpoints 用
     "esModuleInterop": true
-  }
+  },
+  "include": ["src"]
 }

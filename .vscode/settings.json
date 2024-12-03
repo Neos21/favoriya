@@ -1,4 +1,6 @@
 {
+  "typescript.preferences.importModuleSpecifier": "relative",
+  
   // Formatter は使わない (垂直アラインメントが崩される)
   "editor.formatOnSave": false,
   

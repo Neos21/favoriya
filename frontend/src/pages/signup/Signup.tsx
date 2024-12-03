@@ -34,12 +34,17 @@ export const SignupPage: FC = () => {
     
     try {
       const result = await apiSignup(userId, password);  // ユーザ登録する
+      if(result.error) {
+        console.warn('ユーザ登録 NG', result.error);  // TODO : 想定内のエラーの場合は画面にメッセージを出す
+        alert(result.error);
+        return;
+      }
       console.log('ユーザ登録成功', result);
       setIsModalOpen(true);  // モーダルを開く
     }
     catch(error) {
-      console.error('ユーザ登録失敗', error);
-      alert('ユーザ登録 API のコールに失敗しました。もう一度やり直してください');
+      console.error('ユーザ登録処理に失敗しました', error);
+      alert('ユーザ登録処理に失敗しました。もう一度やり直してください');
     }
   };
   

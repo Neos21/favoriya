@@ -5,13 +5,13 @@ export class UserEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   public readonly id: number;
   
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', unique: true })
   public userId: string;
   
   @Column({ name: 'password_hash' })
   public passwordHash: string;
   
-  @Column({ name: 'name' })
+  @Column({ name: 'name', nullable: true })
   public name: string;
   
   @Column({ name: 'role' })

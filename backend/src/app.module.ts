@@ -11,6 +11,7 @@ import { AppService } from './app.service';
 import { configuration } from './core/configs/configuration';
 import { AccessLogMiddleware } from './core/middlewares/access-log.middleware';
 import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 import { SharedModule } from './shared/shared.module';
 
 /** App Module */
@@ -40,9 +41,9 @@ import { SharedModule } from './shared/shared.module';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('dbHost'),
-        port: configService.get<number>('dbPort'),
+        type    : 'postgres',
+        host    : configService.get<string>('dbHost'),
+        port    : configService.get<number>('dbPort'),
         username: configService.get<string>('dbUser'),
         password: configService.get<string>('dbPass'),
         database: configService.get<string>('dbName'),
@@ -54,7 +55,8 @@ import { SharedModule } from './shared/shared.module';
     }),
     
     SharedModule,
-    AuthModule
+    AuthModule,
+    UsersModule
   ],
   controllers: [
     AppController

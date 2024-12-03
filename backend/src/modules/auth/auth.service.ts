@@ -3,25 +3,24 @@ import * as bcryptjs from 'bcryptjs';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { User } from '../../shared/types/user';
+import { authUserConstants } from '../../shared/constants/auth-user';
+
+import type { User } from '../../shared/types/user';
 
 /** Auth Service */
 @Injectable()
 export class AuthService {
-  /** コストファクタ */
-  private readonly saltRounds = 10;
-  
   /** ダミーユーザデータ */
   private readonly dummyUsers = [
     {
       userId: 'anonymous',
-      passwordHash: bcryptjs.hashSync('anonymous', bcryptjs.genSaltSync(this.saltRounds)),
+      passwordHash: bcryptjs.hashSync('anonymous', bcryptjs.genSaltSync(authUserConstants.saltRounds)),
       userName: '名無し',
       role: 'Anonymous'
     },
     {
       userId: 'admin',
-      passwordHash: bcryptjs.hashSync('admin', bcryptjs.genSaltSync(this.saltRounds)),
+      passwordHash: bcryptjs.hashSync('admin', bcryptjs.genSaltSync(authUserConstants.saltRounds)),
       userName: '管理者',
       role: 'Admin'
     }

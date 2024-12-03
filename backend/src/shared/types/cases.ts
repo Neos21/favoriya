@@ -1,3 +1,5 @@
+//! COMMON
+
 /** snake_case → camelCase */
 export type SnakeToCamelCase<T extends string> = T extends `${infer R}_${infer U}`
   ? `${R}${Capitalize<SnakeToCamelCase<U>>}`
