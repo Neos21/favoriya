@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import { authUserConstants } from '../../shared/constants/auth-user';
 
-import type { User } from '../../shared/types/user';
+import type { User } from '../../common/types/user';
 
 /** Auth Service */
 @Injectable()

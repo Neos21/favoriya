@@ -1,5 +1,3 @@
-//! COMMON
-
 import { CamelToSnakeCaseObject, SnakeToCamelCaseObject } from '../types/cases';
 import { isObject } from './is-object';
 

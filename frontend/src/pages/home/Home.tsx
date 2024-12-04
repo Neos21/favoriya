@@ -5,8 +5,9 @@ import { Navigate } from 'react-router-dom';
 import { Container, Typography } from '@mui/material';
 
 import { setUser } from '../../shared/stores/user-slice';
-import { User } from '../../shared/types/user';
 import { GlobalTimelinePage } from '../global-timeline/GlobalTimeline';
+
+import type { User } from '../../common/types/user';
 
 /** Home Page : Auth Check */
 export const HomePage: FC = () => {

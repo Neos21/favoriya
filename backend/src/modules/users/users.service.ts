@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { authUserConstants } from '../../shared/constants/auth-user';
 import { UserEntity } from '../../shared/entities/user.entity';
 
-import type { User } from '../../shared/types/user';
+import type { User } from '../../common/types/user';
 
 /** Users Service */
 @Injectable()

@@ -1,9 +1,9 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 
-import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../shared/helpers/convert-case';
+import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { AuthService } from './auth.service';
 
-import type { UserApi } from '../../shared/types/user';
+import type { UserApi } from '../../common/types/user';
 import type { Response } from 'express';
 
 /** Auth Controller */

@@ -1,5 +1,6 @@
-import { camelToSnakeCaseObject } from '../../../shared/helpers/convert-case';
-import { UserApi } from '../../../shared/types/user';
+import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
+
+import type { UserApi } from '../../../common/types/user';
 
 /**
  * ユーザ登録 API をコールする

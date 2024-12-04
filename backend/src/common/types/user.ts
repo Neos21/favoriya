@@ -1,5 +1,3 @@
-//! COMMON
-
 import { CamelToSnakeCaseObject } from './cases';
 
 /** ユーザ情報 */

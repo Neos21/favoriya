@@ -1,2 +1,14 @@
 .DS_Store
 Thumbs.db
+
+node_modules/
+dist/
+
+# Backend
+.env
+nohup.out
+coverage/
+
+# Frontend
+*storybook.log
+storybook-static/
