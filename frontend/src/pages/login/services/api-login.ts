@@ -1,5 +1,6 @@
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 
+import type { Result } from '../../../common/types/result';
 import type { User, UserApi } from '../../../common/types/user';
 
 /**
@@ -8,22 +9,20 @@ import type { User, UserApi } from '../../../common/types/user';
  * @param userId ユーザ ID
  * @param password パスワード
  * @return ユーザ情報
- * @throws ログイン失敗時
+ * @throws Fetch API の失敗時、正常なはずの Response JSON がパースできなかった時
  */
-export const apiLogin = async (userId: string, password: string): Promise<User> => {
+export const apiLogin = async (userId: string, password: string): Promise<Result<User>> => {
   const requestUserApi: UserApi = camelToSnakeCaseObject({ userId, password });
-  const response = await fetch('/api/auth/login', {
+  const response = await fetch('/api/auth/login', {  // Throws
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(requestUserApi)
   });
   
-  if(!response.ok) {
-    const error = await response.json();  // Throws
-    throw new Error(error.error ?? 'ログインに失敗しました');
-  }
+  const responseResult: Result<UserApi> = await response.json();  // Throws
   
-  const responseUserApi: UserApi = await response.json();  // Throws
-  const resultUser: User = snakeToCamelCaseObject(responseUserApi);
-  return resultUser;
+  if(!response.ok) return { error: responseResult.error };
+  
+  const result: User = snakeToCamelCaseObject(responseResult.result);
+  return { result };
 };

@@ -3,10 +3,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '../../common/types/user';
 
 const initialState: User = {
-  userId  : '',
-  userName: '',
-  role    : '',
-  token   : ''
+  userId: '',
+  name  : '',
+  role  : '',
+  token : ''
 };
 
 /** User State */

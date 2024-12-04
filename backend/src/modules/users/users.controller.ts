@@ -1,21 +1,20 @@
 import { Body, Controller, HttpStatus, Logger, Post, Res } from '@nestjs/common';
 
-import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../common/helpers/convert-case';
+import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { UsersService } from './users.service';
 
-import type { User, UserApi } from '../../common/types/user';
 import type { Response } from 'express';
+import type { Result } from '../../common/types/result';
+import type { User, UserApi } from '../../common/types/user';
 
 /** Users Controller */
 @Controller('api/users')
 export class UsersController {
-  private readonly logger: Logger = new Logger(UsersController.name);
-  
   constructor(private readonly usersService: UsersService) { }
   
   /** ユーザ登録する */
   @Post('')
-  public async create(@Body() userApi: UserApi, @Res() response: Response): Promise<Response<{ error?: string }>> {
+  public async create(@Body() userApi: UserApi, @Res() response: Response): Promise<Response<Result<null>>> {
     try {
       const user: User = snakeToCamelCaseObject(userApi);
       const result = await this.usersService.create(user);  // Throws
@@ -23,8 +22,7 @@ export class UsersController {
       
       return response.status(HttpStatus.CREATED).end();
     }
-    catch(error) {
-      this.logger.error('ユーザ登録処理に失敗しました', error);
+    catch(_error) {
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'ユーザ登録処理に失敗しました' });
     }
   }

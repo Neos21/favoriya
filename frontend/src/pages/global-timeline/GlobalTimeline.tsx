@@ -13,7 +13,7 @@ export const GlobalTimelinePage: FC = () => {
     <Container maxWidth="sm">
       <Typography component="h1" variant="h4" marginY={2}>Global Timeline</Typography>
       <Typography component="p">
-        ようこそ {userState.userName} さん
+        ようこそ {userState.name} さん
       </Typography>
     </Container>
   );

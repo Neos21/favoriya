@@ -17,6 +17,9 @@ import { UsersService } from './users.service';
   ],
   providers: [
     UsersService
+  ],
+  exports: [
+    UsersService  // AuthModule でも使用する
   ]
 })
 export class UsersModule { }

@@ -1,9 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { Box, Button, Container, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Container, TextField, Typography } from '@mui/material';
 
+import { userConstants } from '../../shared/constants/user-constants';
 import { setUser } from '../../shared/stores/user-slice';
 import { apiLogin } from './services/api-login';
 
@@ -12,28 +13,45 @@ export const LoginPage: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
+  const [errorMessage, setErrorMessage] = useState<string>(null);
+  
+  // 本画面に遷移してきた時はログイン済の情報があったら削除する
+  useEffect(() => {
+    dispatch(setUser({ userId: null }));
+    localStorage.removeItem(userConstants.localStorageKey);
+  }, [dispatch]);
+  
   /** On Submit */
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
+    setErrorMessage(null);
+    
     const data     = new FormData(event.currentTarget);
     const userId   = data.get('user-id')!.toString();
     const password = data.get('password')!.toString();
+    
     try {
-      const user = await apiLogin(userId, password);  // ログイン認証してユーザ情報を返してもらう
-      localStorage.setItem('user', JSON.stringify(user));  // 初期起動時に参照する LocalStorage
+      const loginResult = await apiLogin(userId, password);  // ログイン認証してユーザ情報を返してもらう
+      if(loginResult.error) return setErrorMessage(loginResult.error);
+      
+      const user = loginResult.result;
       dispatch(setUser(user));  // Store に保存する
-      console.log('ログイン成功', user);
+      localStorage.setItem(userConstants.localStorageKey, JSON.stringify(user));  // 初期起動時に参照する LocalStorage
       navigate('/');
     }
     catch(error) {
-      alert(`ログイン失敗 : ${error}`);  // TODO : MUI っぽいエラー表示にしたい
-      console.warn('ログイン失敗', error);
+      setErrorMessage('ログイン処理に失敗しました。もう一度やり直してください');
+      console.warn('ログイン処理に失敗しました', error);
     }
   };
   
   return (
     <Container maxWidth="sm">
       <Typography component="h1" variant="h4" marginY={2}>Log In</Typography>
+      
+      {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
+      
       <Box component="form" onSubmit={onSubmit}>
         <TextField
           type="text" name="user-id" label="User ID"
@@ -51,6 +69,10 @@ export const LoginPage: FC = () => {
         >
           Log In
         </Button>
+      </Box>
+      
+      <Box sx={{ mt: 5, textAlign: 'right' }}>
+        <Button component={Link} to="/signup" variant="contained">Sign Up</Button>
       </Box>
     </Container>
   );

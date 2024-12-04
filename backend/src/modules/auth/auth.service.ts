@@ -1,52 +1,40 @@
 import * as bcryptjs from 'bcryptjs';
 
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { authUserConstants } from '../../shared/constants/auth-user';
+import { UsersService } from '../users/users.service';
 
+import type { Result } from '../../common/types/result';
 import type { User } from '../../common/types/user';
 
 /** Auth Service */
 @Injectable()
 export class AuthService {
-  /** ダミーユーザデータ */
-  private readonly dummyUsers = [
-    {
-      userId: 'anonymous',
-      passwordHash: bcryptjs.hashSync('anonymous', bcryptjs.genSaltSync(authUserConstants.saltRounds)),
-      userName: '名無し',
-      role: 'Anonymous'
-    },
-    {
-      userId: 'admin',
-      passwordHash: bcryptjs.hashSync('admin', bcryptjs.genSaltSync(authUserConstants.saltRounds)),
-      userName: '管理者',
-      role: 'Admin'
-    }
-  ];
-  
-  constructor(private readonly jwtService: JwtService) { }
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService
+  ) { }
   
   /** ログイン認証する */
-  public async login(userId: string, password: string): Promise<User> {
-    // TODO : 認証ロジックを追加する
-    const user = this.dummyUsers.find(dummyUser => dummyUser.userId === userId);
-    if(user == null) throw new UnauthorizedException();  // ユーザ名誤り
+  public async login(userId: string, password: string): Promise<Result<User>> {
+    const userResult = await this.usersService.findOneByUserId(userId);
+    if(userResult.error != null) return { error: userResult.error };
     
-    const isValidPassword = await bcryptjs.compare(password, user.passwordHash);
-    if(!isValidPassword) throw new UnauthorizedException();  // パスワード誤り
+    const userEntity = userResult.result;
+    const isValidPassword = await bcryptjs.compare(password, userEntity.passwordHash);
+    if(!isValidPassword) return { error: 'パスワードに誤りがあります' };
     
     const jwtPayload = {  // `JwtAuthGuard` の設定によりコレが `request.user` に入る
-      sub : user.userId,
-      role: user.role
+      sub : userEntity.userId,
+      role: userEntity.role
     };
-    const userInfo: User = {  // レスポンスの元となるデータ
-      userId  : user.userId,
-      userName: user.userName,
-      role    : user.role,
-      token   : await this.jwtService.signAsync(jwtPayload)
+    const result: User = {  // レスポンスの元となるデータ
+      userId: userEntity.userId,
+      name  : userEntity.name,
+      role  : userEntity.role,
+      token : await this.jwtService.signAsync(jwtPayload)  // Throws
     };
-    return userInfo;
+    return { result };
   }
 }

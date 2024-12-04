@@ -5,7 +5,7 @@ export type User = {
   userId: string;
   password?: string;
   passwordHash?: string;
-  userName?: string;
+  name?: string;
   role?: string;
   token?: string;
 };

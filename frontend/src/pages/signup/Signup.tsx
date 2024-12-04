@@ -1,50 +1,62 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { Box, Button, Container, Modal, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Container, Modal, TextField, Typography } from '@mui/material';
 
+import { isValidPassword, isValidUserId } from '../../common/helpers/validators/validator-user';
+import { userConstants } from '../../shared/constants/user-constants';
+import { setUser } from '../../shared/stores/user-slice';
 import { apiSignup } from './services/api-signup';
-import { validatePassword, validateUserId } from './services/validators-signup';
 
 /** Signup Page */
 export const SignupPage: FC = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   
-  const [errors, setErrors] = useState<{ userId?: string; password?: string }>({});
+  const [errorMessage, setErrorMessage] = useState<string>(null);
+  const [formErrors, setFormErrors] = useState<{ userId?: string; password?: string }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  /** 入力チェック : エラーがあれば errors にメッセージをセット・エラーがなければ `true` を返す */
-  const validate = (userId: string, password: string): boolean => {
-    const newErrors: { userId?: string; password?: string } = {};
-    newErrors.userId   = validateUserId(userId);
-    newErrors.password = validatePassword(password);
-    setErrors(newErrors);
+  // 本画面に遷移してきた時はログイン済の情報があったら削除する
+  useEffect(() => {
+    dispatch(setUser({ userId: null }));
+    localStorage.removeItem(userConstants.localStorageKey);
+  }, [dispatch]);
+  
+  /** 入力チェック : エラーがあれば formErrors にメッセージをセット・エラーがなければ `true` を返す */
+  const isValidForm = (userId: string, password: string): boolean => {
+    const newErrors: { userId?: string, password?: string } = {
+      userId  : isValidUserId(userId).error,
+      password: isValidPassword(password).error
+    };
+    setFormErrors(newErrors);
     return Object.values(newErrors).every(newError => newError == null);
   };
   
   /** On Submit */
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
+    setErrorMessage(null);
+    
     const data     = new FormData(event.currentTarget);
     const userId   = data.get('user-id')!.toString();
     const password = data.get('password')!.toString();
     
     // バリデーション失敗時 : ココでエラーメッセージがセットされ各フォーム部品の下部に表示される
-    if(!validate(userId, password)) return;
+    if(!isValidForm(userId, password)) return;
     
     try {
-      const result = await apiSignup(userId, password);  // ユーザ登録する
-      if(result.error) {
-        console.warn('ユーザ登録 NG', result.error);  // TODO : 想定内のエラーの場合は画面にメッセージを出す
-        alert(result.error);
-        return;
-      }
-      console.log('ユーザ登録成功', result);
+      const signupResult = await apiSignup(userId, password);  // ユーザ登録する
+      if(signupResult.error) return setErrorMessage(signupResult.error);
+      
+      // ユーザ登録成功
       setIsModalOpen(true);  // モーダルを開く
     }
     catch(error) {
+      setErrorMessage('ユーザ登録処理に失敗しました。もう一度やり直してください');
       console.error('ユーザ登録処理に失敗しました', error);
-      alert('ユーザ登録処理に失敗しました。もう一度やり直してください');
     }
   };
   
@@ -71,20 +83,23 @@ export const SignupPage: FC = () => {
   return (
     <Container maxWidth="sm">
       <Typography component="h1" variant="h4" marginY={2}>Sign Up</Typography>
+      
+      {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
+      
       <Box component="form" onSubmit={onSubmit}>
         <TextField
           type="text" name="user-id" label="User ID"
           required autoFocus
           fullWidth margin="normal"
-          error={errors.userId != null}
-          helperText={errors.userId}
+          error={formErrors.userId != null}
+          helperText={formErrors.userId}
         />
         <TextField
           type="password" name="password" label="Password"
           required
           fullWidth margin="normal"
-          error={errors.password != null}
-          helperText={errors.password}
+          error={formErrors.password != null}
+          helperText={formErrors.password}
         />
         <Button
           type="submit" variant="contained"
@@ -101,6 +116,7 @@ export const SignupPage: FC = () => {
           <Box sx={{ textAlign: 'right' }}>
             <Button
               variant="contained"
+              autoFocus
               onClick={onCloseModal}
               sx={{ mt: 2 }}
             >
