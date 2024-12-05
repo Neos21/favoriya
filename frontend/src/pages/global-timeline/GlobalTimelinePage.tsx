@@ -81,7 +81,7 @@ export const GlobalTimelinePage: FC = () => {
       {status === 'succeeded' && posts.length !== 0 && posts.map(post => (
         <Typography component="div" marginY={3} key={post.id} sx={{ lineHeight: 1.7 }}>
           <Typography component="p"><strong>@{post.userId}</strong><span style={{ fontSize: '.8rem', color: '#999' }}> - {epochTimeMsToJst(post.id)}</span></Typography>
-          <Typography component="p" sx={{ whiteSpace: 'pre-wrap' }}>{post.text}</Typography>
+          <Typography component="p" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{post.text}</Typography>
         </Typography>
       ))}
       
