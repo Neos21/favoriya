@@ -14,7 +14,7 @@ export class AccessLogMiddleware implements NestMiddleware {
     this.logger.log(yellow(`[${req.method}]`) + ' ' + cyan(`[${req.baseUrl}]`) + this.stringifyParam('Query', req.query) + this.stringifyParam('Body', req.body));
     
     // トップページへの遷移時のみアクセス元情報を確認する
-    if(['', '/'].includes(req.baseUrl)) this.logger.log(`Referer [${req.headers.referer ?? ''}] IP [${req.headers.ip}]`);
+    if(['', '/'].includes(req.baseUrl)) this.logger.log(`Referer [${req.headers.referer ?? ''}] IP [${req.headers.ip ?? ''}]`);
     
     next();
   }
