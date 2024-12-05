@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { GlobalTimelinePage } from './GlobalTimeline';
+import { GlobalTimelinePage } from './GlobalTimelinePage';
 
 const meta = {
-  title: 'GlobalTimeline',
+  title: 'GlobalTimelinePage',
   component: GlobalTimelinePage,
   parameters: {
     layout: 'fullscreen'

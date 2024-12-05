@@ -1,10 +1,10 @@
 import type { Result } from '../../types/result';
 
 /** ユーザ ID の入力チェック */
-export const isValidUserId = (userId: string): Result<boolean> => {
-  if(userId.trim() === '') return { error: 'ユーザ ID を入力してください' };
-  if(!/^[a-z0-9-]+$/.test(userId)) return { error: 'ユーザ ID は数字・英小文字・ハイフンのみ使用できます' };
-  if(userId.length > 25) return { error: 'ユーザ ID は25文字以内である必要があります' };
+export const isValidId = (id: string): Result<boolean> => {
+  if(id.trim() === '') return { error: 'ユーザ ID を入力してください' };
+  if(!/^[a-z0-9-]+$/.test(id)) return { error: 'ユーザ ID は数字・英小文字・ハイフンのみ使用できます' };
+  if(id.length > 25) return { error: 'ユーザ ID は25文字以内である必要があります' };
   return { result: true };  // バリデーション成功
 };
 

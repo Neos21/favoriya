@@ -22,8 +22,8 @@ export class UsersController {
       
       return response.status(HttpStatus.CREATED).end();
     }
-    catch(_error) {
-      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'ユーザ登録処理に失敗しました' });
+    catch(error) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.error });
     }
   }
 }

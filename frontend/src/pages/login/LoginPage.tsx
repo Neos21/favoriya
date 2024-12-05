@@ -17,7 +17,7 @@ export const LoginPage: FC = () => {
   
   // 本画面に遷移してきた時はログイン済の情報があったら削除する
   useEffect(() => {
-    dispatch(setUser({ userId: null }));
+    dispatch(setUser({ id: null }));
     localStorage.removeItem(userConstants.localStorageKey);
   }, [dispatch]);
   
@@ -28,11 +28,11 @@ export const LoginPage: FC = () => {
     setErrorMessage(null);
     
     const data     = new FormData(event.currentTarget);
-    const userId   = data.get('user-id')!.toString();
+    const id       = data.get('id')!.toString();
     const password = data.get('password')!.toString();
     
     try {
-      const loginResult = await apiLogin(userId, password);  // ログイン認証してユーザ情報を返してもらう
+      const loginResult = await apiLogin(id, password);  // ログイン認証してユーザ情報を返してもらう
       if(loginResult.error) return setErrorMessage(loginResult.error);
       
       const user = loginResult.result;
@@ -54,7 +54,7 @@ export const LoginPage: FC = () => {
       
       <Box component="form" onSubmit={onSubmit}>
         <TextField
-          type="text" name="user-id" label="User ID"
+          type="text" name="id" label="User ID"
           required autoFocus
           fullWidth margin="normal"
         />
@@ -65,7 +65,7 @@ export const LoginPage: FC = () => {
         />
         <Button
           type="submit" variant="contained"
-          fullWidth sx={{ my: 3, mb: 2 }}
+          fullWidth sx={{ my: 3 }}
         >
           Log In
         </Button>

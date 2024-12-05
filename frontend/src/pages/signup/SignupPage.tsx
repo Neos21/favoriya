@@ -1,10 +1,10 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { Alert, Box, Button, Container, Modal, TextField, Typography } from '@mui/material';
 
-import { isValidPassword, isValidUserId } from '../../common/helpers/validators/validator-user';
+import { isValidId, isValidPassword } from '../../common/helpers/validators/validator-user';
 import { userConstants } from '../../shared/constants/user-constants';
 import { setUser } from '../../shared/stores/user-slice';
 import { apiSignup } from './services/api-signup';
@@ -15,19 +15,19 @@ export const SignupPage: FC = () => {
   const navigate = useNavigate();
   
   const [errorMessage, setErrorMessage] = useState<string>(null);
-  const [formErrors, setFormErrors] = useState<{ userId?: string; password?: string }>({});
+  const [formErrors, setFormErrors] = useState<{ id?: string; password?: string }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // 本画面に遷移してきた時はログイン済の情報があったら削除する
   useEffect(() => {
-    dispatch(setUser({ userId: null }));
+    dispatch(setUser({ id: null }));
     localStorage.removeItem(userConstants.localStorageKey);
   }, [dispatch]);
   
   /** 入力チェック : エラーがあれば formErrors にメッセージをセット・エラーがなければ `true` を返す */
-  const isValidForm = (userId: string, password: string): boolean => {
-    const newErrors: { userId?: string, password?: string } = {
-      userId  : isValidUserId(userId).error,
+  const isValidForm = (id: string, password: string): boolean => {
+    const newErrors: { id?: string, password?: string } = {
+      id      : isValidId(id).error,
       password: isValidPassword(password).error
     };
     setFormErrors(newErrors);
@@ -41,14 +41,14 @@ export const SignupPage: FC = () => {
     setErrorMessage(null);
     
     const data     = new FormData(event.currentTarget);
-    const userId   = data.get('user-id')!.toString();
+    const id       = data.get('id')!.toString();
     const password = data.get('password')!.toString();
     
     // バリデーション失敗時 : ココでエラーメッセージがセットされ各フォーム部品の下部に表示される
-    if(!isValidForm(userId, password)) return;
+    if(!isValidForm(id, password)) return;
     
     try {
-      const signupResult = await apiSignup(userId, password);  // ユーザ登録する
+      const signupResult = await apiSignup(id, password);  // ユーザ登録する
       if(signupResult.error) return setErrorMessage(signupResult.error);
       
       // ユーザ登録成功
@@ -88,25 +88,29 @@ export const SignupPage: FC = () => {
       
       <Box component="form" onSubmit={onSubmit}>
         <TextField
-          type="text" name="user-id" label="User ID"
+          type="text" name="id" label="User ID"
           required autoFocus
           fullWidth margin="normal"
-          error={formErrors.userId != null}
-          helperText={formErrors.userId}
+          error={formErrors.id != null}
+          helperText={formErrors.id}
         />
         <TextField
           type="password" name="password" label="Password"
-          required
+          required autoComplete="new-password"
           fullWidth margin="normal"
           error={formErrors.password != null}
           helperText={formErrors.password}
         />
         <Button
           type="submit" variant="contained"
-          fullWidth sx={{ my: 3, mb: 2 }}
+          fullWidth sx={{ my: 3 }}
         >
           Sign Up
         </Button>
+      </Box>
+      
+      <Box sx={{ mt: 5, textAlign: 'right' }}>
+        <Button component={Link} to="/" variant="contained">Back To Home</Button>
       </Box>
       
       <Modal open={isModalOpen}>

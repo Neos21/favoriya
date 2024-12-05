@@ -17,8 +17,8 @@ export class AuthService {
   ) { }
   
   /** ログイン認証する */
-  public async login(userId: string, password: string): Promise<Result<User>> {
-    const userResult = await this.usersService.findOneByUserId(userId);
+  public async login(id: string, password: string): Promise<Result<User>> {
+    const userResult = await this.usersService.findOneById(id);
     if(userResult.error != null) return { error: userResult.error };
     
     const userEntity = userResult.result;
@@ -26,14 +26,14 @@ export class AuthService {
     if(!isValidPassword) return { error: 'パスワードに誤りがあります' };
     
     const jwtPayload = {  // `JwtAuthGuard` の設定によりコレが `request.user` に入る
-      sub : userEntity.userId,
+      sub : userEntity.id,
       role: userEntity.role
     };
     const result: User = {  // レスポンスの元となるデータ
-      userId: userEntity.userId,
-      name  : userEntity.name,
-      role  : userEntity.role,
-      token : await this.jwtService.signAsync(jwtPayload)  // Throws
+      id   : userEntity.id,
+      name : userEntity.name,
+      role : userEntity.role,
+      token: await this.jwtService.signAsync(jwtPayload)  // Throws
     };
     return { result };
   }

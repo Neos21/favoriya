@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { SignupPage } from './Signup';
+import { HomePage } from './HomePage';
 
 const meta = {
-  title: 'Signup',
-  component: SignupPage,
+  title: 'HomePage',
+  component: HomePage,
   parameters: {
     layout: 'fullscreen'
   }
-} satisfies Meta<typeof SignupPage>;
+} satisfies Meta<typeof HomePage>;
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Signup: Story = {};
+export const Home: Story = {};

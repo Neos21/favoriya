@@ -8,7 +8,7 @@ import type { UserApi } from '../../common/types/user';
 import type { Response } from 'express';
 
 /** Auth Controller */
-@Controller('/api/auth')
+@Controller('api/auth')
 export class AuthController {
   private readonly logger: Logger = new Logger(AuthController.name);
   
@@ -18,8 +18,8 @@ export class AuthController {
   @Post('login')
   public async login(@Body() userInfoApi: UserApi, @Res() response: Response): Promise<Response<Result<UserApi>>> {
     try {
-      const { userId, password } = snakeToCamelCaseObject(userInfoApi);
-      const loginResult = await this.authService.login(userId, password);  // Throws
+      const { id, password } = snakeToCamelCaseObject(userInfoApi);
+      const loginResult = await this.authService.login(id, password);  // Throws
       if(loginResult.error != null) return response.status(HttpStatus.UNAUTHORIZED).json({ error: loginResult.error });
       
       const result: UserApi = camelToSnakeCaseObject(loginResult.result);

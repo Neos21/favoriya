@@ -4,7 +4,7 @@ import { QueryFailedError, Repository } from 'typeorm';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { isValidPassword, isValidUserId } from '../../common/helpers/validators/validator-user';
+import { isValidId, isValidPassword } from '../../common/helpers/validators/validator-user';
 import { authUserConstants } from '../../shared/constants/auth-user';
 import { UserEntity } from '../../shared/entities/user.entity';
 
@@ -21,8 +21,8 @@ export class UsersService {
   /** ユーザ登録する */
   public async create(user: User): Promise<Result<boolean>> {
     // 入力チェックをする
-    const validateResultUserId = isValidUserId(user.userId);
-    if(validateResultUserId.error != null) return { error: validateResultUserId.error };
+    const validateResultId = isValidId(user.id);
+    if(validateResultId.error != null) return { error: validateResultId.error };
     const validateResultPassword = isValidPassword(user.password);
     if(validateResultPassword.error != null ) return { error: validateResultPassword.error };
     
@@ -32,7 +32,7 @@ export class UsersService {
     
     // DB 登録する
     const newUserEntity = new UserEntity({
-      userId: user.userId,
+      id: user.id,
       passwordHash,
       name: '未設定',
       role: 'Normal'
@@ -50,9 +50,9 @@ export class UsersService {
   }
   
   /** ユーザ ID を条件にユーザ情報を取得する */
-  public async findOneByUserId(userId: string): Promise<Result<UserEntity>> {
+  public async findOneById(id: string): Promise<Result<UserEntity>> {
     try {
-      const user = await this.usersRepository.findOneBy({ userId });
+      const user = await this.usersRepository.findOneBy({ id });
       if(user == null) return { error: '指定のユーザ ID のユーザは存在しません' };
       return { result: user };
     }

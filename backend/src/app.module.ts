@@ -10,9 +10,16 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { configuration } from './core/configs/configuration';
 import { AccessLogMiddleware } from './core/middlewares/access-log.middleware';
-import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
-import { SharedModule } from './shared/shared.module';
+import { AuthController } from './modules/auth/auth.controller';
+import { AuthService } from './modules/auth/auth.service';
+import { TimelineController } from './modules/timeline/timeline.controller';
+import { TimelineService } from './modules/timeline/timeline.service';
+import { PostsController } from './modules/users/posts/posts.controller';
+import { PostsService } from './modules/users/posts/posts.service';
+import { UsersController } from './modules/users/users.controller';
+import { UsersService } from './modules/users/users.service';
+import { PostEntity } from './shared/entities/post.entity';
+import { UserEntity } from './shared/entities/user.entity';
 
 /** App Module */
 @Module({
@@ -53,16 +60,24 @@ import { SharedModule } from './shared/shared.module';
         autoLoadEntities: true  // forFeature() をなくす
       })
     }),
-    
-    SharedModule,
-    AuthModule,
-    UsersModule
+    TypeOrmModule.forFeature([
+      UserEntity,
+      PostEntity
+    ])
   ],
   controllers: [
-    AppController
+    AppController,
+    AuthController,
+    UsersController,
+    PostsController,
+    TimelineController
   ],
   providers: [
-    AppService
+    AppService,
+    AuthService,
+    UsersService,
+    PostsService,
+    TimelineService
   ]
 })
 export class AppModule {

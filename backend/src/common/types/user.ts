@@ -2,7 +2,7 @@ import { CamelToSnakeCaseObject } from './cases';
 
 /** ユーザ情報 */
 export type User = {
-  userId: string;
+  id: string;
   password?: string;
   passwordHash?: string;
   name?: string;

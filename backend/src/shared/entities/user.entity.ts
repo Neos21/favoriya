@@ -1,12 +1,11 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+
+import { PostEntity } from './post.entity';
 
 @Entity('users')
 export class UserEntity {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  public readonly id: number;
-  
-  @Column({ name: 'user_id', unique: true })
-  public userId: string;
+  @PrimaryColumn({ name: 'id', unique: true })
+  public id: string;
   
   @Column({ name: 'password_hash' })
   public passwordHash: string;
@@ -22,6 +21,10 @@ export class UserEntity {
   
   @UpdateDateColumn({ name: 'updated_at' })
   public readonly updatedAt: Date;
+  
+  /** 投稿情報 (子) との親子関係を示す (カラムは作られない) : `@ManyToOne` を指定したプロパティと相互紐付けする */
+  @OneToMany(() => PostEntity, postEntity => postEntity.user, { createForeignKeyConstraints: false })
+  public posts: Array<PostEntity>;
   
   constructor(partial: Partial<UserEntity>) { Object.assign(this, partial); }
 }
