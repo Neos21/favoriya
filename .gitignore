@@ -9,6 +9,11 @@ dist/
 nohup.out
 coverage/
 
+# MinIO
+minio
+mc
+oss/
+
 # Frontend
 *storybook.log
 storybook-static/
