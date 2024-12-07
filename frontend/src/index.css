@@ -1,4 +1,12 @@
 html {
-  overflow-y: scroll;
+  overflow-y: scroll !important;  /* Drawer を開いた時に消させない */
   cursor: default;
+}
+
+body {
+  padding-right: 0 !important;  /* Drawer を開いた時に勝手に付くので切る */
+}
+
+.MuiDrawer-root * {
+  transition: none !important;  /* Drawer 関連のアニメーションを切る */
 }

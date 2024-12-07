@@ -1,11 +1,11 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, FormEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Alert, Box, Button, Container, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, TextField, Typography } from '@mui/material';
 
 import { userConstants } from '../../shared/constants/user-constants';
-import { setUser } from '../../shared/stores/user-slice';
+import { initialUserState, setUser } from '../../shared/stores/user-slice';
 import { apiLogin } from './services/api-login';
 
 /** Login Page */
@@ -17,12 +17,12 @@ export const LoginPage: FC = () => {
   
   // 本画面に遷移してきた時はログイン済の情報があったら削除する
   useEffect(() => {
-    dispatch(setUser({ id: null }));
+    dispatch(setUser(Object.assign({}, initialUserState)));
     localStorage.removeItem(userConstants.localStorageKey);
   }, [dispatch]);
   
   /** On Submit */
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
     setErrorMessage(null);
@@ -46,34 +46,32 @@ export const LoginPage: FC = () => {
     }
   };
   
-  return (
-    <Container maxWidth="sm">
-      <Typography component="h1" variant="h4" marginY={2}>Log In</Typography>
-      
-      {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
-      
-      <Box component="form" onSubmit={onSubmit}>
-        <TextField
-          type="text" name="id" label="User ID"
-          required autoFocus
-          fullWidth margin="normal"
-        />
-        <TextField
-          type="password" name="password" label="Password"
-          required autoComplete="current-password"
-          fullWidth margin="normal"
-        />
-        <Button
-          type="submit" variant="contained"
-          fullWidth sx={{ my: 3 }}
-        >
-          Log In
-        </Button>
-      </Box>
-      
-      <Box sx={{ mt: 5, textAlign: 'right' }}>
-        <Button component={Link} to="/signup" variant="contained">Sign Up</Button>
-      </Box>
-    </Container>
-  );
+  return (<>
+    <Typography component="h1" variant="h4" marginY={2}>Log In</Typography>
+    
+    {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
+    
+    <Box component="form" onSubmit={onSubmit}>
+      <TextField
+        type="text" name="id" label="User ID"
+        required autoFocus
+        fullWidth margin="normal"
+      />
+      <TextField
+        type="password" name="password" label="Password"
+        required autoComplete="current-password"
+        fullWidth margin="normal"
+      />
+      <Button
+        type="submit" variant="contained"
+        fullWidth sx={{ my: 3 }}
+      >
+        Log In
+      </Button>
+    </Box>
+    
+    <Box sx={{ mt: 5, textAlign: 'right' }}>
+      <Button component={Link} to="/signup" variant="contained">Sign Up</Button>
+    </Box>
+  </>);
 };

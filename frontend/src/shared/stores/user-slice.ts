@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { User } from '../../common/types/user';
 
-const initialState: User = {
+export const initialUserState: User = {
   id   : '',
   name : '',
   role : '',
@@ -12,7 +12,7 @@ const initialState: User = {
 /** User State */
 export const userSlice = createSlice({
   name: 'user',
-  initialState,
+  initialState: initialUserState,
   reducers: {
     /** ユーザ情報をセットする (既存データは無視して全更新) */
     setUser: (_state, action: PayloadAction<User>) => {

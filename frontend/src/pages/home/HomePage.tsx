@@ -2,12 +2,13 @@ import { FC, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
+import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { userConstants } from '../../shared/constants/user-constants';
-import { RootState } from '../../shared/stores/store';
 import { setUser } from '../../shared/stores/user-slice';
 import { GlobalTimelinePage } from '../global-timeline/GlobalTimelinePage';
 
 import type { User } from '../../common/types/user';
+import type { RootState } from '../../shared/stores/store';
 
 /** Home Page : Auth Check */
 export const HomePage: FC = () => {
@@ -19,7 +20,7 @@ export const HomePage: FC = () => {
   // 1回だけ実行するため必要
   useEffect(() => {
     // Store に情報が復元済
-    if(userState?.token != null && userState.token !== '') {
+    if(!isEmptyString(userState.id)) {
       setIsLoggedIn(true);
       setIsLoading(false);
       return;
@@ -33,7 +34,7 @@ export const HomePage: FC = () => {
     }
     setIsLoggedIn(userStringified != null);
     setIsLoading(false);
-  }, [dispatch, userState.token]);
+  }, [dispatch, userState]);
   
   // ロード中
   if(isLoading) return <></>;  // TODO : 少し経ってからスピナーを表示する

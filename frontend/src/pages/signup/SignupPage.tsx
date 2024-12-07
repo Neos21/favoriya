@@ -1,12 +1,12 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, FormEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Alert, Box, Button, Container, Modal, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Modal, TextField, Typography } from '@mui/material';
 
 import { isValidId, isValidPassword } from '../../common/helpers/validators/validator-user';
 import { userConstants } from '../../shared/constants/user-constants';
-import { setUser } from '../../shared/stores/user-slice';
+import { initialUserState, setUser } from '../../shared/stores/user-slice';
 import { apiSignup } from './services/api-signup';
 
 /** Signup Page */
@@ -20,7 +20,7 @@ export const SignupPage: FC = () => {
   
   // 本画面に遷移してきた時はログイン済の情報があったら削除する
   useEffect(() => {
-    dispatch(setUser({ id: null }));
+    dispatch(setUser(Object.assign({}, initialUserState)));
     localStorage.removeItem(userConstants.localStorageKey);
   }, [dispatch]);
   
@@ -35,9 +35,8 @@ export const SignupPage: FC = () => {
   };
   
   /** On Submit */
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
     setErrorMessage(null);
     
     const data     = new FormData(event.currentTarget);
@@ -49,7 +48,7 @@ export const SignupPage: FC = () => {
     
     try {
       const signupResult = await apiSignup(id, password);  // ユーザ登録する
-      if(signupResult.error) return setErrorMessage(signupResult.error);
+      if(signupResult.error != null) return setErrorMessage(signupResult.error);
       
       // ユーザ登録成功
       setIsModalOpen(true);  // モーダルを開く
@@ -80,55 +79,53 @@ export const SignupPage: FC = () => {
     p: 4
   };
   
-  return (
-    <Container maxWidth="sm">
-      <Typography component="h1" variant="h4" marginY={2}>Sign Up</Typography>
-      
-      {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
-      
-      <Box component="form" onSubmit={onSubmit}>
-        <TextField
-          type="text" name="id" label="User ID"
-          required autoFocus
-          fullWidth margin="normal"
-          error={formErrors.id != null}
-          helperText={formErrors.id}
-        />
-        <TextField
-          type="password" name="password" label="Password"
-          required autoComplete="new-password"
-          fullWidth margin="normal"
-          error={formErrors.password != null}
-          helperText={formErrors.password}
-        />
-        <Button
-          type="submit" variant="contained"
-          fullWidth sx={{ my: 3 }}
-        >
-          Sign Up
-        </Button>
-      </Box>
-      
-      <Box sx={{ mt: 5, textAlign: 'right' }}>
-        <Button component={Link} to="/" variant="contained">Back To Home</Button>
-      </Box>
-      
-      <Modal open={isModalOpen}>
-        <Box sx={modalStyle}>
-          <Typography component="h2" variant="h5" marginBottom={2}>ユーザ登録が完了しました</Typography>
-          <Typography>ログイン画面でログインしてください</Typography>
-          <Box sx={{ textAlign: 'right' }}>
-            <Button
-              variant="contained"
-              autoFocus
-              onClick={onCloseModal}
-              sx={{ mt: 2 }}
-            >
-              OK
-            </Button>
-          </Box>
+  return (<>
+    <Typography component="h1" variant="h4" marginY={2}>Sign Up</Typography>
+    
+    {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
+    
+    <Box component="form" onSubmit={onSubmit}>
+      <TextField
+        type="text" name="id" label="User ID"
+        required autoFocus
+        fullWidth margin="normal"
+        error={formErrors.id != null}
+        helperText={formErrors.id}
+      />
+      <TextField
+        type="password" name="password" label="Password"
+        required autoComplete="new-password"
+        fullWidth margin="normal"
+        error={formErrors.password != null}
+        helperText={formErrors.password}
+      />
+      <Button
+        type="submit" variant="contained"
+        fullWidth sx={{ my: 3 }}
+      >
+        Sign Up
+      </Button>
+    </Box>
+    
+    <Box sx={{ mt: 5, textAlign: 'right' }}>
+      <Button component={Link} to="/" variant="contained">Back To Home</Button>
+    </Box>
+    
+    <Modal open={isModalOpen}>
+      <Box sx={modalStyle}>
+        <Typography component="h2" variant="h5" marginBottom={2}>ユーザ登録が完了しました</Typography>
+        <Typography>ログイン画面でログインしてください</Typography>
+        <Box sx={{ textAlign: 'right' }}>
+          <Button
+            variant="contained"
+            autoFocus
+            onClick={onCloseModal}
+            sx={{ mt: 2 }}
+          >
+            OK
+          </Button>
         </Box>
-      </Modal>
-    </Container>
-  );
+      </Box>
+    </Modal>
+  </>);
 };

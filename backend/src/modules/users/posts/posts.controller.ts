@@ -20,7 +20,7 @@ export class PostsController {
     try {
       const post: TypePost = snakeToCamelCaseObject(postApi);
       const result = await this.postsService.create(post);  // Throws
-      if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json({ error: result.error });
+      if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
       
       return response.status(HttpStatus.CREATED).end();
     }

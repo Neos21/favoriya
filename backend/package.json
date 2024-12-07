@@ -1,5 +1,5 @@
 {
-  "name": "pseudo-backend",
+  "name": "@pseudo/backend",
   "description": "Pseudo Backend",
   "private": true,
   "version": "0.0.0",
@@ -9,7 +9,6 @@
     "lint": "eslint \"{src,apps,libs,tests}/**/*.ts\"",
     "build": "nest build",
     "test": "jest --maxWorkers 4",
-    "test-coverage": "jest --maxWorkers 4 --coverage",
     "test-debug": "node --inspect-brk --require tsconfig-paths/register --require ts-node/register node_modules/.bin/jest --runInBand",
     "test-e2e": "jest --config ./tests/jest-e2e.json",
     "nest": "nest"
@@ -62,10 +61,15 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "collectCoverage": true,
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
+    "coverageReporters": [
+      "text",
+      "lcov"
+    ],
     "testEnvironment": "node"
   }
 }

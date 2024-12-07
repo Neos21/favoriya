@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Alert, Box, Button, TextField } from '@mui/material';
@@ -6,7 +6,8 @@ import { Alert, Box, Button, TextField } from '@mui/material';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { isValidText } from '../../../common/helpers/validators/validator-post';
 import { useApiPost } from '../../hooks/use-api-fetch';
-import { RootState } from '../../stores/store';
+
+import type { RootState } from '../../stores/store';
 
 import type { PostApi } from '../../../common/types/post';
 import type { Result } from '../../../common/types/result';
@@ -26,13 +27,13 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
   const apiPost = useApiPost();
   
   /** On Change */
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((previousFormData) => ({ ...previousFormData, [name]: value }));
   };
   
   /** On Submit */
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
     

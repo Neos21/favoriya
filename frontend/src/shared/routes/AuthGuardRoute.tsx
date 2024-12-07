@@ -2,10 +2,11 @@ import { FC, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 
+import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { userConstants } from '../constants/user-constants';
-import { RootState } from '../stores/store';
 import { setUser } from '../stores/user-slice';
 
+import type { RootState } from '../stores/store';
 import type { User } from '../../common/types/user';
 
 /** 認証ガード */
@@ -17,12 +18,13 @@ export const AuthGuardRoute: FC = () => {
   
   useEffect(() => {
     // Store に情報が復元済
-    if(userState?.token != null && userState.token !== '') {
+    if(!isEmptyString(userState.id)) {
       setIsLoggedIn(true);
       setIsLoading(false);
       return;
     }
     
+    // LocalStorage にユーザ情報が格納されていればログイン済とする
     const userStringified = localStorage.getItem(userConstants.localStorageKey);
     if(userStringified != null) {
       const user: User = JSON.parse(userStringified);
@@ -30,7 +32,7 @@ export const AuthGuardRoute: FC = () => {
     }
     setIsLoggedIn(userStringified != null);
     setIsLoading(false);
-  }, [dispatch, userState.token]);
+  }, [dispatch, userState]);
   
   // ロード中
   if(isLoading) return <></>;  // TODO : 少し経ってからスピナーを表示する
