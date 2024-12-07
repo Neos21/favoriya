@@ -1,0 +1,13 @@
+{
+  "name": "Pseudo",
+  "short_name": "Pseudo",
+  "lang": "ja",
+  "theme_color": "#00ff00",
+  "background_color": "#000000",
+  "display": "standalone",
+  "start_url": "https://pseudo.neos21.net/",
+  "icons": [
+    { "src": "favicons/192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "favicons/512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}
