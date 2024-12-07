@@ -17,7 +17,7 @@ export const SettingsPage: FC = () => {
     
     <Typography component="h2" variant="h5" marginY={2}>Profile</Typography>
     <List dense sx={{ borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
-      <ListItem><ListItemText primary="User ID" secondary={userState.id} /></ListItem>
+      <ListItem><ListItemText primary="User ID" secondary={'@' + userState.id} /></ListItem>
       <Divider variant="middle" component="li" />
       <ListItem><ListItemText primary="Role" secondary={userState.role} /></ListItem>
     </List>
