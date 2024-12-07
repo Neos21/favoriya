@@ -21,7 +21,7 @@ export class TimelineController {
       return response.status(HttpStatus.OK).json(result);
     }
     catch(error) {
-      return response.status(HttpStatus.BAD_REQUEST).json({ error: error.error });
+      return response.status(HttpStatus.BAD_REQUEST).json({ error: error.error ?? error.toString() });
     }
   }
 }

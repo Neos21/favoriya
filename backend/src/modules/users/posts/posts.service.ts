@@ -17,13 +17,17 @@ export class PostsService {
   
   /** 投稿する */
   public async create(post: Post): Promise<Result<boolean>> {
-    const newPostEntity = new PostEntity(post);
+    const newPostEntity = new PostEntity({
+      userId: post.userId,
+      text: post.text
+    });
+    
     try {
-      await this.postsRepository.insert(newPostEntity);  // Throws
+      await this.postsRepository.insert(newPostEntity);
     }
     catch(error) {
       this.logger.error('投稿処理に失敗しました (DB エラー)', error);
-      throw error;
+      return { error: '投稿処理に失敗しました' };
     }
     
     return { result: true };

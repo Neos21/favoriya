@@ -10,15 +10,20 @@ import type { User, UserApi } from '../../../common/types/user';
  * @param id ユーザ ID
  * @param password パスワード
  * @return ユーザ情報
- * @throws Fetch API の失敗時、正常なはずの Response JSON がパースできなかった時
  */
 export const apiLogin = async (id: string, password: string): Promise<Result<User>> => {
-  const requestUserApi: UserApi = camelToSnakeCaseObject({ id, password });
-  const response = await apiPostWithoutToken('/auth/login', requestUserApi);  // Throws
-  
-  const responseResult: Result<UserApi> = await response.json();  // Throws
-  if(!response.ok) return { error: responseResult.error };
-  
-  const result: User = snakeToCamelCaseObject(responseResult.result);
-  return { result };
+  try {
+    const requestUserApi: UserApi = camelToSnakeCaseObject({ id, password });
+    const response = await apiPostWithoutToken('/auth/login', requestUserApi);  // Throws
+    
+    const responseResult: Result<UserApi> = await response.json();  // Throws
+    if(!response.ok) return { error: responseResult.error };
+    
+    const result: User = snakeToCamelCaseObject(responseResult.result);
+    return { result };
+  }
+  catch(error) {
+    console.error('apiLogin : Failed To Fetch', error);
+    return { error: 'apiLogin : Failed To Fetch' };
+  }
 };

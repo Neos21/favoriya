@@ -19,10 +19,13 @@ export class TimelineService {
   /** グローバルタイムラインを取得する */
   public async getGlobalTimeline(): Promise<Result<Array<PostApi>>> {
     try {
-      const posts = await this.postsRepository.find({
-        take: 50,
-        order: { createdAt: 'DESC' }
-      });
+      const posts = await this.postsRepository
+        .createQueryBuilder('posts')
+        .leftJoinAndSelect('posts.user', 'users')  // users を結合する
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.createdAt', 'users.name'])  // 必要なカラムを選択する
+        .orderBy('posts.createdAt', 'DESC')  // created_at の降順
+        .limit(50)  // 上限50件
+        .getMany();
       
       const postsApi: Array<PostApi> = posts.map(post => camelToSnakeCaseObject(post));
       return { result: postsApi };

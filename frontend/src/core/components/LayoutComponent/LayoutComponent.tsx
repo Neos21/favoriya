@@ -1,5 +1,5 @@
-import { FC, useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { FC, useEffect, useState } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HomeIcon from '@mui/icons-material/Home';
@@ -13,33 +13,41 @@ import { MenuComponent } from '../MenuComponent/MenuComponent';
 export const LayoutComponent: FC = () => {
   const drawerWidth = 240;
   
-  const [isOpen, setIsOpen] = useState(false);  // Drawer を開いているか否か
+  const location = useLocation();
   const isNarrowWindow = useMediaQuery('(max-width: 599.98px)');  // 画面幅が 600px 以内かどうか
   
-  const toggleDrawer = () => setIsOpen(!isOpen);
+  const [isOpen, setIsOpen] = useState(false);  // Drawer を開いているか否か
+  
+  const onCloseDrawer = () => setIsOpen(false);
+  const onToggleDrawer = () => setIsOpen(!isOpen);
+  
+  // 画面遷移ごとに実行する
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
   
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <Drawer
         variant={isNarrowWindow ? 'temporary' : 'persistent'}
         open={isNarrowWindow ? isOpen : true}
-        onClose={toggleDrawer}  // temporary の場合の閉じる処理
+        onClose={onCloseDrawer}
         sx={{
           width: drawerWidth,
           flexShrink: 0,
           '& .MuiDrawer-paper': { width: drawerWidth }
         }}
       >
-        <MenuComponent />
+        <MenuComponent onClickItem={onCloseDrawer} />
       </Drawer>
       
       <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="fixed" sx={{ paddingLeft: (isNarrowWindow ? 0 : `${drawerWidth}px`) }}>
+        <AppBar position="fixed" sx={{ paddingLeft: (isNarrowWindow ? 0 : `${drawerWidth}px`), paddingRight: '0 !important' }}>
           <Toolbar>
             <Grid2 container spacing={3} width="100%">
               {isNarrowWindow &&
                 <Grid2 display="flex" justifyContent="center" alignItems="center" size="grow">
-                  <IconButton size="large" color="inherit" onClick={toggleDrawer}>
+                  <IconButton size="large" color="inherit" onClick={onToggleDrawer}>
                     <MenuIcon />
                   </IconButton>
                 </Grid2>
@@ -67,7 +75,7 @@ export const LayoutComponent: FC = () => {
         </AppBar>
         
         {/* AppBar の高さが 64px あるため padding-top を指定している */}
-        <Container maxWidth="md" sx={{ minWidth: 300, paddingTop: '64px', paddingBottom: 4 }}>
+        <Container maxWidth="md" sx={{ minWidth: 300, paddingTop: (isNarrowWindow ? '56px' : '64px'), paddingBottom: 4 }}>
           <Outlet />
         </Container>
       </Box>

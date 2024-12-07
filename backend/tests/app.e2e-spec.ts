@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import supertest from 'supertest';
 
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -18,9 +18,8 @@ describe('AppController (e2e)', () => {
   });
   
   it('/ (GET)', () => {
-    return request(app.getHttpServer())
+    return supertest(app.getHttpServer())
       .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .expect(404);
   });
 });

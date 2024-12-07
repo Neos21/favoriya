@@ -1,6 +1,6 @@
 import * as bcryptjs from 'bcryptjs';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from '../users/users.service';
@@ -11,6 +11,8 @@ import type { User } from '../../common/types/user';
 /** Auth Service */
 @Injectable()
 export class AuthService {
+  private readonly logger: Logger = new Logger(AuthService.name);
+  
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService
@@ -18,7 +20,7 @@ export class AuthService {
   
   /** ログイン認証する */
   public async login(id: string, password: string): Promise<Result<User>> {
-    const userResult = await this.usersService.findOneById(id);
+    const userResult = await this.usersService.findOneByIdWithPasswordHash(id);
     if(userResult.error != null) return { error: userResult.error };
     
     const userEntity = userResult.result;
@@ -29,12 +31,18 @@ export class AuthService {
       sub : userEntity.id,
       role: userEntity.role
     };
-    const result: User = {  // レスポンスの元となるデータ
-      id   : userEntity.id,
-      name : userEntity.name,
-      role : userEntity.role,
-      token: await this.jwtService.signAsync(jwtPayload)  // Throws
-    };
-    return { result };
+    try {
+      const result: User = {  // レスポンスの元となるデータ
+        id   : userEntity.id,
+        name : userEntity.name,
+        role : userEntity.role,
+        token: await this.jwtService.signAsync(jwtPayload)  // Throws
+      };
+      return { result };
+    }
+    catch(error) {
+      this.logger.error('JWT 署名に失敗しました', error);
+      return { error: 'JWT 署名に失敗しました' };
+    }
   }
 }

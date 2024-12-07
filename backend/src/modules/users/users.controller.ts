@@ -2,6 +2,7 @@ import { Body, Controller, HttpStatus, Param, Patch, Post, Req, Res, UseGuards }
 
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
+import { isValidJwtUserId } from '../../shared/helpers/is-valid-jwt-user-id';
 import { UsersService } from './users.service';
 
 import type { Request, Response } from 'express';
@@ -24,7 +25,7 @@ export class UsersController {
       return response.status(HttpStatus.CREATED).end();
     }
     catch(error) {
-      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.error });
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.error ?? error.toString() });
     }
   }
   
@@ -33,18 +34,34 @@ export class UsersController {
   @Patch(':userId')
   public async patch(@Param('userId') id: string, @Body() userApi: UserApi, @Req() request: Request, @Res() response: Response): Promise<Response<Result<UserApi>>> {
     try {
-      const jwtPayload = (request as unknown as { user: { sub: string } }).user;
-      if(jwtPayload.sub !== id) return response.status(HttpStatus.UNAUTHORIZED).json({ error: 'このリソースにアクセスすることは許可されていません' });
+      if(!isValidJwtUserId(request, response, id)) return;
       
       const user: User = snakeToCamelCaseObject(userApi);
-      const result = await this.usersService.patch(id, user);
+      const result = await this.usersService.patch(id, user);  // Throws
       if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
       
-      const updatedUser: UserApi = camelToSnakeCaseObject(result.result);  // Throws
+      const updatedUser: UserApi = camelToSnakeCaseObject(result.result);
       return response.status(HttpStatus.OK).json({ result: updatedUser });
     }
     catch(error) {
-      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.error });
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.error ?? error.toString() });
+    }
+  }
+  
+  /** パスワードを変更する */
+  @UseGuards(JwtAuthGuard)
+  @Post(':userId/change-password')
+  public async changePassword(@Param('userId') id: string, @Body('current_password') currentPassword: string, @Body('new_password') newPassword: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<boolean>>> {
+    try {
+      if(!isValidJwtUserId(request, response, id)) return;
+      
+      const result = await this.usersService.changePassword(id, currentPassword, newPassword);  // Throws
+      if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
+      
+      return response.status(HttpStatus.OK).json(result);
+    }
+    catch(error) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.error ?? error.toString() });
     }
   }
 }

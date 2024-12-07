@@ -24,8 +24,8 @@ export const GlobalTimelinePage: FC = () => {
     setPosts([]);
     
     try {
-      const response = await apiGet('/timeline/global');
-      const postsApi: Result<Array<PostApi>> = await response.json();
+      const response = await apiGet('/timeline/global');  // Throws
+      const postsApi: Result<Array<PostApi>> = await response.json();  // Throws
       if(postsApi.error != null) return setStatus('failed');
       
       const posts: Array<Post> = postsApi.result.map(postApi => snakeToCamelCaseObject(postApi));
@@ -77,9 +77,14 @@ export const GlobalTimelinePage: FC = () => {
     {status === 'succeeded' && posts.length === 0 && <Typography component="p" marginY={3}>投稿がありません</Typography>}
     
     {status === 'succeeded' && posts.length !== 0 && posts.map(post => (
-      <Typography component="div" marginY={3} key={post.id} sx={{ lineHeight: 1.7 }}>
-        <Typography component="p"><strong>@{post.userId}</strong><span style={{ fontSize: '.8rem', color: '#999' }}> - {epochTimeMsToJst(post.id)}</span></Typography>
-        <Typography component="p" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{post.text}</Typography>
+      <Typography component="div" marginY={3} key={post.id} sx={{  wordBreak: 'break-all' }}>
+        <Typography component="p" sx={{ lineHeight: 1.8 }}>
+          <strong>{post.user.name}</strong>&nbsp;
+          <span style={{ color: '#999' }}>@{post.userId}
+            <span style={{ fontSize: '.8rem' }}> - {epochTimeMsToJst(post.id)}</span>
+          </span>
+        </Typography>
+        <Typography component="p" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>{post.text}</Typography>
       </Typography>
     ))}
   </>);

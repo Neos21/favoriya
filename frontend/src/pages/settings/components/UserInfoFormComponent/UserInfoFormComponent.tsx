@@ -32,13 +32,13 @@ export const UserInfoFormComponent: FC = () => {
     setFormData({ name: userState.name });
   }, [setFormData, userState]);
   
-  /** User Info の値保持 */
+  /** フォームの値保持 */
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((previousFormData) => ({ ...previousFormData, [name]: value }));
   };
   
-  /** User Info の入力チェック */
+  /** フォームの入力チェック */
   const isValidForm = (name: string): boolean => {
     const newErrors: { name: string } = {
       name: isValidName(name).error
@@ -47,7 +47,7 @@ export const UserInfoFormComponent: FC = () => {
     return Object.values(newErrors).every(newError => newError == null);
   };
   
-  /** User Info の更新処理 */
+  /** フォームの Submit 処理 */
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
@@ -58,8 +58,8 @@ export const UserInfoFormComponent: FC = () => {
     
     try {
       const id = userState.id;
-      const response = await apiPatch(`/users/${id}`, { name });
-      const updatedUserApi: Result<UserApi> = await response.json();
+      const response = await apiPatch(`/users/${id}`, { name });  // Throws
+      const updatedUserApi: Result<UserApi> = await response.json();  // Throws
       if(updatedUserApi.error != null) return setErrorMessage(updatedUserApi.error);
       
       const updatedUser = snakeToCamelCaseObject(updatedUserApi.result);
@@ -91,7 +91,7 @@ export const UserInfoFormComponent: FC = () => {
       />
       <Button
         type="submit" variant="contained"
-        fullWidth sx={{ my: 3 }}
+        fullWidth sx={{ mt: 3 }}
       >
         Update
       </Button>

@@ -17,8 +17,12 @@ import { initialUserState, setUser } from '../../../shared/stores/user-slice';
 
 import type { RootState } from '../../../shared/stores/store';
 
+type Props = {
+  onClickItem: () => void;
+};
+
 /** Menu Component */
-export const MenuComponent: FC = () => {
+export const MenuComponent: FC<Props> = ({ onClickItem }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userState = useSelector((state: RootState) => state.user);
@@ -27,14 +31,14 @@ export const MenuComponent: FC = () => {
   if(isEmptyString(userState.id)) return (
     <List>
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/login">
+        <ListItemButton component={Link} to="/login" onClick={onClickItem}>
           <ListItemIcon><LoginIcon /></ListItemIcon>
           <ListItemText primary="Login" />
         </ListItemButton>
       </ListItem>
       
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/signup">
+        <ListItemButton component={Link} to="/signup" onClick={onClickItem}>
           <ListItemIcon><AssignmentTurnedInIcon /></ListItemIcon>
           <ListItemText primary="Signup" />
         </ListItemButton>
@@ -44,6 +48,7 @@ export const MenuComponent: FC = () => {
   
   /** On Click */
   const onLogout = () => {
+    onClickItem();
     dispatch(setUser(Object.assign({}, initialUserState)));
     localStorage.removeItem(userConstants.localStorageKey);
     navigate('/');
@@ -53,7 +58,7 @@ export const MenuComponent: FC = () => {
   return (
     <List>
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/">
+        <ListItemButton component={Link} to="/" onClick={onClickItem}>
           <ListItemIcon><HomeIcon /></ListItemIcon>
           <ListItemText primary="Home" />
         </ListItemButton>
@@ -74,7 +79,7 @@ export const MenuComponent: FC = () => {
       </ListItem>
       
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/settings">
+        <ListItemButton component={Link} to="/settings" onClick={onClickItem}>
           <ListItemIcon><SettingsIcon /></ListItemIcon>
           <ListItemText primary="Settings" />
         </ListItemButton>

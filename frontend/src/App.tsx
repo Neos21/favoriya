@@ -21,6 +21,7 @@ export const App = () => (
         <CssBaseline />
         <Routes>
           <Route path="/" element={<LayoutComponent />}>
+            
             <Route index          element={<HomePage   />}></Route>
             <Route path="/signup" element={<SignupPage />}></Route>
             <Route path="/login"  element={<LoginPage  />}></Route>
