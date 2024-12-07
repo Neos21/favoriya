@@ -10,4 +10,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const FontParser: Story = {};
+export const FontParser: Story = {
+  args: {
+    input: ''
+  }
+};
