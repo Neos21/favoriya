@@ -10,3 +10,62 @@ body {
 .MuiDrawer-root * {
   transition: none !important;  /* Drawer 関連のアニメーションを切る */
 }
+
+
+/* Font Parser Component */
+
+.font-parser-component strong {
+  color: #f00;
+  font-weight: bold;
+}
+
+.font-parser-component em {
+  color: #0b5;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-parser-component del {
+  opacity: .85;
+}
+
+.font-parser-component code,
+.font-parser-component var,
+.font-parser-component samp,
+.font-parser-component kbd {
+  margin: 0 3px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1.25px 6px;
+  font-size: .94em;
+  font-style: normal;
+  background: #333;
+}
+
+.font-parser-component code { color: #f0a; }
+.font-parser-component var  { color: #0df; }
+.font-parser-component samp { color: #c3f; }
+.font-parser-component kbd  { color: #f60; }
+
+@keyframes blink-animation {
+  50% { opacity: 0; }
+}
+
+.font-parser-component marquee { display: block; }
+
+@keyframes scroll-left {
+  from { transform: translateX( 100%); }
+  to   { transform: translateX(-100%); }
+}
+@keyframes scroll-right {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX( 100%); }
+}
+@keyframes scroll-up {
+  from { transform: translateY( 100%); }
+  to   { transform: translateY(-100%); }
+}
+@keyframes scroll-down {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY( 100%); }
+}

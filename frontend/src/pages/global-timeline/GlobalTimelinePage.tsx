@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Alert, Button, Typography } from '@mui/material';
 
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
+import { FontParserComponent } from '../../shared/components/FontParserComponent/FontParserComponent';
 import { PostFormComponent } from '../../shared/components/PostFormComponent/PostFormComponent';
 import { useApiGet } from '../../shared/hooks/use-api-fetch';
 
@@ -84,7 +85,9 @@ export const GlobalTimelinePage: FC = () => {
             <span style={{ fontSize: '.8rem' }}> - {epochTimeMsToJst(post.id)}</span>
           </span>
         </Typography>
-        <Typography component="p" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>{post.text}</Typography>
+        <Typography component="div" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
+          <FontParserComponent input={post.text} />
+        </Typography>
       </Typography>
     ))}
   </>);
