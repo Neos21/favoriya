@@ -8,9 +8,18 @@ export const camelToSnakeCase = (value: string): string => {
 
 /** camelCase → snake_case オブジェクト */
 export const camelToSnakeCaseObject = <T extends object>(object: T): CamelToSnakeCaseObject<T> => {
-  if(isObject(object)) {
+  if(object instanceof Date) {
+    return object.getTime().toString() as CamelToSnakeCaseObject<T>;
+  }
+  else if(Array.isArray(object)) {
+    return object.map(item => camelToSnakeCaseObject(item)) as CamelToSnakeCaseObject<T>;
+  }
+  else if(isObject(object)) {
     return Object.entries(object).reduce((accumulator, [camelKey, value]) => {
-      if(Array.isArray(value)) {
+      if(object instanceof Date) {
+        return object.getTime().toString() as CamelToSnakeCaseObject<T>;
+      }
+      else if(Array.isArray(value)) {
         accumulator[camelToSnakeCase(camelKey)] = value.map(item => camelToSnakeCaseObject(item));
       }
       else if(isObject(value)) {
@@ -22,9 +31,6 @@ export const camelToSnakeCaseObject = <T extends object>(object: T): CamelToSnak
       return accumulator;
     }, {}) as CamelToSnakeCaseObject<T>;
   }
-  else if(Array.isArray(object)) {
-    return object.map(item => camelToSnakeCaseObject(item)) as CamelToSnakeCaseObject<T>;
-  }
   return object as CamelToSnakeCaseObject<T>;
 };
 
@@ -35,9 +41,18 @@ export const snakeToCamelCase = (value: string): string => {
 
 /** snake_case → camelCase オブジェクト */
 export const snakeToCamelCaseObject = <T extends object>(object: T): SnakeToCamelCaseObject<T> => {
-  if (isObject(object)) {
+  if(object instanceof Date) {
+    return object.getTime().toString() as SnakeToCamelCaseObject<T>;
+  }
+  else if(Array.isArray(object)) {
+    return object.map(item => snakeToCamelCaseObject(item)) as SnakeToCamelCaseObject<T>;
+  }
+  else if(isObject(object)) {
     return Object.entries(object).reduce((accumulator, [snakeKey, value]) => {
-      if(Array.isArray(value)) {
+      if(object instanceof Date) {
+        return object.getTime().toString() as SnakeToCamelCaseObject<T>;
+      }
+      else if(Array.isArray(value)) {
         accumulator[snakeToCamelCase(snakeKey)] = value.map(item => snakeToCamelCaseObject(item));
       }
       else if(isObject(value)) {
@@ -48,9 +63,6 @@ export const snakeToCamelCaseObject = <T extends object>(object: T): SnakeToCame
       }
       return accumulator;
     }, {}) as SnakeToCamelCaseObject<T>;
-  }
-  else if (Array.isArray(object)) {
-    return object.map(item => snakeToCamelCaseObject(item)) as SnakeToCamelCaseObject<T>;
   }
   return object as SnakeToCamelCaseObject<T>;
 };

@@ -21,10 +21,11 @@ type FormData = { text: string };
 
 /** Post Form Component */
 export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
+  const apiPost = useApiPost();
+  const userState = useSelector((state: RootState) => state.user);
+  
   const [formData, setFormData] = useState<FormData>({ text: '' });
   const [errorMessage, setErrorMessage] = useState<string>(null);
-  const userState = useSelector((state: RootState) => state.user);
-  const apiPost = useApiPost();
   
   /** On Change */
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -63,16 +64,24 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
     }
   };
   
+  /** Ctrl + Enter or Cmd + Enter で投稿できるようにする */
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+      onSubmit(event as unknown as FormEvent<HTMLFormElement>);
+      return;
+    }
+  };
+  
   return (
     <>
       {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
       
       <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
-        <Box sx={{ textAlign: 'right' }}>
+        <Box component="div" sx={{ textAlign: 'right' }}>
           <Button type="submit" variant="contained">投稿</Button>
         </Box>
         <TextField
-          multiline name="text" label="Text" value={formData.text} onChange={onChange}
+          multiline name="text" label="Text" value={formData.text} onChange={onChange} onKeyDown={onKeyDown}
           required
           fullWidth rows={4} margin="normal"
         />

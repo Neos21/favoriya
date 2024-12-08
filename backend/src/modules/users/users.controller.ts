@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
@@ -27,6 +27,16 @@ export class UsersController {
     catch(error) {
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.error ?? error.toString() });
     }
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get(':userId')
+  public async findOneById(@Param('userId') id: string, @Res() response: Response): Promise<Response<Result<UserApi>>> {
+    const result = await this.usersService.findOneById(id);
+    if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
+    
+    const userApi = snakeToCamelCaseObject(result.result);
+    return response.status(HttpStatus.OK).json({ result: userApi });
   }
   
   /** ユーザ情報を一部更新する */

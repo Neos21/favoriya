@@ -103,15 +103,15 @@ export const SignupPage: FC = () => {
     </Box>
     
     <Divider sx={{ mt: 4 }} />
-    <Box sx={{ mt: 4, textAlign: 'right' }}>
+    <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
       <Button component={Link} to="/" variant="contained">ホームに戻る</Button>
     </Box>
     
     <Modal open={isModalOpen}>
-      <Box sx={modalStyle}>
+      <Box component="div" sx={modalStyle}>
         <Typography component="h2" variant="h5">ユーザ登録が完了しました</Typography>
         <Typography component="p" sx={{ mt: 3 }}>ログイン画面でログインしてください</Typography>
-        <Box sx={{ mt: 3, textAlign: 'right' }}>
+        <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>
           <Button variant="contained" autoFocus onClick={onCloseModal}>OK</Button>
         </Box>
       </Box>

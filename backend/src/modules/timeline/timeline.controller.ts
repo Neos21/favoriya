@@ -1,5 +1,7 @@
 import { Controller, Get, HttpStatus, Res, UseGuards } from '@nestjs/common';
 
+import { camelToSnakeCaseObject } from '../../common/helpers/convert-case';
+import { PostEntity } from '../../shared/entities/post.entity';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { TimelineService } from './timeline.service';
 
@@ -16,12 +18,10 @@ export class TimelineController {
   @UseGuards(JwtAuthGuard)
   @Get('global')
   public async globalTimeline(@Res() response: Response): Promise<Response<Result<Array<PostApi>>>> {
-    try {
-      const result: Result<Array<PostApi>> = await this.timelineService.getGlobalTimeline();
-      return response.status(HttpStatus.OK).json(result);
-    }
-    catch(error) {
-      return response.status(HttpStatus.BAD_REQUEST).json({ error: error.error ?? error.toString() });
-    }
+    const result: Result<Array<PostEntity>> = await this.timelineService.getGlobalTimeline();
+    if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
+    
+    const postsApi: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity));
+    return response.status(HttpStatus.OK).json({ result: postsApi });
   }
 }

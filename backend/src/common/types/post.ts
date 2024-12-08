@@ -7,8 +7,8 @@ export type Post = {
   userId: string;
   text: string;
   
-  createdAt?: any;
-  updatedAt?: any;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
   
   user?: User;
 };

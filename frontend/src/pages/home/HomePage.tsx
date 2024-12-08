@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
 import { isEmptyString } from '../../common/helpers/is-empty-string';
+import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { userConstants } from '../../shared/constants/user-constants';
 import { setUser } from '../../shared/stores/user-slice';
 import { GlobalTimelinePage } from '../global-timeline/GlobalTimelinePage';
@@ -37,7 +38,7 @@ export const HomePage: FC = () => {
   }, [dispatch, userState]);
   
   // ロード中
-  if(isLoading) return <></>;  // TODO : 少し経ってからスピナーを表示する
+  if(isLoading) return <LoadingSpinnerComponent />;
   
   // ログインできていなかったらログイン画面に遷移する
   if(!isLoggedIn) return <Navigate to="/login" />;

@@ -32,14 +32,14 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
   if(isEmptyString(userState.id)) return (
     <List>
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/login" onClick={onClickItem} selected={location.pathname === '/login'}>
+        <ListItemButton component={Link} to="/login" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/login'}>
           <ListItemIcon><LoginIcon /></ListItemIcon>
           <ListItemText primary="ログイン" />
         </ListItemButton>
       </ListItem>
       
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/signup" onClick={onClickItem} selected={location.pathname === '/signup'}>
+        <ListItemButton component={Link} to="/signup" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/signup'}>
           <ListItemIcon><AssignmentTurnedInIcon /></ListItemIcon>
           <ListItemText primary="登録" />
         </ListItemButton>
@@ -59,28 +59,28 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
   return (
     <List>
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/" onClick={onClickItem} selected={location.pathname === '/'}>
+        <ListItemButton component={Link} to="/" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/'}>
           <ListItemIcon><HomeIcon /></ListItemIcon>
           <ListItemText primary="ホーム" />
         </ListItemButton>
       </ListItem>
       
       <ListItem disablePadding>
-        <ListItemButton disabled>
+        <ListItemButton disabled className="menu-component-list-item">
           <ListItemIcon><NotificationsIcon /></ListItemIcon>
           <ListItemText primary="通知" />
         </ListItemButton>
       </ListItem>
       
       <ListItem disablePadding>
-        <ListItemButton disabled>
+        <ListItemButton component={Link} to={'/@' + userState.id} onClick={onClickItem}  className="menu-component-list-item" selected={location.pathname === '/@' + userState.id}>
           <ListItemIcon><AccountCircleIcon /></ListItemIcon>
           <ListItemText primary="プロフィール" />
         </ListItemButton>
       </ListItem>
       
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/settings" onClick={onClickItem} selected={location.pathname === '/settings'}>
+        <ListItemButton component={Link} to="/settings" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/settings'}>
           <ListItemIcon><SettingsIcon /></ListItemIcon>
           <ListItemText primary="設定" />
         </ListItemButton>

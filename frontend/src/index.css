@@ -7,12 +7,34 @@ body {
   padding-right: 0 !important;  /* Drawer を開いた時に勝手に付くので切る */
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* Misc
+ * ================================================================================ */
+
+a.hover-underline:hover, a.hover-underline:focus {
+  text-decoration: underline;
+}
+
 .MuiDrawer-root * {
   transition: none !important;  /* Drawer 関連のアニメーションを切る */
 }
 
 
-/* Font Parser Component */
+/* Menu Component
+ * ================================================================================ */
+
+.menu-component-list-item.Mui-selected {
+  background-color: #ff4081 !important;
+}
+
+
+/* Font Parser Component
+ * ================================================================================ */
 
 .font-parser-component strong {
   color: #f00;

@@ -9,8 +9,8 @@ export type User = {
   role?: string;
   token?: string;
   
-  createdAt?: any;
-  updatedAt?: any;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 };
 
 export type UserApi = CamelToSnakeCaseObject<User>;

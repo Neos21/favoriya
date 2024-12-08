@@ -87,7 +87,7 @@ export const ChangePasswordFormComponent: FC = () => {
         error={formErrors.newPassword != null}
         helperText={formErrors.newPassword}
       />
-      <Box sx={{ mt: 4, textAlign: 'right' }}>
+      <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
         <Button type="submit" variant="contained">パスワード変更</Button>
       </Box>
     </Box>

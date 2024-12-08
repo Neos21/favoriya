@@ -1,6 +1,6 @@
-import { Body, Controller, HttpStatus, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 
-import { snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
+import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { isValidJwtUserId } from '../../../shared/helpers/is-valid-jwt-user-id';
 import { PostsService } from './posts.service';
@@ -25,5 +25,16 @@ export class PostsController {
     if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
     
     return response.status(HttpStatus.CREATED).end();
+  }
+  
+  /** 投稿一覧を取得する */
+  @UseGuards(JwtAuthGuard)
+  @Get(':userId/posts')
+  public async findById(@Param('userId') userId: string, @Res() response: Response): Promise<Response<Result<Array<PostApi>>>> {
+    const result = await this.postsService.findById(userId);
+    if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
+    
+    const posts: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity));
+    return response.status(HttpStatus.OK).json({ result: posts });
   }
 }

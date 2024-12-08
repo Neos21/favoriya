@@ -3,11 +3,9 @@ import { Repository } from 'typeorm';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { camelToSnakeCaseObject } from '../../common/helpers/convert-case';
 import { PostEntity } from '../../shared/entities/post.entity';
 
 import type { Result } from '../../common/types/result';
-import type { PostApi } from '../../common/types/post';
 
 /** Timeline Service */
 @Injectable()
@@ -17,7 +15,7 @@ export class TimelineService {
   constructor(@InjectRepository(PostEntity) private readonly postsRepository: Repository<PostEntity>) { }
   
   /** グローバルタイムラインを取得する */
-  public async getGlobalTimeline(): Promise<Result<Array<PostApi>>> {
+  public async getGlobalTimeline(): Promise<Result<Array<PostEntity>>> {
     try {
       const posts = await this.postsRepository
         .createQueryBuilder('posts')
@@ -26,9 +24,7 @@ export class TimelineService {
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
         .limit(50)  // 上限50件
         .getMany();
-      
-      const postsApi: Array<PostApi> = posts.map(post => camelToSnakeCaseObject(post));
-      return { result: postsApi };
+      return { result: posts };
     }
     catch(error) {
       this.logger.error('グローバルタイムラインの取得に失敗しました (DB エラー)', error);

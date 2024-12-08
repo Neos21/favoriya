@@ -9,7 +9,7 @@ import { LoginPage } from './LoginPage';
 describe('LoginPage', () => {
   it('should be defined', () => {
     render(<Provider store={store}><LoginPage /></Provider>, { wrapper: BrowserRouter });
-    const component = screen.getAllByText((/Log In/i));
+    const component = screen.getAllByText((/ログイン/));
     expect(component).toBeDefined();
   });
 });

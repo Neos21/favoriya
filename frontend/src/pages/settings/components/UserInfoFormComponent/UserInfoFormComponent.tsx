@@ -89,7 +89,7 @@ export const UserInfoFormComponent: FC = () => {
         error={formErrors.name != null}
         helperText={formErrors.name}
       />
-      <Box sx={{ mt: 4, textAlign: 'right' }}>
+      <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
         <Button type="submit" variant="contained">更新</Button>
       </Box>
     </Box>

@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { isEmptyString } from '../../common/helpers/is-empty-string';
-import { userConstants } from '../constants/user-constants';
-import { setUser } from '../stores/user-slice';
+import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
+import { userConstants } from '../../shared/constants/user-constants';
+import { setUser } from '../../shared/stores/user-slice';
 
-import type { RootState } from '../stores/store';
+import type { RootState } from '../../shared/stores/store';
 import type { User } from '../../common/types/user';
 
 /** 認証ガード */
@@ -35,7 +36,7 @@ export const AuthGuardRoute: FC = () => {
   }, [dispatch, userState]);
   
   // ロード中
-  if(isLoading) return <></>;  // TODO : 少し経ってからスピナーを表示する
+  if(isLoading) return <LoadingSpinnerComponent />;
   
   // ログインできていなかったらログイン画面に遷移する
   if(!isLoggedIn) return <Navigate to="/login" />;

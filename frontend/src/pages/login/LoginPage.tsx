@@ -66,7 +66,7 @@ export const LoginPage: FC = () => {
     </Box>
     
     <Divider sx={{ mt: 4 }} />
-    <Box sx={{ mt: 4, textAlign: 'right' }}>
+    <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
       <Button component={Link} to="/signup" variant="contained">登録</Button>
     </Box>
   </>);

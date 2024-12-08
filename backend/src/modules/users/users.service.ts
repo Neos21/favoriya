@@ -41,7 +41,7 @@ export class UsersService {
       await this.usersRepository.insert(newUserEntity);
     }
     catch(error) {
-      if(error instanceof QueryFailedError && (error as any).code === '23505') return { error: 'そのユーザ ID は既に使用されています' };
+      if(error instanceof QueryFailedError && (error as unknown as { code: string }).code === '23505') return { error: 'そのユーザ ID は既に使用されています' };
       this.logger.error('ユーザ登録処理に失敗しました (DB エラー)', error);
       throw error;  // その他のエラーは Internal Server Error とする
     }

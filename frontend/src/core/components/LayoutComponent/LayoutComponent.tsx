@@ -27,7 +27,7 @@ export const LayoutComponent: FC = () => {
   }, [location.pathname]);
   
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
+    <Box component="div" sx={{ display: 'flex', height: '100vh' }}>
       <Drawer
         variant={isNarrowWindow ? 'temporary' : 'persistent'}
         open={isNarrowWindow ? isOpen : true}
@@ -41,7 +41,7 @@ export const LayoutComponent: FC = () => {
         <MenuComponent onClickItem={onCloseDrawer} />
       </Drawer>
       
-      <Box sx={{ flexGrow: 1 }}>
+      <Box component="div" sx={{ flexGrow: 1 }}>
         <AppBar position="fixed" sx={{ paddingLeft: (isNarrowWindow ? 0 : `${drawerWidth}px`), paddingRight: '0 !important' }}>
           <Toolbar>
             <Grid2 container spacing={3} width="100%">
