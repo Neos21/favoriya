@@ -7,7 +7,7 @@ $ chmod +x ./minio
 $ export MINIO_ROOT_USER=example
 $ export MINIO_ROOT_PASSWORD=example-secret
 $ export MINIO_SERVER_URL='https://example.neos21.net'
-$ export MINIO_BROWSER_REDIRECT_URL='http://127.0.0.1:9001/minio-ui'
+$ export MINIO_BROWSER_REDIRECT_URL='https://example.neos21.net/minio-ui'
 
 $ ./minio server ./oss --console-address ':9001'
   # 管理コンソールには Serveo を経由してアクセスしても良いか

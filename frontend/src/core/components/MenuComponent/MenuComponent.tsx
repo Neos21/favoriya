@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import HomeIcon from '@mui/icons-material/Home';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -87,11 +88,18 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
       </ListItem>
       
       <Divider component="li" sx={{ mt: 4 }} />
-      
       <ListItem disablePadding sx={{ mt: 4 }}>
         <ListItemButton onClick={onLogout}>
           <ListItemIcon><LogoutIcon /></ListItemIcon>
           <ListItemText primary="ログアウト" />
+        </ListItemButton>
+      </ListItem>
+      
+      <Divider component="li" sx={{ mt: 4 }} />
+      <ListItem disablePadding sx={{ mt: 4 }}>
+        <ListItemButton onClick={() => window.open('https://github.com/Neos21/pseudo')}>
+          <ListItemIcon><GitHubIcon /></ListItemIcon>
+          <ListItemText primary="GitHub" />
         </ListItemButton>
       </ListItem>
     </List>
