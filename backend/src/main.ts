@@ -8,6 +8,7 @@ import { AppModule } from './app.module';
 import { cyan, yellow } from './core/utils/colour-logger';
 import { listRoutes } from './core/utils/list-routes';
 
+/** Bootstrap */
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
@@ -26,7 +27,7 @@ async function bootstrap() {
   await app.listen(port);
   
   const logger = new Logger(bootstrap.name);
-  logger.log(cyan('Server Started At Port [') + yellow(`${port}`) + cyan(']'));
+  logger.log(`${cyan('Server Started At Port [')}${yellow(String(port))}${cyan(']')}`);
   
   // ルーティング一覧を出力する
   logger.log(listRoutes(app.getHttpServer()._events.request._router));

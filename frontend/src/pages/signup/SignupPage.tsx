@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Divider, Modal, TextField, Typography } from '@mui/material';
 
 import { isValidId, isValidPassword } from '../../common/helpers/validators/validator-user';
+import { modalStyle } from '../../shared/constants/modal-style';
 import { userConstants } from '../../shared/constants/user-constants';
 import { initialUserState, setUser } from '../../shared/stores/user-slice';
 import { apiSignup } from './services/api-signup';
@@ -63,20 +64,6 @@ export const SignupPage: FC = () => {
   const onCloseModal = () => {
     setIsModalOpen(false);
     navigate('/login');
-  };
-  
-  /** モーダルのスタイル */
-  const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #999',
-    borderRadius: 4,
-    boxShadow: 24,
-    p: 4
   };
   
   return (<>

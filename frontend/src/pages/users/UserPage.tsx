@@ -19,7 +19,7 @@ export const UserPage: FC = () => {
   
   const apiGet = useApiGet();
   
-  const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
+  const [status, setStatus] = useState<'loading' | 'succeeded' | 'not-found' | 'failed'>('loading');
   const [user, setUser] = useState<User>(null);
   const [posts, setPosts] = useState<Array<Post>>([]);
   
@@ -33,10 +33,10 @@ export const UserPage: FC = () => {
     (async () => {
       try {
         const response = await apiGet(`/users/${paramUserId}`);  // Throws
-        const userApi: Result<UserApi> = await response.json();  // Throws
-        if(userApi.error != null) return setStatus('failed');
+        const userApiResult: Result<UserApi> = await response.json();  // Throws
+        if(userApiResult.error != null) return setStatus(response.status === 404 ? 'not-found' : 'failed');
         
-        setUser(snakeToCamelCaseObject(userApi.result));
+        setUser(snakeToCamelCaseObject(userApiResult.result));
       }
       catch(error) {
         setStatus('failed');
@@ -45,10 +45,10 @@ export const UserPage: FC = () => {
       
       try {
         const response = await apiGet(`/users/${paramUserId}/posts`);  // Throws
-        const postsApi: Result<Array<PostApi>> = await response.json();  // Throws
-        if(postsApi.error != null) return setStatus('failed');
+        const postsApiResult: Result<Array<PostApi>> = await response.json();  // Throws
+        if(postsApiResult.error != null) return setStatus('failed');
         
-        setPosts(postsApi.result.map(postApi => snakeToCamelCaseObject(postApi)));
+        setPosts(postsApiResult.result.map(postApi => snakeToCamelCaseObject(postApi)));
       }
       catch(error) {
         setStatus('failed');
@@ -60,18 +60,20 @@ export const UserPage: FC = () => {
   }, [apiGet, paramUserId, rawParamUserId]);
   
   // 先頭に `@` が付いていなかった場合は `@` 付きでリダイレクトさせる
-  if(!rawParamUserId.startsWith('@')) return <Navigate to={'/@' + rawParamUserId } />;
+  if(!rawParamUserId.startsWith('@')) return <Navigate to={`/@${rawParamUserId}`} />;
   
   return (<>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>@{paramUserId}</Typography>
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     
+    {status === 'not-found' && <Alert severity="error" sx={{ mt: 3 }}>指定のユーザ ID のユーザは存在しません</Alert>}
+    
     {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>ユーザ情報の取得に失敗しました</Alert>}
     
     {status === 'succeeded' && <>
       <List sx={{ mt: 3, borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
-        <ListItem><ListItemText primary="ユーザ ID" secondary={'@' + user.id} /></ListItem>
+        <ListItem><ListItemText primary="ユーザ ID" secondary={`@${user.id}`} /></ListItem>
         <Divider component="li" variant="middle" />
         <ListItem><ListItemText primary="ユーザ名" secondary={user.name} /></ListItem>
         <Divider component="li" variant="middle" />

@@ -33,7 +33,10 @@ export class UsersController {
   @Get(':userId')
   public async findOneById(@Param('userId') id: string, @Res() response: Response): Promise<Response<Result<UserApi>>> {
     const result = await this.usersService.findOneById(id);
-    if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
+    if(result.error != null) {
+      if(result.error === this.usersService.userNotFoundErrorMessage) return response.status(HttpStatus.NOT_FOUND).json(result);
+      return response.status(HttpStatus.BAD_REQUEST).json(result);
+    }
     
     const userApi = snakeToCamelCaseObject(result.result);
     return response.status(HttpStatus.OK).json({ result: userApi });

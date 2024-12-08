@@ -11,6 +11,7 @@ import { HomePage } from './pages/home/HomePage';
 import { LoginPage } from './pages/login/LoginPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
 import { SignupPage } from './pages/signup/SignupPage';
+import { PostPage } from './pages/users/posts/PostPage';
 import { UserPage } from './pages/users/UserPage';
 import { store } from './shared/stores/store';
 
@@ -26,7 +27,9 @@ export const App = () => (
               <Route path="/global-timeline" element={<GlobalTimelinePage />}></Route>
               <Route path="/settings"        element={<SettingsPage       />}></Route>
               
-              <Route path="/:userId" element={<UserPage />} />
+              <Route path="/:userId/posts/:postId" element={<PostPage />} />
+              <Route path="/:userId/posts"         element={<UserPage />} />
+              <Route path="/:userId"               element={<UserPage />} />
             </Route>
             
             <Route path="/signup" element={<SignupPage      />}></Route>

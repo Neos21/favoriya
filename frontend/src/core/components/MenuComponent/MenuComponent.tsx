@@ -73,7 +73,7 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
       </ListItem>
       
       <ListItem disablePadding>
-        <ListItemButton component={Link} to={'/@' + userState.id} onClick={onClickItem}  className="menu-component-list-item" selected={location.pathname === '/@' + userState.id}>
+        <ListItemButton component={Link} to={`/@${userState.id}`} onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === `/@${userState.id}`}>
           <ListItemIcon><AccountCircleIcon /></ListItemIcon>
           <ListItemText primary="プロフィール" />
         </ListItemButton>

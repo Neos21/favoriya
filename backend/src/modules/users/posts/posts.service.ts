@@ -11,6 +11,8 @@ import type { Result } from '../../../common/types/result';
 /** Posts Service */
 @Injectable()
 export class PostsService {
+  public readonly postNotFoundErrorMessage: string = '指定の投稿は存在しません';
+  
   private readonly logger: Logger = new Logger(PostsService.name);
   
   constructor(@InjectRepository(PostEntity) private readonly postsRepository: Repository<PostEntity>) { }
@@ -49,6 +51,42 @@ export class PostsService {
     catch(error) {
       this.logger.error('投稿一覧の取得に失敗しました (DB エラー)', error);
       return { error: '投稿一覧の取得に失敗しました' };
+    }
+  }
+  
+  /** 投稿1件を取得する */
+  public async findOneById(userId: string, postId): Promise<Result<PostEntity>> {
+    try {
+      const post = await this.postsRepository
+        .createQueryBuilder('posts')
+        .leftJoinAndSelect('posts.user', 'users')  // users を結合する
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.createdAt', 'users.name'])  // 必要なカラムを選択する
+        .where('posts.userId = :userId AND posts.id = :postId', { userId, postId })  // 指定のユーザ ID・投稿 ID
+        .getOne();
+      if(post == null) return { error: this.postNotFoundErrorMessage };
+      return { result: post };
+    }
+    catch(error) {
+      this.logger.error('投稿の取得に失敗しました (DB エラー)', error);
+      return { error: '投稿の取得に失敗しました' };
+    }
+  }
+  
+  
+  /** 投稿1件を削除する */
+  public async removeOneById(userId: string, postId: string): Promise<Result<boolean>> {
+    try {
+      const deleteResult = await this.postsRepository.delete({ id: postId, userId });
+      if(deleteResult.affected === 0) return { error: this.postNotFoundErrorMessage };
+      if(deleteResult.affected !== 1) {
+        this.logger.error('投稿の削除処理で2件以上の削除が発生', deleteResult);
+        throw new Error('Invalid Affected');
+      }
+      return { result: true };
+    }
+    catch(error) {
+      this.logger.error('投稿の削除に失敗しました (DB エラー)', error);
+      return { error: '投稿の削除に失敗しました' };
     }
   }
 }

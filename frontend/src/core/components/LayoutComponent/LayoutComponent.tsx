@@ -8,6 +8,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { AppBar, Box, Container, Drawer, Grid2, IconButton, Toolbar, useMediaQuery } from '@mui/material';
 
+import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { RootState } from '../../../shared/stores/store';
 import { MenuComponent } from '../MenuComponent/MenuComponent';
 
@@ -69,7 +70,10 @@ export const LayoutComponent: FC = () => {
               </Grid2>
               
               <Grid2 display="flex" justifyContent="center" alignItems="center" size="grow">
-                <IconButton size="large" color="inherit" component={Link} to={'/@' + userState.id} className={ location.pathname === '/@' + userState.id ? 'app-bar-icon-active' : 'app-bar-icon' }>
+                <IconButton size="large" color="inherit" component={Link} to={`/@${userState.id}`}
+                  className={ location.pathname === `/@${userState.id}` ? 'app-bar-icon-active' : 'app-bar-icon' }
+                  disabled={isEmptyString(userState.id)}
+                >
                   <AccountCircleIcon />
                 </IconButton>
               </Grid2>

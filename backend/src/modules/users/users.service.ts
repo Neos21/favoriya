@@ -14,6 +14,8 @@ import type { User } from '../../common/types/user';
 /** Users Service */
 @Injectable()
 export class UsersService {
+  public readonly userNotFoundErrorMessage: string = '指定のユーザ ID のユーザは存在しません';
+  
   private readonly logger: Logger = new Logger(UsersService.name);
   
   constructor(@InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>) { }
@@ -62,7 +64,7 @@ export class UsersService {
   public async findOneByIdWithPasswordHash(id: string): Promise<Result<UserEntity>> {
     try {
       const user = await this.usersRepository.findOneBy({ id });
-      if(user == null) return { error: '指定のユーザ ID のユーザは存在しません' };
+      if(user == null) return { error: this.userNotFoundErrorMessage };
       return { result: user };
     }
     catch(error) {

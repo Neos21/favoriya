@@ -56,7 +56,7 @@ export const GlobalTimelinePage: FC = () => {
     
     {status !== 'loading' &&
       <Typography component="p" sx={{ mt: 3, textAlign: 'right' }}>
-        <Button variant="contained" onClick={onReload}>Reload</Button>
+        <Button variant="contained" onClick={onReload}>再読込</Button>
       </Typography>
     }
     

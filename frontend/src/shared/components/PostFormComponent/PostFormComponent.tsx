@@ -81,7 +81,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
           <Button type="submit" variant="contained">投稿</Button>
         </Box>
         <TextField
-          multiline name="text" label="Text" value={formData.text} onChange={onChange} onKeyDown={onKeyDown}
+          multiline name="text" label="投稿" value={formData.text} onChange={onChange} onKeyDown={onKeyDown}
           required
           fullWidth rows={4} margin="normal"
         />

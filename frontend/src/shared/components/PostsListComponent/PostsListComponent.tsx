@@ -24,11 +24,14 @@ export const PostsListComponent: FC<Props> = ({ posts }) => {
             primary={
               <Typography component="p">
                 <Typography component="strong" sx={{ mr: 1, fontWeight: 'bold' }}>
-                  <Link to={'/@' + post.userId} className="hover-underline">{post.user.name}</Link>
+                  <Link to={`/@${post.userId}`} className="hover-underline">{post.user.name}</Link>
                 </Typography>
                 <Typography component="span" sx={{ color: '#999' }}>
                   @{post.userId}
-                  <Typography component="span" sx={{ fontSize: '.8rem' }}> - {epochTimeMsToJstString(post.id, 'YYYY-MM-DD HH:mm:SS')}</Typography>
+                  <Typography component="span" sx={{ fontSize: '.8rem' }}>
+                    <Typography component="span" sx={{ mx: 1 }}>-</Typography>
+                    <Link to={`/@${post.userId}/posts/${post.id}`} className="hover-underline">{epochTimeMsToJstString(post.id, 'YYYY-MM-DD HH:mm:SS')}</Link>
+                  </Typography>
                 </Typography>
               </Typography>
             }

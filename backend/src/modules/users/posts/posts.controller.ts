@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
@@ -36,5 +36,34 @@ export class PostsController {
     
     const posts: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity));
     return response.status(HttpStatus.OK).json({ result: posts });
+  }
+  
+  /** 投稿1件を取得する */
+  @UseGuards(JwtAuthGuard)
+  @Get(':userId/posts/:postId')
+  public async findOneById(@Param('userId') userId: string, @Param('postId') postId: string, @Res() response: Response): Promise<Response<Result<Array<PostApi>>>> {
+    const result = await this.postsService.findOneById(userId, postId);
+    if(result.error != null) {
+      if(result.error === this.postsService.postNotFoundErrorMessage) return response.status(HttpStatus.NOT_FOUND).json(result);
+      return response.status(HttpStatus.BAD_REQUEST).json(result);
+    }
+    
+    const post: PostApi = camelToSnakeCaseObject(result.result);
+    return response.status(HttpStatus.OK).json({ result: post });
+  }
+  
+  /** 投稿1件を削除する */
+  @UseGuards(JwtAuthGuard)
+  @Delete(':userId/posts/:postId')
+  public async removeOneById(@Param('userId') userId: string, @Param('postId') postId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<Array<PostApi>>>> {
+    if(!isValidJwtUserId(request, response, userId)) return;
+    
+    const result = await this.postsService.removeOneById(userId, postId);
+    if(result.error != null) {
+      if(result.error === this.postsService.postNotFoundErrorMessage) return response.status(HttpStatus.NOT_FOUND).json(result);
+      return response.status(HttpStatus.BAD_REQUEST).json(result);
+    }
+    
+    return response.status(HttpStatus.NO_CONTENT).end();
   }
 }
