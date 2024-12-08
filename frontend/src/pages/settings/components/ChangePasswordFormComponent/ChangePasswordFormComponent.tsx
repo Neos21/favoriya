@@ -26,7 +26,7 @@ export const ChangePasswordFormComponent: FC = () => {
   /** フォームの値保持 */
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setFormData((previousFormData) => ({ ...previousFormData, [name]: value }));
+    setFormData(previousFormData => ({ ...previousFormData, [name]: value }));
   };
   
   /** フォームの入力チェック */
@@ -66,33 +66,30 @@ export const ChangePasswordFormComponent: FC = () => {
   };
   
   return (<>
-    <Typography component="h2" variant="h5" marginY={2}>Change Password</Typography>
+    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>パスワード変更</Typography>
     
-    {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
+    {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
     
-    {succeededMessage != null && <Alert severity="success" sx={{ my: 3 }}>{succeededMessage}</Alert>}
+    {succeededMessage != null && <Alert severity="success" sx={{ mt: 3 }}>{succeededMessage}</Alert>}
     
-    <Box component="form" onSubmit={onSubmit}>
+    <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
       <TextField
-        type="password" name="currentPassword" label="Current Password" value={formData.currentPassword} onChange={onChange}
+        type="password" name="currentPassword" label="現在のパスワード" value={formData.currentPassword} onChange={onChange}
         required autoComplete="current-passowrd"
         fullWidth margin="normal"
         error={formErrors.currentPassword != null}
         helperText={formErrors.currentPassword}
       />
       <TextField
-        type="password" name="newPassword" label="New Password" value={formData.newPassword} onChange={onChange}
+        type="password" name="newPassword" label="新規パスワード" value={formData.newPassword} onChange={onChange}
         required autoComplete="new-passowrd"
         fullWidth margin="normal"
         error={formErrors.newPassword != null}
         helperText={formErrors.newPassword}
       />
-      <Button
-        type="submit" variant="contained"
-        fullWidth sx={{ mt: 3 }}
-      >
-        Change Password
-      </Button>
+      <Box sx={{ mt: 4, textAlign: 'right' }}>
+        <Button type="submit" variant="contained">パスワード変更</Button>
+      </Box>
     </Box>
   </>);
 };

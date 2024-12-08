@@ -29,7 +29,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
   /** On Change */
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setFormData((previousFormData) => ({ ...previousFormData, [name]: value }));
+    setFormData(previousFormData => ({ ...previousFormData, [name]: value }));
   };
   
   /** On Submit */
@@ -65,20 +65,17 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
   
   return (
     <>
-      {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
+      {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
       
-      <Box component="form" onSubmit={onSubmit}>
+      <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
+        <Box sx={{ textAlign: 'right' }}>
+          <Button type="submit" variant="contained">投稿</Button>
+        </Box>
         <TextField
           multiline name="text" label="Text" value={formData.text} onChange={onChange}
           required
           fullWidth rows={4} margin="normal"
         />
-        <Button
-          type="submit" variant="contained"
-          fullWidth sx={{ my: 2 }}
-        >
-          Post
-        </Button>
       </Box>
     </>
   );

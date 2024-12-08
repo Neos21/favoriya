@@ -35,7 +35,7 @@ export const UserInfoFormComponent: FC = () => {
   /** フォームの値保持 */
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setFormData((previousFormData) => ({ ...previousFormData, [name]: value }));
+    setFormData(previousFormData => ({ ...previousFormData, [name]: value }));
   };
   
   /** フォームの入力チェック */
@@ -75,26 +75,23 @@ export const UserInfoFormComponent: FC = () => {
   };
   
   return (<>
-    <Typography component="h2" variant="h5" marginY={2}>User Info</Typography>
+    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>ユーザ情報</Typography>
     
-    {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
+    {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
     
-    {succeededMessage != null && <Alert severity="success" sx={{ my: 3 }}>{succeededMessage}</Alert>}
+    {succeededMessage != null && <Alert severity="success" sx={{ mt: 3 }}>{succeededMessage}</Alert>}
     
-    <Box component="form" onSubmit={onSubmit}>
+    <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
       <TextField
-        type="text" name="name" label="User Name" value={formData.name} onChange={onChange}
+        type="text" name="name" label="ユーザ名" value={formData.name} onChange={onChange}
         required
         fullWidth margin="normal"
         error={formErrors.name != null}
         helperText={formErrors.name}
       />
-      <Button
-        type="submit" variant="contained"
-        fullWidth sx={{ mt: 3 }}
-      >
-        Update
-      </Button>
+      <Box sx={{ mt: 4, textAlign: 'right' }}>
+        <Button type="submit" variant="contained">更新</Button>
+      </Box>
     </Box>
   </>);
 };

@@ -59,7 +59,7 @@ export const FontParserComponent: React.FC<Props> = ({ input }) => {
     // blink 要素を span 要素に変換
     document.querySelectorAll('blink').forEach(blink => {
       const span = document.createElement('span');
-      span.style.animation = 'blink-animation 1s step-start infinite';
+      span.style.animation = 'blink-animation 1.5s step-start infinite';
       span.innerHTML = blink.innerHTML;
       blink.replaceWith(span);
     });

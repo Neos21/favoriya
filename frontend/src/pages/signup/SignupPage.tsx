@@ -2,7 +2,7 @@ import { FC, FormEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Alert, Box, Button, Modal, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Divider, Modal, TextField, Typography } from '@mui/material';
 
 import { isValidId, isValidPassword } from '../../common/helpers/validators/validator-user';
 import { userConstants } from '../../shared/constants/user-constants';
@@ -80,50 +80,39 @@ export const SignupPage: FC = () => {
   };
   
   return (<>
-    <Typography component="h1" variant="h4" marginY={2}>Sign Up</Typography>
+    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>登録</Typography>
     
-    {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
+    {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
     
-    <Box component="form" onSubmit={onSubmit}>
+    <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
       <TextField
-        type="text" name="id" label="User ID"
+        type="text" name="id" label="ユーザ ID"
         required autoFocus
         fullWidth margin="normal"
         error={formErrors.id != null}
         helperText={formErrors.id}
       />
       <TextField
-        type="password" name="password" label="Password"
-        required autoComplete="new-password"
+        type="password" name="password" label="パスワード"
+        required autoComplete="current-password"
         fullWidth margin="normal"
         error={formErrors.password != null}
         helperText={formErrors.password}
       />
-      <Button
-        type="submit" variant="contained"
-        fullWidth sx={{ my: 3 }}
-      >
-        Sign Up
-      </Button>
+      <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }}>登録</Button>
     </Box>
     
-    <Box sx={{ mt: 5, textAlign: 'right' }}>
-      <Button component={Link} to="/" variant="contained">Back To Home</Button>
+    <Divider sx={{ mt: 4 }} />
+    <Box sx={{ mt: 4, textAlign: 'right' }}>
+      <Button component={Link} to="/" variant="contained">ホームに戻る</Button>
     </Box>
     
     <Modal open={isModalOpen}>
       <Box sx={modalStyle}>
-        <Typography component="h2" variant="h5" marginBottom={2}>ユーザ登録が完了しました</Typography>
-        <Typography>ログイン画面でログインしてください</Typography>
-        <Box sx={{ textAlign: 'right' }}>
-          <Button
-            variant="contained"
-            autoFocus
-            onClick={onCloseModal}
-            sx={{ mt: 2 }}
-          >
-            OK
-          </Button>
+        <Typography component="h2" variant="h5">ユーザ登録が完了しました</Typography>
+        <Typography component="p" sx={{ mt: 3 }}>ログイン画面でログインしてください</Typography>
+        <Box sx={{ mt: 3, textAlign: 'right' }}>
+          <Button variant="contained" autoFocus onClick={onCloseModal}>OK</Button>
         </Box>
       </Box>
     </Modal>

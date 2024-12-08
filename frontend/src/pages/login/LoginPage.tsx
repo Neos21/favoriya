@@ -2,7 +2,7 @@ import { FC, FormEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Alert, Box, Button, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Divider, TextField, Typography } from '@mui/material';
 
 import { userConstants } from '../../shared/constants/user-constants';
 import { initialUserState, setUser } from '../../shared/stores/user-slice';
@@ -47,31 +47,27 @@ export const LoginPage: FC = () => {
   };
   
   return (<>
-    <Typography component="h1" variant="h4" marginY={2}>Log In</Typography>
+    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>ログイン</Typography>
     
-    {errorMessage != null && <Alert severity="error" sx={{ my: 3 }}>{errorMessage}</Alert>}
+    {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
     
-    <Box component="form" onSubmit={onSubmit}>
+    <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
       <TextField
-        type="text" name="id" label="User ID"
+        type="text" name="id" label="ユーザ ID"
         required autoFocus
         fullWidth margin="normal"
       />
       <TextField
-        type="password" name="password" label="Password"
+        type="password" name="password" label="パスワード"
         required autoComplete="current-password"
         fullWidth margin="normal"
       />
-      <Button
-        type="submit" variant="contained"
-        fullWidth sx={{ my: 3 }}
-      >
-        Log In
-      </Button>
+      <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }}>ログイン</Button>
     </Box>
     
-    <Box sx={{ mt: 5, textAlign: 'right' }}>
-      <Button component={Link} to="/signup" variant="contained">Sign Up</Button>
+    <Divider sx={{ mt: 4 }} />
+    <Box sx={{ mt: 4, textAlign: 'right' }}>
+      <Button component={Link} to="/signup" variant="contained">登録</Button>
     </Box>
   </>);
 };

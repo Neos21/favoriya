@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Alert, Button, Typography } from '@mui/material';
+import { Alert, Button, Divider, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { FontParserComponent } from '../../shared/components/FontParserComponent/FontParserComponent';
@@ -59,36 +59,47 @@ export const GlobalTimelinePage: FC = () => {
   };
   
   return (<>
-    <Typography component="h1" variant="h4" marginY={2}>Global Timeline</Typography>
-    <Typography component="p">
+    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>グローバルタイムライン</Typography>
+    <Typography component="p" sx={{ mt: 3 }}>
       ようこそ {userState.name} (@{userState.id}) さん
     </Typography>
+    
     <PostFormComponent onAfterSubmit={onReload} />
     
-    <Typography component="p" marginY={4}>現在、グローバルタイムラインは直近の50件を表示しています。</Typography>
+    <Typography component="p" sx={{ mt: 3 }}>現在、グローバルタイムラインは直近の50件を表示しています。</Typography>
     
-    {status === 'loading' && <Typography component="p">Loading...</Typography>}
+    {status === 'loading' && <></>}  {/* TODO : スピナー */}
     
-    {status !== 'loading' && <Typography component="p" marginY={3} sx={{ textAlign: 'right' }}>
+    {status !== 'loading' && <Typography component="p" sx={{ mt: 3, textAlign: 'right' }}>
       <Button variant="contained" onClick={onReload}>Reload</Button>
     </Typography>}
     
-    {status === 'failed' && <Alert severity="error" sx={{ my: 3 }}>グローバルタイムラインの取得に失敗しました</Alert>}
+    {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>グローバルタイムラインの取得に失敗しました</Alert>}
     
-    {status === 'succeeded' && posts.length === 0 && <Typography component="p" marginY={3}>投稿がありません</Typography>}
+    {status === 'succeeded' && posts.length === 0 && <Typography component="p" sx={{ mt: 3 }}>投稿がありません</Typography>}
     
-    {status === 'succeeded' && posts.length !== 0 && posts.map(post => (
-      <Typography component="div" marginY={3} key={post.id} sx={{  wordBreak: 'break-all' }}>
-        <Typography component="p" sx={{ lineHeight: 1.8 }}>
-          <strong>{post.user.name}</strong>&nbsp;
-          <span style={{ color: '#999' }}>@{post.userId}
-            <span style={{ fontSize: '.8rem' }}> - {epochTimeMsToJst(post.id)}</span>
-          </span>
-        </Typography>
-        <Typography component="div" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
-          <FontParserComponent input={post.text} />
-        </Typography>
-      </Typography>
-    ))}
+    {status === 'succeeded' && posts.length !== 0 && <List sx={{ mt: 3 }}>
+      {posts.map(post => (<>
+        <ListItem alignItems="flex-start" key={post.id} sx={{ wordBreak: 'break-all', px: 0 }}>
+          <ListItemText
+            primary={
+              <Typography component="p">
+                <Typography component="strong" sx={{ mr: 1, fontWeight: 'bold' }}>{post.user.name}</Typography>
+                <Typography component="span" sx={{ color: '#999' }}>
+                  @{post.userId}
+                  <Typography component="span" sx={{ fontSize: '.8rem' }}> - {epochTimeMsToJst(post.id)}</Typography>
+                </Typography>
+              </Typography>
+            }
+            secondary={
+              <Typography component="div" sx={{ mt: 1, whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
+                <FontParserComponent input={post.text} />
+              </Typography>
+            }
+          />
+        </ListItem>
+        <Divider component="li" />
+      </>))}
+    </List>}
   </>);
 };

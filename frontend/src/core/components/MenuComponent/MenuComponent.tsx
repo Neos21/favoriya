@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
@@ -25,22 +25,23 @@ type Props = {
 export const MenuComponent: FC<Props> = ({ onClickItem }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const userState = useSelector((state: RootState) => state.user);
   
   // 未ログイン
   if(isEmptyString(userState.id)) return (
     <List>
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/login" onClick={onClickItem}>
+        <ListItemButton component={Link} to="/login" onClick={onClickItem} selected={location.pathname === '/login'}>
           <ListItemIcon><LoginIcon /></ListItemIcon>
-          <ListItemText primary="Login" />
+          <ListItemText primary="ログイン" />
         </ListItemButton>
       </ListItem>
       
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/signup" onClick={onClickItem}>
+        <ListItemButton component={Link} to="/signup" onClick={onClickItem} selected={location.pathname === '/signup'}>
           <ListItemIcon><AssignmentTurnedInIcon /></ListItemIcon>
-          <ListItemText primary="Signup" />
+          <ListItemText primary="登録" />
         </ListItemButton>
       </ListItem>
     </List>
@@ -58,39 +59,39 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
   return (
     <List>
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/" onClick={onClickItem}>
+        <ListItemButton component={Link} to="/" onClick={onClickItem} selected={location.pathname === '/'}>
           <ListItemIcon><HomeIcon /></ListItemIcon>
-          <ListItemText primary="Home" />
+          <ListItemText primary="ホーム" />
         </ListItemButton>
       </ListItem>
       
       <ListItem disablePadding>
         <ListItemButton disabled>
           <ListItemIcon><NotificationsIcon /></ListItemIcon>
-          <ListItemText primary="Notifications" />
+          <ListItemText primary="通知" />
         </ListItemButton>
       </ListItem>
       
       <ListItem disablePadding>
         <ListItemButton disabled>
           <ListItemIcon><AccountCircleIcon /></ListItemIcon>
-          <ListItemText primary="Profile" />
+          <ListItemText primary="プロフィール" />
         </ListItemButton>
       </ListItem>
       
       <ListItem disablePadding>
-        <ListItemButton component={Link} to="/settings" onClick={onClickItem}>
+        <ListItemButton component={Link} to="/settings" onClick={onClickItem} selected={location.pathname === '/settings'}>
           <ListItemIcon><SettingsIcon /></ListItemIcon>
-          <ListItemText primary="Settings" />
+          <ListItemText primary="設定" />
         </ListItemButton>
       </ListItem>
       
-      <Divider component="li" sx={{ marginTop: 4 }} />
+      <Divider component="li" sx={{ mt: 4 }} />
       
-      <ListItem disablePadding>
+      <ListItem disablePadding sx={{ mt: 4 }}>
         <ListItemButton onClick={onLogout}>
           <ListItemIcon><LogoutIcon /></ListItemIcon>
-          <ListItemText primary="Logout" />
+          <ListItemText primary="ログアウト" />
         </ListItemButton>
       </ListItem>
     </List>
