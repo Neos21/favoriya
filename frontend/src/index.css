@@ -1,3 +1,7 @@
+:root {
+  --colour-pink: #ff4081;
+}
+
 html {
   overflow-y: scroll !important;  /* Drawer を開いた時に消させない */
   cursor: default;
@@ -24,12 +28,20 @@ a.hover-underline:hover, a.hover-underline:focus {
   transition: none !important;  /* Drawer 関連のアニメーションを切る */
 }
 
+.app-bar-icon {
+  color: #999 !important;
+}
+
+.app-bar-icon-active {
+  color: #fff !important;
+}
+
 
 /* Menu Component
  * ================================================================================ */
 
 .menu-component-list-item.Mui-selected {
-  background-color: #ff4081 !important;
+  background-color: var(--colour-pink) !important;
 }
 
 

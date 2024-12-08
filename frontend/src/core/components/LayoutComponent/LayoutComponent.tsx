@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -7,6 +8,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { AppBar, Box, Container, Drawer, Grid2, IconButton, Toolbar, useMediaQuery } from '@mui/material';
 
+import { RootState } from '../../../shared/stores/store';
 import { MenuComponent } from '../MenuComponent/MenuComponent';
 
 /** Layout Component */
@@ -15,6 +17,7 @@ export const LayoutComponent: FC = () => {
   
   const location = useLocation();
   const isNarrowWindow = useMediaQuery('(max-width: 599.98px)');  // 画面幅が 600px 以内かどうか
+  const userState = useSelector((state: RootState) => state.user);
   
   const [isOpen, setIsOpen] = useState(false);  // Drawer を開いているか否か
   
@@ -54,7 +57,7 @@ export const LayoutComponent: FC = () => {
               }
               
               <Grid2 display="flex" justifyContent="center" alignItems="center" size="grow">
-                <IconButton size="large" color="inherit" component={Link} to="/">
+                <IconButton size="large" color="inherit" component={Link} to="/" className={ location.pathname === '/' ? 'app-bar-icon-active' : 'app-bar-icon' }>
                   <HomeIcon />
                 </IconButton>
               </Grid2>
@@ -66,7 +69,7 @@ export const LayoutComponent: FC = () => {
               </Grid2>
               
               <Grid2 display="flex" justifyContent="center" alignItems="center" size="grow">
-                <IconButton size="large" color="inherit" disabled>
+                <IconButton size="large" color="inherit" component={Link} to={'/@' + userState.id} className={ location.pathname === '/@' + userState.id ? 'app-bar-icon-active' : 'app-bar-icon' }>
                   <AccountCircleIcon />
                 </IconButton>
               </Grid2>
