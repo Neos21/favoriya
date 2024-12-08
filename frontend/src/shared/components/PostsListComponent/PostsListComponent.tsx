@@ -1,9 +1,11 @@
 import { FC, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Divider, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
+import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { FontParserComponent } from '../../components/FontParserComponent/FontParserComponent';
+import { userConstants } from '../../constants/user-constants';
 import { epochTimeMsToJstString } from '../../services/convert-date-to-jst';
 
 import type { Post } from '../../../common/types/post';
@@ -20,6 +22,9 @@ export const PostsListComponent: FC<Props> = ({ posts }) => {
     <List sx={{ mt: 3 }}>
       {posts.map(post => <Fragment key={post.id}>
         <ListItem alignItems="flex-start" sx={{ wordBreak: 'break-all', px: 0 }}>
+          <ListItemAvatar>
+            <Avatar src={isEmptyString(post.user.avatarUrl) ? '' : `${userConstants.ossUrl}${post.user.avatarUrl}`} />
+          </ListItemAvatar>
           <ListItemText
             primary={
               <Typography component="p">

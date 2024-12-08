@@ -41,7 +41,7 @@ export class PostsService {
       const posts = await this.postsRepository
         .createQueryBuilder('posts')
         .leftJoinAndSelect('posts.user', 'users')  // users を結合する
-        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.createdAt', 'users.name'])  // 必要なカラムを選択する
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.createdAt', 'users.name', 'users.avatarUrl'])  // 必要なカラムを選択する
         .where('posts.userId = :userId', { userId })  // 指定のユーザ ID
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
         .limit(50)  // 上限50件
@@ -60,7 +60,7 @@ export class PostsService {
       const post = await this.postsRepository
         .createQueryBuilder('posts')
         .leftJoinAndSelect('posts.user', 'users')  // users を結合する
-        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.createdAt', 'users.name'])  // 必要なカラムを選択する
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.createdAt', 'users.name', 'users.avatarUrl'])  // 必要なカラムを選択する
         .where('posts.userId = :userId AND posts.id = :postId', { userId, postId })  // 指定のユーザ ID・投稿 ID
         .getOne();
       if(post == null) return { error: this.postNotFoundErrorMessage };
@@ -71,7 +71,6 @@ export class PostsService {
       return { error: '投稿の取得に失敗しました' };
     }
   }
-  
   
   /** 投稿1件を削除する */
   public async removeOneById(userId: string, postId: string): Promise<Result<boolean>> {

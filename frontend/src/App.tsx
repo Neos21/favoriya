@@ -9,6 +9,7 @@ import { theme } from './core/theme';
 import { GlobalTimelinePage } from './pages/global-timeline/GlobalTimelinePage';
 import { HomePage } from './pages/home/HomePage';
 import { LoginPage } from './pages/login/LoginPage';
+import { ChangeAvatarPage } from './pages/settings/change-avatar/ChangeAvatarPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
 import { SignupPage } from './pages/signup/SignupPage';
 import { PostPage } from './pages/users/posts/PostPage';
@@ -25,7 +26,9 @@ export const App = () => (
           <Route element={<LayoutComponent />}>
             <Route element={<AuthGuardRoute />}>
               <Route path="/global-timeline" element={<GlobalTimelinePage />}></Route>
-              <Route path="/settings"        element={<SettingsPage       />}></Route>
+              
+              <Route path="/settings/change-avatar" element={<ChangeAvatarPage />}></Route>
+              <Route path="/settings"               element={<SettingsPage     />}></Route>
               
               <Route path="/:userId/posts/:postId" element={<PostPage />} />
               <Route path="/:userId/posts"         element={<UserPage />} />

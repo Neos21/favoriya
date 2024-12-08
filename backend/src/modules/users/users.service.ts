@@ -41,14 +41,13 @@ export class UsersService {
     });
     try {
       await this.usersRepository.insert(newUserEntity);
+      return { result: true };  // 成功
     }
     catch(error) {
       if(error instanceof QueryFailedError && (error as unknown as { code: string }).code === '23505') return { error: 'そのユーザ ID は既に使用されています' };
       this.logger.error('ユーザ登録処理に失敗しました (DB エラー)', error);
       throw error;  // その他のエラーは Internal Server Error とする
     }
-    
-    return { result: true };  // 成功
   }
   
   /** ユーザ ID を条件にユーザ情報を取得する (パスワードハッシュは取得しない) */
@@ -90,13 +89,12 @@ export class UsersService {
         this.logger.error('ユーザ情報更新処理 (Patch) で0件 or 2件以上の更新が発生', updateResult);
         throw new Error('Invalid Affected');
       }
+      return await this.findOneById(id);
     }
     catch(error) {
       this.logger.error('ユーザ情報更新処理 (Patch) に失敗しました (DB エラー)', error);
       throw error;
     }
-    
-    return await this.findOneById(id);
   }
   
   /** パスワードを変更する */
@@ -129,12 +127,11 @@ export class UsersService {
         this.logger.error('ユーザパスワードの変更処理で0件 or 2件以上の更新が発生', updateResult);
         throw new Error('Invalid Affected');
       }
+      return { result: true };  // 成功
     }
     catch(error) {
       this.logger.error('ユーザパスワードの変更処理に失敗しました (DB エラー)', error);
       throw error;
     }
-    
-    return { result: true };  // 成功
   }
 }

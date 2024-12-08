@@ -72,4 +72,12 @@ server {
 $ curl https://dl.min.io/client/mc/release/linux-amd64/mc -o ./mc
 $ chmod +x ./mc
 $ ./mc --help
+
+$ ./mc alias set local http://localhost:9000 example example-secret
+$ ./mc alias list
+
+# バケット作成
+$ ./mc mb ./oss/users/avatar
+# バケットを公開状態にする
+$ ./mc anonymous set public local/users
 ```

@@ -16,6 +16,9 @@ export class UserEntity {
   @Column({ name: 'role' })
   public role: string;
   
+  @Column({ name: 'avatar_url', nullable: true })
+  public avatarUrl: string;
+  
   @CreateDateColumn({ name: 'created_at' })
   public readonly createdAt: Date;
   

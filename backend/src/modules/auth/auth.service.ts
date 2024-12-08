@@ -32,13 +32,10 @@ export class AuthService {
       role: userEntity.role
     };
     try {
-      const result: User = {  // レスポンスの元となるデータ
-        id   : userEntity.id,
-        name : userEntity.name,
-        role : userEntity.role,
-        token: await this.jwtService.signAsync(jwtPayload)  // Throws
-      };
-      return { result };
+      // レスポンスの元となるデータ
+      const user: User = { ...userEntity };
+      user.token = await this.jwtService.signAsync(jwtPayload);  // Throws
+      return { result: user };
     }
     catch(error) {
       this.logger.error('JWT 署名に失敗しました', error);

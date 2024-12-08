@@ -6,7 +6,6 @@ export type Post = {
   id?: string;
   userId: string;
   text: string;
-  
   createdAt?: Date | string;
   updatedAt?: Date | string;
   

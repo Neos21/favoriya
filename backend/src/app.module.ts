@@ -1,3 +1,4 @@
+import { NestMinioModule } from 'nestjs-minio';
 import * as path from 'node:path';
 
 import { MiddlewareConsumer, Module } from '@nestjs/common';
@@ -20,6 +21,8 @@ import { UsersController } from './modules/users/users.controller';
 import { UsersService } from './modules/users/users.service';
 import { PostEntity } from './shared/entities/post.entity';
 import { UserEntity } from './shared/entities/user.entity';
+import { AvatarService } from './modules/users/avatar/avatar.service';
+import { AvatarController } from './modules/users/avatar/avatar.controller';
 
 /** App Module */
 @Module({
@@ -63,21 +66,35 @@ import { UserEntity } from './shared/entities/user.entity';
     TypeOrmModule.forFeature([
       UserEntity,
       PostEntity
-    ])
+    ]),
+    // MinIO
+    NestMinioModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        isGlobal : true,
+        endPoint : configService.get<string>('ossHost'),
+        port     : configService.get<number>('ossPort'),
+        accessKey: configService.get<string>('ossUser'),
+        secretKey: configService.get<string>('ossPass'),
+        useSSL   : configService.get<boolean>('ossSsl')
+      })
+    })
   ],
   controllers: [
     AppController,
     AuthController,
     UsersController,
     PostsController,
-    TimelineController
+    TimelineController,
+    AvatarController
   ],
   providers: [
     AppService,
     AuthService,
     UsersService,
     PostsService,
-    TimelineService
+    TimelineService,
+    AvatarService
   ]
 })
 export class AppModule {

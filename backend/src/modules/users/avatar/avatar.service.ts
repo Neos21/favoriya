@@ -1,0 +1,149 @@
+import { NestMinioService } from 'nestjs-minio';
+import * as path from 'node:path';
+import sharp from 'sharp';
+import { Repository } from 'typeorm';
+
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
+import { commonUserConstants } from '../../../common/constants/user-constants';
+import { isEmptyString } from '../../../common/helpers/is-empty-string';
+import { UserEntity } from '../../../shared/entities/user.entity';
+import { UsersService } from '../users.service';
+
+import type { Result } from '../../../common/types/result';
+
+/** Avatar Service */
+@Injectable()
+export class AvatarService {
+  private readonly logger: Logger = new Logger(AvatarService.name);
+  
+  constructor(
+    @InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>,
+    private readonly usersService: UsersService,
+    private readonly nestMinioService: NestMinioService,
+  ) { }
+  
+  /** アバター画像をアップロードする */
+  public async uploadAvatar(userId: string, file: Express.Multer.File): Promise<Result<string>> {
+    if(file.size > commonUserConstants.avatarMaxFileSizeKb) return { error: 'ファイルサイズが 500KB を超えています' };
+    if(!file.mimetype.startsWith('image/')) return { error: '画像ファイルではありません' };
+    
+    // リサイズする
+    const resizedBuffer = await this.resizeImage(file.buffer);
+    // バケットがなければ作成する
+    const makeBucketResult = await this.makeBucketIfNotExists();
+    if(makeBucketResult.error != null) return { error: makeBucketResult.error };
+    // ファイル名を作成する
+    const fileNameResult = this.createFileName(userId, file.originalname);
+    // MinIO にアップロードする
+    const avatarUrlResult = await this.uploadToMinio(resizedBuffer, file.mimetype, fileNameResult.result);
+    if(avatarUrlResult.error != null) return { error: avatarUrlResult.error };
+    // 変更前のユーザ情報を取得する
+    const beforeUserEntityResult = await this.usersService.findOneById(userId);
+    if(beforeUserEntityResult.error != null) return { error: beforeUserEntityResult.error };
+    // 変更前のアバター画像ファイルを削除する
+    const removeOldAvatarObjectResult = await this.removeObject(beforeUserEntityResult.result.avatarUrl);
+    if(removeOldAvatarObjectResult.error != null) return { error: removeOldAvatarObjectResult.error };
+    // データベースを更新する
+    const updateResult = await this.updateUserAvatar(userId, avatarUrlResult.result);
+    if(updateResult.error != null) return { error: updateResult.error };
+    // 更新したアバター画像のパスを返す
+    return { result: avatarUrlResult.result };
+  }
+  
+  /** アバター画像を削除する */
+  public async removeAvatar(userId: string): Promise<Result<boolean>> {
+    // 変更前のユーザ情報を取得する
+    const beforeUserEntityResult = await this.usersService.findOneById(userId);
+    if(beforeUserEntityResult.error != null) return { error: beforeUserEntityResult.error };
+    // 変更前のアバター画像ファイルを削除する
+    const removeOldAvatarObjectResult = await this.removeObject(beforeUserEntityResult.result.avatarUrl);
+    if(removeOldAvatarObjectResult.error != null) return { error: removeOldAvatarObjectResult.error };
+    // データベースを更新する
+    const updateResult = await this.updateUserAvatar(userId, '');  // アバター画像パスをなしにする
+    if(updateResult.error != null) return { error: updateResult.error };
+    // 成功
+    return { result: true };
+  }
+  
+  /** リサイズする */
+  private async resizeImage(buffer: Buffer): Promise<Buffer> {
+    const metadata = await sharp(buffer).metadata();
+    if(metadata.width > commonUserConstants.avatarMaxImageSizePx || metadata.height > commonUserConstants.avatarMaxImageSizePx) {
+      return sharp(buffer).resize(commonUserConstants.avatarMaxImageSizePx, commonUserConstants.avatarMaxImageSizePx, { fit: 'inside' }).toBuffer();
+    }
+    return buffer;  // リサイズ不要
+  }
+  
+  /** バケットが存在しなければ作成する */
+  private async makeBucketIfNotExists(): Promise<Result<boolean>> {
+    try {
+      const existsBucket = await this.nestMinioService.getMinio().bucketExists(commonUserConstants.bucketName);
+      if(!existsBucket) await this.nestMinioService.getMinio().makeBucket(commonUserConstants.bucketName);
+      return { result: true };
+    }
+    catch(error) {
+      this.logger.error('バケットの確認・作成に失敗しました', error);
+      return { error: 'バケットの確認・作成に失敗しました' };
+    }
+  }
+  
+  /** ファイル名を組み立てる */
+  private createFileName(userId: string, originalName: string): Result<string> {
+    const extName = path.extname(originalName).toLowerCase();
+    if(isEmptyString(extName)) return { error: '拡張子が不正です' };
+    
+    const fileName = `avatar/${userId}-${Date.now()}${extName}`;
+    return { result: fileName };
+  }
+  
+  /** MinIO にアップロードする */
+  private async uploadToMinio(buffer: Buffer, mimeType: string, fileName: string): Promise<Result<string>> {
+    try {
+      await this.nestMinioService.getMinio().putObject(commonUserConstants.bucketName, fileName, buffer, buffer.byteLength, {
+        'Content-Type': mimeType
+      });
+      return { result: `/${commonUserConstants.bucketName}/${fileName}` };
+    }
+    catch(error) {
+      this.logger.error('画像のアップロードに失敗しました', error);
+      return { error: '画像のアップロードに失敗しました' };
+    }
+  }
+  
+  /** 既存のオブジェクトを削除する */
+  private async removeObject(avatarUrl: string): Promise<Result<boolean>> {
+    if(isEmptyString(avatarUrl)) return { result: true };  // 削除する画像ファイルなし
+    
+    try {
+      const objectName = avatarUrl.replace(`/${commonUserConstants.bucketName}/`, '');  // バケット名を除去しオブジェクト名を抽出する
+      await this.nestMinioService.getMinio().removeObject(commonUserConstants.bucketName, objectName);
+      return { result: true };
+    }
+    catch(error) {
+      this.logger.error('既存のアバター画像の削除処理に失敗しました', error);
+      return { error: '既存のアバター画像の削除処理に失敗しました' };
+    }
+  }
+  
+  /** ユーザ情報のアバター画像カラムを更新する */
+  private async updateUserAvatar(userId: string, newAvatarUrl: string): Promise<Result<boolean>> {
+    try {
+      const updateUserEntity = new UserEntity({
+        avatarUrl: newAvatarUrl
+      });
+      
+      const updateResult = await this.usersRepository.update(userId, updateUserEntity);
+      if(updateResult.affected !== 1) {
+        this.logger.error('ユーザ情報のアバター画像パス更新処理 (Patch) で0件 or 2件以上の更新が発生', updateResult);
+        throw new Error('Invalid Affected');
+      }
+      return { result: true };
+    }
+    catch(error) {
+      this.logger.error('アバター画像アップロードに伴うユーザ情報の更新に失敗しました', error);
+      return { error: 'アバター画像アップロードに伴うユーザ情報の更新に失敗しました' };
+    }
+  }
+}

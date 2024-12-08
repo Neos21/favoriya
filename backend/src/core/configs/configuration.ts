@@ -51,12 +51,19 @@ const getBooleanValue = (envName: string): boolean => {
 
 /** 環境変数のオブジェクトを返す : この関数内にオブジェクトを定義しないと環境変数が読み込まれない */
 export const configuration = (): { [key: string]: string | number | boolean } => ({
+  noColour : getBooleanValue('NO_COLOR'                        ),  // ロガーの色付けをしない : NestJS のロガー `cli-colors.util.js` と同じ環境変数名・確認のため宣言
   port     : getNumberValue ('PSEUDO_PORT'      , 6216         ),  // ポート番号
   jwtSecret: getStringValue ('PSEUDO_JWT_SECRET', 'CHANGE-THIS'),  // JWT 認証のシークレット
+  
   dbHost   : getStringValue ('PSEUDO_DB_HOST'   , 'localhost'  ),  // DB ホスト
   dbPort   : getNumberValue ('PSEUDO_DB_PORT'   , 5432         ),  // DB ポート
   dbUser   : getStringValue ('PSEUDO_DB_USER'   , 'CHANGE-THIS'),  // DB ユーザ名
   dbPass   : getStringValue ('PSEUDO_DB_PASS'   , 'CHANGE-THIS'),  // DB パスワード
   dbName   : getStringValue ('PSEUDO_DB_NAME'   , 'CHANGE-THIS'),  // DB データベース名
-  noColour : getBooleanValue('NO_COLOR'                        )   // ロガーの色付けをしない : NestJS のロガー `cli-colors.util.js` と同じ環境変数名・確認のため宣言
+  
+  ossHost  : getStringValue ('PSEUDO_OSS_HOST'  , 'localhost'  ),  // OSS ホスト
+  ossPort  : getNumberValue ('PSEUDO_OSS_PORT'  , 9000         ),  // OSS ポート
+  ossUser  : getStringValue ('PSEUDO_OSS_USER'  , 'CHANGE-THIS'),  // OSS ユーザ名
+  ossPass  : getStringValue ('PSEUDO_OSS_PASS'  , 'CHANGE-THIS'),  // OSS パスワード
+  ossSsl   : getBooleanValue('PSEUDO_OSS_SSL'                  )   // OSS SSL 接続するか否か
 });
