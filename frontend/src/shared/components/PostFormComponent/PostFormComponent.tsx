@@ -99,7 +99,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
               <ul style={{ margin: '0', paddingLeft: '1rem' }}>
                 <li>size … 1 ～ 7・-4 ～ +4</li>
                 <li>color</li>
-                <li>family</li>
+                <li>face</li>
               </ul>
             </li>
             <li>marquee : direction・scrollamout</li>
