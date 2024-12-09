@@ -29,6 +29,16 @@ export class UsersController {
     }
   }
   
+  /** ユーザ情報一覧を取得する */
+  @UseGuards(JwtAuthGuard)
+  @Get('')
+  public async findAll(@Res() response: Response): Promise<Response<Result<Array<UserApi>>>> {
+    const result = await this.usersService.findAll();
+    const usersApi = result.result.map(userApi => snakeToCamelCaseObject(userApi));
+    return response.status(HttpStatus.OK).json({ result: usersApi });
+  }
+  
+  /** ユーザ ID を条件にユーザ情報を取得する (パスワードハッシュは取得しない) */
   @UseGuards(JwtAuthGuard)
   @Get(':userId')
   public async findOneById(@Param('userId') id: string, @Res() response: Response): Promise<Response<Result<UserApi>>> {

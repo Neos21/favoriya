@@ -12,7 +12,7 @@ import { UserInfoFormComponent } from './components/UserInfoFormComponent/UserIn
 export const SettingsPage: FC = () => {
   const userState = useSelector((state: RootState) => state.user);
   
-  return (<>
+  return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>設定</Typography>
     
     <Divider sx={{ mt: 4 }} />
@@ -34,5 +34,5 @@ export const SettingsPage: FC = () => {
     
     <Divider sx={{ mt: 4 }} />
     <ChangePasswordFormComponent />
-  </>);
+  </>;
 };

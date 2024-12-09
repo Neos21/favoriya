@@ -74,7 +74,7 @@ export const UserInfoFormComponent: FC = () => {
     }
   };
   
-  return (<>
+  return <>
     <Typography component="h2" variant="h5" sx={{ mt: 3 }}>ユーザ情報</Typography>
     
     {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
@@ -93,5 +93,5 @@ export const UserInfoFormComponent: FC = () => {
         <Button type="submit" variant="contained">更新</Button>
       </Box>
     </Box>
-  </>);
+  </>;
 };

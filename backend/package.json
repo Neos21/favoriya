@@ -1,6 +1,6 @@
 {
-  "name": "@pseudo/backend",
-  "description": "Pseudo Backend",
+  "name": "@favoriya/backend",
+  "description": "Favoriya Backend",
   "private": true,
   "version": "0.0.0",
   "scripts": {

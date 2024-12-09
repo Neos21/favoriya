@@ -17,7 +17,7 @@ export const SignupPage: FC = () => {
   
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [formErrors, setFormErrors] = useState<{ id?: string; password?: string }>({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
   // 本画面に遷移してきた時はログイン済の情報があったら削除する
   useEffect(() => {
@@ -66,7 +66,7 @@ export const SignupPage: FC = () => {
     navigate('/login');
   };
   
-  return (<>
+  return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>登録</Typography>
     
     {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
@@ -103,5 +103,5 @@ export const SignupPage: FC = () => {
         </Box>
       </Box>
     </Modal>
-  </>);
+  </>;
 };

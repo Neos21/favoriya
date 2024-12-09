@@ -26,7 +26,7 @@ export const PostPage: FC = () => {
   
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'not-found' | 'failed'>('loading');
   const [post, setPost] = useState<Post>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
   // 念のため `@` を除去するテイで作っておく
   const paramUserId = rawParamUserId.startsWith('@') ? rawParamUserId.slice(1) : rawParamUserId;
@@ -72,7 +72,7 @@ export const PostPage: FC = () => {
   // 先頭に `@` が付いていなかった場合は `@` 付きでリダイレクトさせる
   if(!rawParamUserId.startsWith('@')) return <Navigate to={`/@${rawParamUserId}/posts/${paramPostId}`} />;
   
-  return (<>
+  return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>
       @{paramUserId}
       {status === 'succeeded' && <>
@@ -106,5 +106,5 @@ export const PostPage: FC = () => {
         </Box>
       </Modal>
     </>}
-  </>);
+  </>;
 };

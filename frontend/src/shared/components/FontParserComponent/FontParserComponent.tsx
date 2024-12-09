@@ -105,7 +105,7 @@ export const FontParserComponent: React.FC<Props> = ({ input }) => {
   
   // DOMPurify でサニタイズした HTML を取得し、変換処理を適用する
   const sanitizedHtml = DOMPurify.sanitize(input, {
-    ALLOWED_TAGS: ['font', 'b', 'i', 's', 'strong', 'em', 'strike', 'del', 'ins', 'mark', 'code', 'var', 'samp', 'kbd', 'marquee', 'blink'],  // 許可する要素名
+    ALLOWED_TAGS: ['font', 'marquee', 'blink', 'b', 'i', 's', 'del', 'ins', 'em', 'strong', 'mark', 'code', 'var', 'samp', 'kbd'],  // 許可する要素名
     ALLOWED_ATTR: ['color', 'size', 'face', 'direction', 'scrollamount']  // 許可する属性
   });
   

@@ -1,1 +1,1 @@
-# Pseudo Frontend
+# Favoriya Frontend

@@ -45,7 +45,7 @@ export const GlobalTimelinePage: FC = () => {
   // 再読み込み
   const onReload = () => fetchPosts();
   
-  return (<>
+  return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>グローバルタイムライン</Typography>
     
     <PostFormComponent onAfterSubmit={onReload} />
@@ -63,5 +63,5 @@ export const GlobalTimelinePage: FC = () => {
     {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>グローバルタイムラインの取得に失敗しました</Alert>}
     
     {status === 'succeeded' && <PostsListComponent posts={posts} />}
-  </>);
+  </>;
 };

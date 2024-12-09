@@ -1,6 +1,6 @@
 {
-  "name": "@pseudo/frontend",
-  "description": "Pseudo Frontend",
+  "name": "@favoriya/frontend",
+  "description": "Favoriya Frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",

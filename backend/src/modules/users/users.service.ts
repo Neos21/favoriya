@@ -50,6 +50,27 @@ export class UsersService {
     }
   }
   
+  /** ユーザ情報一覧を取得する */
+  public async findAll(): Promise<Result<Array<UserEntity>>> {
+    try {
+      const users = await this.usersRepository.find({
+        select: {
+          id       : true,
+          name     : true,
+          role     : true,
+          avatarUrl: true,
+          createdAt: true
+        },
+        order: { createdAt: 'DESC' }
+      });
+      return { result: users };
+    }
+    catch(error) {
+      this.logger.error('ユーザ情報一覧の取得処理に失敗しました (DB エラー)', error);
+      return { error: 'ユーザ情報一覧の取得処理に失敗しました' };
+    }
+  }
+  
   /** ユーザ ID を条件にユーザ情報を取得する (パスワードハッシュは取得しない) */
   public async findOneById(id: string): Promise<Result<UserEntity>> {
     const userResult = await this.findOneByIdWithPasswordHash(id);

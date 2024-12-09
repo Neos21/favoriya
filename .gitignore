@@ -1,19 +1,24 @@
+# System
 .DS_Store
 Thumbs.db
 
+# Misc
+MEMO.md
+
+# Common
 node_modules/
 dist/
+coverage/
 
 # Backend
 .env
 nohup.out
-coverage/
+
+# Frontend
+*storybook.log
+storybook-static/
 
 # MinIO
 minio
 mc
 oss/
-
-# Frontend
-*storybook.log
-storybook-static/

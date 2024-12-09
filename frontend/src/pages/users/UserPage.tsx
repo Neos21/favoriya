@@ -62,7 +62,7 @@ export const UserPage: FC = () => {
   // 先頭に `@` が付いていなかった場合は `@` 付きでリダイレクトさせる
   if(!rawParamUserId.startsWith('@')) return <Navigate to={`/@${rawParamUserId}`} />;
   
-  return (<>
+  return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>@{paramUserId}</Typography>
     
     {status === 'loading' && <LoadingSpinnerComponent />}
@@ -86,5 +86,5 @@ export const UserPage: FC = () => {
       
       <PostsListComponent posts={posts} />
     </>}
-  </>);
+  </>;
 };

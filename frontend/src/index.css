@@ -4,6 +4,7 @@
 
 html {
   overflow-y: scroll !important;  /* Drawer を開いた時に消させない */
+  word-break: break-all;
   cursor: default;
 }
 

@@ -23,6 +23,8 @@ import { PostEntity } from './shared/entities/post.entity';
 import { UserEntity } from './shared/entities/user.entity';
 import { AvatarService } from './modules/users/avatar/avatar.service';
 import { AvatarController } from './modules/users/avatar/avatar.controller';
+import { AdminController } from './modules/admin/admin.controller';
+import { AdminService } from './modules/admin/admin.service';
 
 /** App Module */
 @Module({
@@ -86,7 +88,8 @@ import { AvatarController } from './modules/users/avatar/avatar.controller';
     UsersController,
     PostsController,
     TimelineController,
-    AvatarController
+    AvatarController,
+    AdminController
   ],
   providers: [
     AppService,
@@ -94,7 +97,8 @@ import { AvatarController } from './modules/users/avatar/avatar.controller';
     UsersService,
     PostsService,
     TimelineService,
-    AvatarService
+    AvatarService,
+    AdminService
   ]
 })
 export class AppModule {

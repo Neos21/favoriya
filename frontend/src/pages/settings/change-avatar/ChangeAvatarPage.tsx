@@ -33,7 +33,7 @@ export const ChangeAvatarPage: FC = () => {
   
   const [selectedFile, setSelectedFile] = useState<File>(null);
   const [previewUrl, setPreviewUrl] = useState<string>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [succeededMessage, setSucceededMessage] = useState<string>(null);
   
@@ -119,7 +119,7 @@ export const ChangeAvatarPage: FC = () => {
     }
   };
   
-  return (<>
+  return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>アバター変更</Typography>
     
     <Avatar
@@ -168,5 +168,5 @@ export const ChangeAvatarPage: FC = () => {
     <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>
       <Button variant="contained" color="error" onClick={onRemoveFile} disabled={isUploading}>画像を削除</Button>
     </Box>
-  </>);
+  </>;
 };

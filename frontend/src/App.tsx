@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
@@ -14,34 +15,45 @@ import { SettingsPage } from './pages/settings/SettingsPage';
 import { SignupPage } from './pages/signup/SignupPage';
 import { PostPage } from './pages/users/posts/PostPage';
 import { UserPage } from './pages/users/UserPage';
+import { UsersPage } from './pages/users/UsersPage';
+import { LoadingSpinnerComponent } from './shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { store } from './shared/stores/store';
+
+// Lazy Loading
+const AdminGuardRoute = lazy(async () => ({ default: (await import('./core/routes/AdminGuardRoute')).AdminGuardRoute }));
 
 /** App */
 export const App = () => (
-  <BrowserRouter>
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Routes>
-          <Route element={<LayoutComponent />}>
-            <Route element={<AuthGuardRoute />}>
-              <Route path="/global-timeline" element={<GlobalTimelinePage />}></Route>
+  <Suspense fallback={<LoadingSpinnerComponent />}>
+    <BrowserRouter>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Routes>
+            <Route element={<LayoutComponent />}>
+              <Route element={<AuthGuardRoute />}>
+                <Route path="/global-timeline" element={<GlobalTimelinePage />} />
+                
+                <Route path="/settings/change-avatar" element={<ChangeAvatarPage />} />
+                <Route path="/settings"               element={<SettingsPage     />} />
+                
+                <Route path="/users"                 element={<UsersPage />} />
+                
+                <Route path="/:userId/posts/:postId" element={<PostPage  />} />
+                <Route path="/:userId/posts"         element={<UserPage  />} />
+                <Route path="/:userId"               element={<UserPage  />} />
+                
+                <Route path="/admin/*" element={<AdminGuardRoute />} />
+              </Route>
               
-              <Route path="/settings/change-avatar" element={<ChangeAvatarPage />}></Route>
-              <Route path="/settings"               element={<SettingsPage     />}></Route>
-              
-              <Route path="/:userId/posts/:postId" element={<PostPage />} />
-              <Route path="/:userId/posts"         element={<UserPage />} />
-              <Route path="/:userId"               element={<UserPage />} />
+              <Route path="/signup" element={<SignupPage      />} />
+              <Route path="/login"  element={<LoginPage       />} />
+              <Route path="/"       element={<HomePage        />} />
+              <Route path="*"       element={<Navigate to="/" />} />
             </Route>
-            
-            <Route path="/signup" element={<SignupPage      />}></Route>
-            <Route path="/login"  element={<LoginPage       />}></Route>
-            <Route path="/"       element={<HomePage        />}></Route>
-            <Route path="*"       element={<Navigate to="/" />}></Route>
-          </Route>
-        </Routes>
-      </ThemeProvider>
-    </Provider>
-  </BrowserRouter>
+          </Routes>
+        </ThemeProvider>
+      </Provider>
+    </BrowserRouter>
+  </Suspense>
 );

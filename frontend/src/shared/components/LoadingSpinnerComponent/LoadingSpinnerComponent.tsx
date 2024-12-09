@@ -12,11 +12,9 @@ export const LoadingSpinnerComponent: FC = () => {
     }, 1000);
   }, []);
   
-  return (
-    <Fade in={isIn}>
-      <Typography sx={{ mt: 5, textAlign: 'center' }}>
-        <CircularProgress />
-      </Typography>
-    </Fade>
-  );
+  return <Fade in={isIn}>
+    <Typography sx={{ mt: 5, textAlign: 'center' }}>
+      <CircularProgress />
+    </Typography>
+  </Fade>;
 };

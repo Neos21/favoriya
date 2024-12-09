@@ -46,7 +46,7 @@ export const LoginPage: FC = () => {
     }
   };
   
-  return (<>
+  return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>ログイン</Typography>
     
     {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
@@ -69,5 +69,5 @@ export const LoginPage: FC = () => {
     <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
       <Button component={Link} to="/signup" variant="contained">登録</Button>
     </Box>
-  </>);
+  </>;
 };
