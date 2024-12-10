@@ -17,7 +17,7 @@ export class AuthController {
   public async login(@Body() userInfoApi: UserApi, @Res() response: Response): Promise<Response<Result<UserApi>>> {
     const { id, password } = snakeToCamelCaseObject(userInfoApi);
     const loginResult = await this.authService.login(id, password);
-    if(loginResult.error != null) return response.status(HttpStatus.UNAUTHORIZED).json({ error: loginResult.error });
+    if(loginResult.error != null) return response.status(HttpStatus.UNAUTHORIZED).json(loginResult);
     
     const result: UserApi = camelToSnakeCaseObject(loginResult.result);
     return response.status(HttpStatus.OK).json({ result });

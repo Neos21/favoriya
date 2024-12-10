@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { commonUserConstants } from '../../../common/constants/user-constants';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { UserEntity } from '../../../shared/entities/user.entity';
-import { UsersService } from '../users.service';
 
 import type { Result } from '../../../common/types/result';
 
@@ -20,7 +19,6 @@ export class AvatarService {
   
   constructor(
     @InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>,
-    private readonly usersService: UsersService,
     private readonly nestMinioService: NestMinioService,
   ) { }
   
@@ -33,21 +31,21 @@ export class AvatarService {
     const resizedBuffer = await this.resizeImage(file.buffer);
     // バケットがなければ作成する
     const makeBucketResult = await this.makeBucketIfNotExists();
-    if(makeBucketResult.error != null) return { error: makeBucketResult.error };
+    if(makeBucketResult.error != null) return makeBucketResult as Result<string>;
     // ファイル名を作成する
     const fileNameResult = this.createFileName(userId, file.originalname);
     // MinIO にアップロードする
     const avatarUrlResult = await this.uploadToMinio(resizedBuffer, file.mimetype, fileNameResult.result);
-    if(avatarUrlResult.error != null) return { error: avatarUrlResult.error };
+    if(avatarUrlResult.error != null) return avatarUrlResult;
     // 変更前のユーザ情報を取得する
-    const beforeUserEntityResult = await this.usersService.findOneById(userId);
-    if(beforeUserEntityResult.error != null) return { error: beforeUserEntityResult.error };
+    const beforeUserEntityResult = await this.findOneById(userId);
+    if(beforeUserEntityResult.error != null) return beforeUserEntityResult as Result<string>;
     // 変更前のアバター画像ファイルを削除する
     const removeOldAvatarObjectResult = await this.removeObject(beforeUserEntityResult.result.avatarUrl);
-    if(removeOldAvatarObjectResult.error != null) return { error: removeOldAvatarObjectResult.error };
+    if(removeOldAvatarObjectResult.error != null) return removeOldAvatarObjectResult as Result<string>;
     // データベースを更新する
     const updateResult = await this.updateUserAvatar(userId, avatarUrlResult.result);
-    if(updateResult.error != null) return { error: updateResult.error };
+    if(updateResult.error != null) return updateResult as Result<string>;
     // 更新したアバター画像のパスを返す
     return { result: avatarUrlResult.result };
   }
@@ -55,14 +53,16 @@ export class AvatarService {
   /** アバター画像を削除する */
   public async removeAvatar(userId: string): Promise<Result<boolean>> {
     // 変更前のユーザ情報を取得する
-    const beforeUserEntityResult = await this.usersService.findOneById(userId);
-    if(beforeUserEntityResult.error != null) return { error: beforeUserEntityResult.error };
+    const beforeUserEntityResult = await this.findOneById(userId);
+    if(beforeUserEntityResult.error != null) return beforeUserEntityResult as Result<boolean>;
+    // アバター画像ファイルが存在しなければ成功として終了する
+    if(isEmptyString(beforeUserEntityResult.result.avatarUrl)) return { result: true };
     // 変更前のアバター画像ファイルを削除する
     const removeOldAvatarObjectResult = await this.removeObject(beforeUserEntityResult.result.avatarUrl);
-    if(removeOldAvatarObjectResult.error != null) return { error: removeOldAvatarObjectResult.error };
+    if(removeOldAvatarObjectResult.error != null) return removeOldAvatarObjectResult;
     // データベースを更新する
     const updateResult = await this.updateUserAvatar(userId, '');  // アバター画像パスをなしにする
-    if(updateResult.error != null) return { error: updateResult.error };
+    if(updateResult.error != null) return updateResult;
     // 成功
     return { result: true };
   }
@@ -124,6 +124,20 @@ export class AvatarService {
     catch(error) {
       this.logger.error('既存のアバター画像の削除処理に失敗しました', error);
       return { error: '既存のアバター画像の削除処理に失敗しました' };
+    }
+  }
+  
+  /** ユーザ情報を取得する */
+  private async findOneById(userId: string): Promise<Result<UserEntity>> {
+    try {
+      const user = await this.usersRepository.findOneBy({ id: userId });
+      if(user == null) return { error: '指定のユーザ ID のユーザは存在しません' };
+      user.passwordHash = null;
+      return { result: user };
+    }
+    catch(error) {
+      this.logger.error('ユーザ情報の取得処理に失敗しました (DB エラー)', error);
+      return { error: 'ユーザ情報の取得処理に失敗しました' };
     }
   }
   

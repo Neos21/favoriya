@@ -34,5 +34,11 @@ export const SettingsPage: FC = () => {
     
     <Divider sx={{ mt: 4 }} />
     <ChangePasswordFormComponent />
+    
+    <Divider sx={{ mt: 4 }} />
+    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>アカウント削除</Typography>
+    <Typography component="p" sx={{ mt: 3 }}>
+      <Link to="/settings/delete-account" className="hover-underline">アカウント削除確認画面に移動する</Link>
+    </Typography>
   </>;
 };

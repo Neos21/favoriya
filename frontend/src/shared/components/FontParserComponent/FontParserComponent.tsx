@@ -24,7 +24,7 @@ type Props = { input: string; };
 /** Font Parser Component */
 export const FontParserComponent: React.FC<Props> = ({ input }) => {
   /** font 要素などを置換する */
-  const convert = (html: string) => {
+  const convertTags = (html: string) => {
     const parser = new DOMParser();
     const document = parser.parseFromString(html, 'text/html');
     
@@ -104,12 +104,20 @@ export const FontParserComponent: React.FC<Props> = ({ input }) => {
   };
   
   // DOMPurify でサニタイズした HTML を取得し、変換処理を適用する
-  const sanitizedHtml = DOMPurify.sanitize(input, {
-    ALLOWED_TAGS: ['font', 'marquee', 'blink', 'b', 'i', 's', 'del', 'ins', 'em', 'strong', 'mark', 'code', 'var', 'samp', 'kbd'],  // 許可する要素名
+  const tagSanitizedHtml = DOMPurify.sanitize(input, {
+    ALLOWED_TAGS: ['font', 'marquee', 'blink', 'b', 'i', 'u', 's', 'del', 'ins', 'em', 'strong', 'mark', 'code', 'var', 'samp', 'kbd'],  // 許可する要素名
     ALLOWED_ATTR: ['color', 'size', 'face', 'direction', 'scrollamount']  // 許可する属性
   });
+  const tagTransformedHtml = convertTags(tagSanitizedHtml);
   
-  const transformedHtml = convert(sanitizedHtml);
+  // URL 文字列を a 要素を埋め込む
+  const convertUrlsToLinks = (html: string) => {
+    const sanitizedHtml = DOMPurify.sanitize(html);
+    return sanitizedHtml
+      .replace((/(\b(https?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/igu), url => `<a href="${url}"  target="_blank" rel="noopener noreferrer" class="normal-link">${url}</a>`)
+      .replace((/(\b(ttps?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/igu) , url => `<a href="h${url}" target="_blank" rel="noopener noreferrer" class="hidden-link">${url}</a>`);
+  };
+  const transformedHtml = convertUrlsToLinks(tagTransformedHtml);
   
   return <div className="font-parser-component" dangerouslySetInnerHTML={{ __html: transformedHtml }} />;
 };

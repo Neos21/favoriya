@@ -11,6 +11,7 @@ import { GlobalTimelinePage } from './pages/global-timeline/GlobalTimelinePage';
 import { HomePage } from './pages/home/HomePage';
 import { LoginPage } from './pages/login/LoginPage';
 import { ChangeAvatarPage } from './pages/settings/change-avatar/ChangeAvatarPage';
+import { DeleteAccountPage } from './pages/settings/delete-account/DeleteAccountPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
 import { SignupPage } from './pages/signup/SignupPage';
 import { PostPage } from './pages/users/posts/PostPage';
@@ -34,8 +35,9 @@ export const App = () => (
               <Route element={<AuthGuardRoute />}>
                 <Route path="/global-timeline" element={<GlobalTimelinePage />} />
                 
-                <Route path="/settings/change-avatar" element={<ChangeAvatarPage />} />
-                <Route path="/settings"               element={<SettingsPage     />} />
+                <Route path="/settings/delete-account" element={<DeleteAccountPage />} />
+                <Route path="/settings/change-avatar"  element={<ChangeAvatarPage  />} />
+                <Route path="/settings"                element={<SettingsPage      />} />
                 
                 <Route path="/users"                 element={<UsersPage />} />
                 

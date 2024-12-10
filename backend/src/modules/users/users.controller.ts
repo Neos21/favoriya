@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
@@ -82,6 +82,23 @@ export class UsersController {
       if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
       
       return response.status(HttpStatus.OK).json(result);
+    }
+    catch(error) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.error ?? error.toString() });
+    }
+  }
+  
+  /** ユーザ情報を削除する */
+  @UseGuards(JwtAuthGuard)
+  @Delete(':userId')
+  public async remove(@Param('userId') id: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<void>>> {
+    try {
+      if(!isValidJwtUserId(request, response, id)) return;
+      
+      const result = await this.usersService.remove(id);  // Throws
+      if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
+      
+      return response.status(HttpStatus.NO_CONTENT).end();
     }
     catch(error) {
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.error ?? error.toString() });

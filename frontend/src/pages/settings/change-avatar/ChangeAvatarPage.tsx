@@ -7,11 +7,12 @@ import { Alert, Avatar, Box, Button, Divider, Grid2, Typography } from '@mui/mat
 
 import { commonUserConstants } from '../../../common/constants/user-constants';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
-import { Result } from '../../../common/types/result';
 import { userConstants } from '../../../shared/constants/user-constants';
 import { useApiDelete } from '../../../shared/hooks/use-api-fetch';
 import { RootState } from '../../../shared/stores/store';
 import { setUser } from '../../../shared/stores/user-slice';
+
+import type { Result } from '../../../common/types/result';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',

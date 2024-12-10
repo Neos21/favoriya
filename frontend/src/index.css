@@ -21,8 +21,17 @@ a {
 /* Misc
  * ================================================================================ */
 
-a.hover-underline:hover, a.hover-underline:focus {
+a.hover-underline:hover, a.hover-underline:focus,
+a.hidden-link:hover, a.hidden-link:focus {
   text-decoration: underline;
+}
+
+a.normal-link {
+  text-decoration: underline;
+  
+  &:hover, &:focus {
+    text-decoration: none;
+  }
 }
 
 .MuiDrawer-root * {

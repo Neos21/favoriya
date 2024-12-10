@@ -13,6 +13,7 @@ import type { RootState } from '../../stores/store';
 
 import type { PostApi } from '../../../common/types/post';
 import type { Result } from '../../../common/types/result';
+
 type Props = {
   /** 投稿が完了した後に呼ばれる関数 */
   onAfterSubmit?: () => void;
@@ -104,7 +105,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
             </li>
             <li>marquee : direction・scrollamout</li>
             <li>blink … <span style={{ animation: 'blink-animation 1.5s step-start infinite' }}>Example</span></li>
-            <li><b>b</b>・<i>i</i>・<s>s</s>・<del>del</del>・<ins>ins</ins></li>
+            <li><b>b</b>・<i>i</i>・<u>u</u>・<s>s</s>・<del>del</del>・<ins>ins</ins></li>
             <li><em>em</em>・<strong>strong</strong>・<mark>mark</mark></li>
             <li><code>code</code>・<var>var</var>・<samp>samp</samp>・<kbd>kbd</kbd></li>
           </ul>

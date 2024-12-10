@@ -88,4 +88,16 @@ export class PostsService {
       return { error: '投稿の削除に失敗しました' };
     }
   }
+  
+  /** ユーザに紐付く投稿を全削除する */
+  public async removeAllByUserId(userId: string): Promise<Result<boolean>> {
+    try {
+      await this.postsRepository.delete({ userId });
+      return { result: true };
+    }
+    catch(error) {
+      this.logger.error('当該ユーザの全投稿の削除に失敗しました (DB エラー)', error);
+      return { error: '当該ユーザの全投稿の削除に失敗しました' };
+    }
+  }
 }

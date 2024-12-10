@@ -19,6 +19,7 @@ nohup.out
 storybook-static/
 
 # MinIO
+minio.bash
 minio
 mc
 oss/

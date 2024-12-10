@@ -7,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { isValidId, isValidName, isValidPassword } from '../../common/helpers/validators/validator-user';
 import { authUserConstants } from '../../shared/constants/auth-user';
 import { UserEntity } from '../../shared/entities/user.entity';
+import { AvatarService } from './avatar/avatar.service';
+import { PostsService } from './posts/posts.service';
 
 import type { Result } from '../../common/types/result';
 import type { User } from '../../common/types/user';
@@ -18,15 +20,19 @@ export class UsersService {
   
   private readonly logger: Logger = new Logger(UsersService.name);
   
-  constructor(@InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>) { }
+  constructor(
+    @InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>,
+    private readonly avatarService: AvatarService,
+    private readonly postsService: PostsService
+  ) { }
   
   /** ユーザ登録する */
   public async create(user: User): Promise<Result<boolean>> {
     // 入力チェックをする
     const validateResultId = isValidId(user.id);
-    if(validateResultId.error != null) return { error: validateResultId.error };
+    if(validateResultId.error != null) return validateResultId;
     const validateResultPassword = isValidPassword(user.password);
-    if(validateResultPassword.error != null) return { error: validateResultPassword.error };
+    if(validateResultPassword.error != null) return validateResultPassword;
     
     // パスワードをハッシュ化する
     const salt = await bcryptjs.genSalt(authUserConstants.saltRounds);
@@ -100,7 +106,7 @@ export class UsersService {
     // 入力チェックしながら値を格納していく
     if(user.name != null) {
       const validateResultName = isValidName(user.name);
-      if(validateResultName.error != null) return { error: validateResultName.error };
+      if(validateResultName.error != null) return validateResultName as Result<User>;
       updateUserEntity.name = user.name;
     }
     
@@ -122,7 +128,7 @@ export class UsersService {
   public async changePassword(id: string, currentPassword: string, newPassword: string): Promise<Result<boolean>> {
     // ユーザの存在チェック
     const userResult = await this.findOneByIdWithPasswordHash(id);
-    if(userResult.error != null) return { error: userResult.error };
+    if(userResult.error != null) return userResult as Result<boolean>;
     
     // 現在のパスワードの一致チェック
     const userEntity = userResult.result;
@@ -131,7 +137,7 @@ export class UsersService {
     
     // 新規パスワードの入力チェック
     const validateResultNewPassword = isValidPassword(newPassword);
-    if(validateResultNewPassword.error != null) return { error: validateResultNewPassword.error };
+    if(validateResultNewPassword.error != null) return validateResultNewPassword;
     
     // 現在のパスワードと新規パスワードが同じ場合はエラーにする
     if(currentPassword === newPassword) return { error: '同じパスワード文字列が入力されています' };
@@ -152,6 +158,33 @@ export class UsersService {
     }
     catch(error) {
       this.logger.error('ユーザパスワードの変更処理に失敗しました (DB エラー)', error);
+      throw error;
+    }
+  }
+  
+  /** ユーザアカウント (紐付く情報全て) を削除する */
+  public async remove(id: string): Promise<Result<boolean>> {
+    // ユーザの存在チェック・兼・現在のデータ取得
+    const userResult = await this.findOneById(id);
+    if(userResult.error != null) return userResult as Result<boolean>;
+    // アバター画像ファイルがあれば削除する
+    const removeAvadarResult = await this.avatarService.removeAvatar(id);
+    if(removeAvadarResult.error != null) return removeAvadarResult;
+    // ユーザに紐付く投稿を全て削除する
+    const removeAllPostsResult = await this.postsService.removeAllByUserId(id);
+    if(removeAllPostsResult.error != null) return removeAllPostsResult;
+    
+    // ユーザ情報を削除する
+    try {
+      const deleteResult = await this.usersRepository.delete({ id });
+      if(deleteResult.affected !== 1)  {
+        this.logger.error('ユーザの削除処理で0件 or 2件以上の削除が発生', deleteResult);
+        throw new Error('Invalid Affected');
+      }
+      return { result: true };
+    }
+    catch(error) {
+      this.logger.error('ユーザ情報の削除処理に失敗しました (DB エラー)', error);
       throw error;
     }
   }

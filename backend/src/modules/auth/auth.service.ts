@@ -21,7 +21,7 @@ export class AuthService {
   /** ログイン認証する */
   public async login(id: string, password: string): Promise<Result<User>> {
     const userResult = await this.usersService.findOneByIdWithPasswordHash(id);
-    if(userResult.error != null) return { error: userResult.error };
+    if(userResult.error != null) return userResult;
     
     const userEntity = userResult.result;
     const isValidPassword = await bcryptjs.compare(password, userEntity.passwordHash);
