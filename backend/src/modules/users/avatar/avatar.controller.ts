@@ -17,11 +17,11 @@ export class AvatarController {
   @UseGuards(JwtAuthGuard)
   @Post(':userId/avatar')
   @UseInterceptors(FileInterceptor('file'))
-  public async uploadAvatar(@Param('userId') userId: string, @UploadedFile() file: Express.Multer.File, @Req() request: Request, @Res() response: Response): Promise<Response<Result<string>>> {
+  public async save(@Param('userId') userId: string, @UploadedFile() file: Express.Multer.File, @Req() request: Request, @Res() response: Response): Promise<Response<Result<string>>> {
     if(!isValidJwtUserId(request, response, userId)) return;
     
-    const result = await this.avatarService.uploadAvatar(userId, file);
-    if(result.error != null) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(result);
+    const result = await this.avatarService.save(userId, file);
+    if(result.error != null) return response.status(result.code ?? HttpStatus.INTERNAL_SERVER_ERROR).json(result);
     
     return response.status(HttpStatus.OK).json(result);
   }
@@ -32,8 +32,8 @@ export class AvatarController {
   public async remove(@Param('userId') userId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<void>>> {
     if(!isValidJwtUserId(request, response, userId)) return;
     
-    const result = await this.avatarService.removeAvatar(userId);
-    if(result.error != null) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(result);
+    const result = await this.avatarService.remove(userId);
+    if(result.error != null) return response.status(result.code ?? HttpStatus.INTERNAL_SERVER_ERROR).json(result);
     
     return response.status(HttpStatus.NO_CONTENT).end();
   }

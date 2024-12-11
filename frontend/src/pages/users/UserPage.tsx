@@ -6,6 +6,7 @@ import { Alert, Divider, List, ListItem, ListItemText, Typography } from '@mui/m
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { PostsListComponent } from '../../shared/components/PostsListComponent/PostsListComponent';
+import { httpStatus } from '../../shared/constants/http-status';
 import { useApiGet } from '../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../shared/services/convert-date-to-jst';
 
@@ -34,7 +35,7 @@ export const UserPage: FC = () => {
       try {
         const response = await apiGet(`/users/${paramUserId}`);  // Throws
         const userApiResult: Result<UserApi> = await response.json();  // Throws
-        if(userApiResult.error != null) return setStatus(response.status === 404 ? 'not-found' : 'failed');
+        if(userApiResult.error != null) return setStatus(response.status === httpStatus.notFound ? 'not-found' : 'failed');
         
         setUser(snakeToCamelCaseObject(userApiResult.result));
       }
@@ -48,7 +49,7 @@ export const UserPage: FC = () => {
         const postsApiResult: Result<Array<PostApi>> = await response.json();  // Throws
         if(postsApiResult.error != null) return setStatus('failed');
         
-        setPosts(postsApiResult.result.map(postApi => snakeToCamelCaseObject(postApi)));
+        setPosts(postsApiResult.result.map(postApi => snakeToCamelCaseObject(postApi) as Post));
       }
       catch(error) {
         setStatus('failed');
@@ -84,7 +85,7 @@ export const UserPage: FC = () => {
       
       <Typography component="p" sx={{ mt: 3 }}>現在、ユーザの投稿は直近の50件を表示しています。</Typography>
       
-      <PostsListComponent posts={posts} />
+      <PostsListComponent propPosts={posts} />
     </>}
   </>;
 };

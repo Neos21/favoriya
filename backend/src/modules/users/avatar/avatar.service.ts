@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import sharp from 'sharp';
 import { Repository } from 'typeorm';
 
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { commonUserConstants } from '../../../common/constants/user-constants';
@@ -23,9 +23,9 @@ export class AvatarService {
   ) { }
   
   /** アバター画像をアップロードする */
-  public async uploadAvatar(userId: string, file: Express.Multer.File): Promise<Result<string>> {
-    if(file.size > commonUserConstants.avatarMaxFileSizeKb) return { error: 'ファイルサイズが 500KB を超えています' };
-    if(!file.mimetype.startsWith('image/')) return { error: '画像ファイルではありません' };
+  public async save(userId: string, file: Express.Multer.File): Promise<Result<string>> {
+    if(file.size > commonUserConstants.avatarMaxFileSizeKb) return { error: 'ファイルサイズが 500KB を超えています', code: HttpStatus.BAD_REQUEST };
+    if(!file.mimetype.startsWith('image/')) return { error: '画像ファイルではありません', code: HttpStatus.BAD_REQUEST };
     
     // リサイズする
     const resizedBuffer = await this.resizeImage(file.buffer);
@@ -35,25 +35,25 @@ export class AvatarService {
     // ファイル名を作成する
     const fileNameResult = this.createFileName(userId, file.originalname);
     // MinIO にアップロードする
-    const avatarUrlResult = await this.uploadToMinio(resizedBuffer, file.mimetype, fileNameResult.result);
+    const avatarUrlResult = await this.putObject(resizedBuffer, file.mimetype, fileNameResult.result);
     if(avatarUrlResult.error != null) return avatarUrlResult;
     // 変更前のユーザ情報を取得する
-    const beforeUserEntityResult = await this.findOneById(userId);
+    const beforeUserEntityResult = await this.findOneUserById(userId);
     if(beforeUserEntityResult.error != null) return beforeUserEntityResult as Result<string>;
     // 変更前のアバター画像ファイルを削除する
     const removeOldAvatarObjectResult = await this.removeObject(beforeUserEntityResult.result.avatarUrl);
     if(removeOldAvatarObjectResult.error != null) return removeOldAvatarObjectResult as Result<string>;
     // データベースを更新する
-    const updateResult = await this.updateUserAvatar(userId, avatarUrlResult.result);
+    const updateResult = await this.updateUserAvatarUrl(userId, avatarUrlResult.result);
     if(updateResult.error != null) return updateResult as Result<string>;
     // 更新したアバター画像のパスを返す
-    return { result: avatarUrlResult.result };
+    return avatarUrlResult;
   }
   
   /** アバター画像を削除する */
-  public async removeAvatar(userId: string): Promise<Result<boolean>> {
+  public async remove(userId: string): Promise<Result<boolean>> {
     // 変更前のユーザ情報を取得する
-    const beforeUserEntityResult = await this.findOneById(userId);
+    const beforeUserEntityResult = await this.findOneUserById(userId);
     if(beforeUserEntityResult.error != null) return beforeUserEntityResult as Result<boolean>;
     // アバター画像ファイルが存在しなければ成功として終了する
     if(isEmptyString(beforeUserEntityResult.result.avatarUrl)) return { result: true };
@@ -61,7 +61,7 @@ export class AvatarService {
     const removeOldAvatarObjectResult = await this.removeObject(beforeUserEntityResult.result.avatarUrl);
     if(removeOldAvatarObjectResult.error != null) return removeOldAvatarObjectResult;
     // データベースを更新する
-    const updateResult = await this.updateUserAvatar(userId, '');  // アバター画像パスをなしにする
+    const updateResult = await this.updateUserAvatarUrl(userId, '');  // アバター画像パスをなしにする
     if(updateResult.error != null) return updateResult;
     // 成功
     return { result: true };
@@ -85,21 +85,21 @@ export class AvatarService {
     }
     catch(error) {
       this.logger.error('バケットの確認・作成に失敗しました', error);
-      return { error: 'バケットの確認・作成に失敗しました' };
+      return { error: 'バケットの確認・作成に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
   /** ファイル名を組み立てる */
   private createFileName(userId: string, originalName: string): Result<string> {
     const extName = path.extname(originalName).toLowerCase();
-    if(isEmptyString(extName)) return { error: '拡張子が不正です' };
+    if(isEmptyString(extName)) return { error: '拡張子が不正です', code: HttpStatus.BAD_REQUEST };
     
     const fileName = `avatar/${userId}-${Date.now()}${extName}`;
     return { result: fileName };
   }
   
   /** MinIO にアップロードする */
-  private async uploadToMinio(buffer: Buffer, mimeType: string, fileName: string): Promise<Result<string>> {
+  private async putObject(buffer: Buffer, mimeType: string, fileName: string): Promise<Result<string>> {
     try {
       await this.nestMinioService.getMinio().putObject(commonUserConstants.bucketName, fileName, buffer, buffer.byteLength, {
         'Content-Type': mimeType
@@ -108,7 +108,7 @@ export class AvatarService {
     }
     catch(error) {
       this.logger.error('画像のアップロードに失敗しました', error);
-      return { error: '画像のアップロードに失敗しました' };
+      return { error: '画像のアップロードに失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -123,41 +123,38 @@ export class AvatarService {
     }
     catch(error) {
       this.logger.error('既存のアバター画像の削除処理に失敗しました', error);
-      return { error: '既存のアバター画像の削除処理に失敗しました' };
+      return { error: '既存のアバター画像の削除処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
   /** ユーザ情報を取得する */
-  private async findOneById(userId: string): Promise<Result<UserEntity>> {
+  private async findOneUserById(userId: string): Promise<Result<UserEntity>> {
     try {
       const user = await this.usersRepository.findOneBy({ id: userId });
-      if(user == null) return { error: '指定のユーザ ID のユーザは存在しません' };
+      if(user == null) return { error: '指定のユーザ ID のユーザは存在しません', code: HttpStatus.NOT_FOUND };
       user.passwordHash = null;
       return { result: user };
     }
     catch(error) {
       this.logger.error('ユーザ情報の取得処理に失敗しました (DB エラー)', error);
-      return { error: 'ユーザ情報の取得処理に失敗しました' };
+      return { error: 'ユーザ情報の取得処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
   /** ユーザ情報のアバター画像カラムを更新する */
-  private async updateUserAvatar(userId: string, newAvatarUrl: string): Promise<Result<boolean>> {
+  private async updateUserAvatarUrl(userId: string, newAvatarUrl: string): Promise<Result<boolean>> {
     try {
-      const updateUserEntity = new UserEntity({
-        avatarUrl: newAvatarUrl
-      });
-      
+      const updateUserEntity = new UserEntity({ avatarUrl: newAvatarUrl });
       const updateResult = await this.usersRepository.update(userId, updateUserEntity);
       if(updateResult.affected !== 1) {
         this.logger.error('ユーザ情報のアバター画像パス更新処理 (Patch) で0件 or 2件以上の更新が発生', updateResult);
-        throw new Error('Invalid Affected');
+        return { error: 'ユーザ情報のアバター画像パス更新処理で問題が発生しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
       return { result: true };
     }
     catch(error) {
       this.logger.error('アバター画像アップロードに伴うユーザ情報の更新に失敗しました', error);
-      return { error: 'アバター画像アップロードに伴うユーザ情報の更新に失敗しました' };
+      return { error: 'アバター画像アップロードに伴うユーザ情報の更新に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
 }

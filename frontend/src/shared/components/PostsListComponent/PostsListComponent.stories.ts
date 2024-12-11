@@ -12,6 +12,6 @@ type Story = StoryObj<typeof meta>;
 
 export const PostsList: Story = {
   args: {
-    posts: null
+    propPosts: null
   }
 };

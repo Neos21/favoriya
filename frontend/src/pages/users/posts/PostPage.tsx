@@ -7,6 +7,7 @@ import { Alert, Box, Button, Grid2, Modal, Typography } from '@mui/material';
 import { snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { LoadingSpinnerComponent } from '../../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { PostsListComponent } from '../../../shared/components/PostsListComponent/PostsListComponent';
+import { httpStatus } from '../../../shared/constants/http-status';
 import { modalStyle } from '../../../shared/constants/modal-style';
 import { useApiDelete, useApiGet } from '../../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../../shared/services/convert-date-to-jst';
@@ -56,9 +57,9 @@ export const PostPage: FC = () => {
       try {
         const response = await apiGet(`/users/${paramUserId}/posts/${paramPostId}`);  // Throws
         const postApiResult: Result<PostApi> = await response.json();  // Throws
-        if(postApiResult.error != null) return setStatus(response.status === 404 ? 'not-found' : 'failed');
+        if(postApiResult.error != null) return setStatus(response.status === httpStatus.notFound ? 'not-found' : 'failed');
         
-        setPost(snakeToCamelCaseObject(postApiResult.result));
+        setPost(snakeToCamelCaseObject(postApiResult.result) as Post);
       }
       catch(error) {
         setStatus('failed');
@@ -88,7 +89,7 @@ export const PostPage: FC = () => {
     {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>投稿の取得に失敗しました</Alert>}
     
     {status === 'succeeded' && <>
-      <PostsListComponent posts={[post]} />
+      <PostsListComponent propPosts={[post]} />
       
       {userState.id === post.userId &&
         <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>

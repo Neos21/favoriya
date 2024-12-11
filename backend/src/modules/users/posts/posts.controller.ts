@@ -20,9 +20,9 @@ export class PostsController {
   public async create(@Param('userId') userId: string, @Body() postApi: PostApi, @Req() request: Request, @Res() response: Response): Promise<Response<Result<null>>> {
     if(!isValidJwtUserId(request, response, userId)) return;
     
-    const post: TypePost = snakeToCamelCaseObject(postApi);
+    const post: TypePost = snakeToCamelCaseObject(postApi) as TypePost;
     const result = await this.postsService.create(post);
-    if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
+    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
     return response.status(HttpStatus.CREATED).end();
   }
@@ -32,7 +32,7 @@ export class PostsController {
   @Get(':userId/posts')
   public async findById(@Param('userId') userId: string, @Res() response: Response): Promise<Response<Result<Array<PostApi>>>> {
     const result = await this.postsService.findById(userId);
-    if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
+    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
     const posts: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity));
     return response.status(HttpStatus.OK).json({ result: posts });
@@ -43,10 +43,7 @@ export class PostsController {
   @Get(':userId/posts/:postId')
   public async findOneById(@Param('userId') userId: string, @Param('postId') postId: string, @Res() response: Response): Promise<Response<Result<Array<PostApi>>>> {
     const result = await this.postsService.findOneById(userId, postId);
-    if(result.error != null) {
-      if(result.error === this.postsService.postNotFoundErrorMessage) return response.status(HttpStatus.NOT_FOUND).json(result);
-      return response.status(HttpStatus.BAD_REQUEST).json(result);
-    }
+    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
     const post: PostApi = camelToSnakeCaseObject(result.result);
     return response.status(HttpStatus.OK).json({ result: post });
@@ -59,10 +56,7 @@ export class PostsController {
     if(!isValidJwtUserId(request, response, userId)) return;
     
     const result = await this.postsService.removeOneById(userId, postId);
-    if(result.error != null) {
-      if(result.error === this.postsService.postNotFoundErrorMessage) return response.status(HttpStatus.NOT_FOUND).json(result);
-      return response.status(HttpStatus.BAD_REQUEST).json(result);
-    }
+    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
     return response.status(HttpStatus.NO_CONTENT).end();
   }

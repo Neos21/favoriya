@@ -27,7 +27,7 @@ export const GlobalTimelinePage: FC = () => {
       const postsApi: Result<Array<PostApi>> = await response.json();  // Throws
       if(postsApi.error != null) return setStatus('failed');
       
-      const posts: Array<Post> = postsApi.result.map(postApi => snakeToCamelCaseObject(postApi));
+      const posts: Array<Post> = postsApi.result.map(postApi => snakeToCamelCaseObject(postApi) as Post);
       setPosts(posts);
       setStatus('succeeded');
     }
@@ -62,6 +62,6 @@ export const GlobalTimelinePage: FC = () => {
     
     {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>グローバルタイムラインの取得に失敗しました</Alert>}
     
-    {status === 'succeeded' && <PostsListComponent posts={posts} />}
+    {status === 'succeeded' && <PostsListComponent propPosts={posts} />}
   </>;
 };

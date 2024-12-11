@@ -19,8 +19,8 @@ export class AdminController {
   @Get('server-metrics')
   public async getServerMetrics(@Req() request: Request, @Res() response: Response): Promise<Response<Result<ServerMetricsApi>>> {
     if(!isValidJwtAdminRole(request, response)) return;
+    
     const result = await this.adminService.getServerMetrics();
-    if(result.error != null) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(result);
     return response.status(HttpStatus.OK).json({ result: snakeToCamelCaseObject(result.result) });
   }
 }

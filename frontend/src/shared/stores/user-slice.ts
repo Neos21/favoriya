@@ -6,7 +6,9 @@ export const initialUserState: User = {
   id   : '',
   name : '',
   role : '',
-  token: ''
+  token: '',
+  showOwnFavouritesCount   : false,
+  showOthersFavouritesCount: false
 };
 
 /** User State */

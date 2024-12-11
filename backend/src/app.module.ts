@@ -11,20 +11,23 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { configuration } from './core/configs/configuration';
 import { AccessLogMiddleware } from './core/middlewares/access-log.middleware';
+import { AdminController } from './modules/admin/admin.controller';
+import { AdminService } from './modules/admin/admin.service';
 import { AuthController } from './modules/auth/auth.controller';
 import { AuthService } from './modules/auth/auth.service';
 import { TimelineController } from './modules/timeline/timeline.controller';
 import { TimelineService } from './modules/timeline/timeline.service';
+import { AvatarController } from './modules/users/avatar/avatar.controller';
+import { AvatarService } from './modules/users/avatar/avatar.service';
+import { FavouritesController } from './modules/users/posts/favourites/favourites.controller';
+import { FavouritesService } from './modules/users/posts/favourites/favourites.service';
 import { PostsController } from './modules/users/posts/posts.controller';
 import { PostsService } from './modules/users/posts/posts.service';
 import { UsersController } from './modules/users/users.controller';
 import { UsersService } from './modules/users/users.service';
+import { FavouriteEntity } from './shared/entities/favourite.entity';
 import { PostEntity } from './shared/entities/post.entity';
 import { UserEntity } from './shared/entities/user.entity';
-import { AvatarService } from './modules/users/avatar/avatar.service';
-import { AvatarController } from './modules/users/avatar/avatar.controller';
-import { AdminController } from './modules/admin/admin.controller';
-import { AdminService } from './modules/admin/admin.service';
 
 /** App Module */
 @Module({
@@ -67,7 +70,8 @@ import { AdminService } from './modules/admin/admin.service';
     }),
     TypeOrmModule.forFeature([
       UserEntity,
-      PostEntity
+      PostEntity,
+      FavouriteEntity
     ]),
     // MinIO
     NestMinioModule.registerAsync({
@@ -86,18 +90,20 @@ import { AdminService } from './modules/admin/admin.service';
     AppController,
     AuthController,
     UsersController,
-    PostsController,
-    TimelineController,
     AvatarController,
+    PostsController,
+    FavouritesController,
+    TimelineController,
     AdminController
   ],
   providers: [
     AppService,
     AuthService,
     UsersService,
-    PostsService,
-    TimelineService,
     AvatarService,
+    PostsService,
+    FavouritesService,
+    TimelineService,
     AdminService
   ]
 })

@@ -1,6 +1,6 @@
 import * as bcryptjs from 'bcryptjs';
 
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from '../users/users.service';
@@ -25,7 +25,7 @@ export class AuthService {
     
     const userEntity = userResult.result;
     const isValidPassword = await bcryptjs.compare(password, userEntity.passwordHash);
-    if(!isValidPassword) return { error: 'パスワードに誤りがあります' };
+    if(!isValidPassword) return { error: 'パスワードに誤りがあります', code: HttpStatus.BAD_REQUEST };
     
     const jwtPayload = {  // `JwtAuthGuard` の設定によりコレが `request.user` に入る
       sub : userEntity.id,
@@ -39,7 +39,7 @@ export class AuthService {
     }
     catch(error) {
       this.logger.error('JWT 署名に失敗しました', error);
-      return { error: 'JWT 署名に失敗しました' };
+      return { error: 'JWT 署名に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
 }

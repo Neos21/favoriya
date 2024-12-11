@@ -1,7 +1,7 @@
 import * as bcryptjs from 'bcryptjs';
 import { QueryFailedError, Repository } from 'typeorm';
 
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { isValidId, isValidName, isValidPassword } from '../../common/helpers/validators/validator-user';
@@ -16,8 +16,6 @@ import type { User } from '../../common/types/user';
 /** Users Service */
 @Injectable()
 export class UsersService {
-  public readonly userNotFoundErrorMessage: string = '指定のユーザ ID のユーザは存在しません';
-  
   private readonly logger: Logger = new Logger(UsersService.name);
   
   constructor(
@@ -39,20 +37,15 @@ export class UsersService {
     const passwordHash = await bcryptjs.hash(user.password, salt);
     
     // DB 登録する
-    const newUserEntity = new UserEntity({
-      id: user.id,
-      passwordHash,
-      name: '未設定',
-      role: 'Normal'
-    });
+    const newUserEntity = new UserEntity({ id: user.id, passwordHash });
     try {
       await this.usersRepository.insert(newUserEntity);
       return { result: true };  // 成功
     }
     catch(error) {
-      if(error instanceof QueryFailedError && (error as unknown as { code: string }).code === '23505') return { error: 'そのユーザ ID は既に使用されています' };
+      if(error instanceof QueryFailedError && (error as unknown as { code: string }).code === '23505') return { error: 'そのユーザ ID は既に使用されています', code: HttpStatus.BAD_REQUEST };
       this.logger.error('ユーザ登録処理に失敗しました (DB エラー)', error);
-      throw error;  // その他のエラーは Internal Server Error とする
+      return { error: 'ユーザ登録処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -73,7 +66,7 @@ export class UsersService {
     }
     catch(error) {
       this.logger.error('ユーザ情報一覧の取得処理に失敗しました (DB エラー)', error);
-      return { error: 'ユーザ情報一覧の取得処理に失敗しました' };
+      return { error: 'ユーザ情報一覧の取得処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -90,12 +83,12 @@ export class UsersService {
   public async findOneByIdWithPasswordHash(id: string): Promise<Result<UserEntity>> {
     try {
       const user = await this.usersRepository.findOneBy({ id });
-      if(user == null) return { error: this.userNotFoundErrorMessage };
+      if(user == null) return { error: '指定のユーザ ID のユーザは存在しません', code: HttpStatus.NOT_FOUND };
       return { result: user };
     }
     catch(error) {
       this.logger.error('ユーザ情報の取得処理に失敗しました (DB エラー)', error);
-      return { error: 'ユーザ情報の取得処理に失敗しました' };
+      return { error: 'ユーザ情報の取得処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -113,14 +106,14 @@ export class UsersService {
     try {
       const updateResult = await this.usersRepository.update(id, updateUserEntity);
       if(updateResult.affected !== 1) {  // 1件だけ更新が成功していない場合
-        this.logger.error('ユーザ情報更新処理 (Patch) で0件 or 2件以上の更新が発生', updateResult);
-        throw new Error('Invalid Affected');
+        this.logger.error('ユーザ情報の更新処理 (Patch) で0件 or 2件以上の更新が発生', updateResult);
+        return { error: 'ユーザ情報の更新処理で問題が発生しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
       return await this.findOneById(id);
     }
     catch(error) {
-      this.logger.error('ユーザ情報更新処理 (Patch) に失敗しました (DB エラー)', error);
-      throw error;
+      this.logger.error('ユーザ情報の更新処理 (Patch) に失敗しました (DB エラー)', error);
+      return { error: 'ユーザ情報の更新処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -133,14 +126,14 @@ export class UsersService {
     // 現在のパスワードの一致チェック
     const userEntity = userResult.result;
     const isValidCurrentPassword = await bcryptjs.compare(currentPassword, userEntity.passwordHash);
-    if(!isValidCurrentPassword) return { error: '現在のパスワードが誤っています' };
+    if(!isValidCurrentPassword) return { error: '現在のパスワードが誤っています', code: HttpStatus.BAD_REQUEST };
     
     // 新規パスワードの入力チェック
     const validateResultNewPassword = isValidPassword(newPassword);
     if(validateResultNewPassword.error != null) return validateResultNewPassword;
     
     // 現在のパスワードと新規パスワードが同じ場合はエラーにする
-    if(currentPassword === newPassword) return { error: '同じパスワード文字列が入力されています' };
+    if(currentPassword === newPassword) return { error: '同じパスワード文字列が入力されています', code: HttpStatus.BAD_REQUEST };
     
     // 新規パスワードをハッシュ化する
     const salt = await bcryptjs.genSalt(authUserConstants.saltRounds);
@@ -151,14 +144,14 @@ export class UsersService {
     try {
       const updateResult = await this.usersRepository.update(id, updateUserEntity);
       if(updateResult.affected !== 1) {  // 1件だけ更新が成功していない場合
-        this.logger.error('ユーザパスワードの変更処理で0件 or 2件以上の更新が発生', updateResult);
-        throw new Error('Invalid Affected');
+        this.logger.error('ユーザパスワードの更新処理で0件 or 2件以上の更新が発生', updateResult);
+        return { error: 'ユーザパスワードの更新処理で問題が発生しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
       return { result: true };  // 成功
     }
     catch(error) {
-      this.logger.error('ユーザパスワードの変更処理に失敗しました (DB エラー)', error);
-      throw error;
+      this.logger.error('ユーザパスワードの更新処理に失敗しました (DB エラー)', error);
+      return { error: 'ユーザパスワードの更新処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -168,7 +161,7 @@ export class UsersService {
     const userResult = await this.findOneById(id);
     if(userResult.error != null) return userResult as Result<boolean>;
     // アバター画像ファイルがあれば削除する
-    const removeAvadarResult = await this.avatarService.removeAvatar(id);
+    const removeAvadarResult = await this.avatarService.remove(id);
     if(removeAvadarResult.error != null) return removeAvadarResult;
     // ユーザに紐付く投稿を全て削除する
     const removeAllPostsResult = await this.postsService.removeAllByUserId(id);
@@ -177,15 +170,15 @@ export class UsersService {
     // ユーザ情報を削除する
     try {
       const deleteResult = await this.usersRepository.delete({ id });
-      if(deleteResult.affected !== 1)  {
-        this.logger.error('ユーザの削除処理で0件 or 2件以上の削除が発生', deleteResult);
-        throw new Error('Invalid Affected');
+      if(deleteResult.affected !== 1) {
+        this.logger.error('ユーザ情報の削除処理で0件 or 2件以上の削除が発生', deleteResult);
+        return { error: 'ユーザ情報の削除処理で問題が発生しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
       return { result: true };
     }
     catch(error) {
       this.logger.error('ユーザ情報の削除処理に失敗しました (DB エラー)', error);
-      throw error;
+      return { error: 'ユーザ情報の削除処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
 }
