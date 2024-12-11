@@ -68,8 +68,6 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
     }
   };
   
-  console.log(posts);
-  
   return <List sx={{ mt: 3 }}>
     {posts.map(post => <Fragment key={post.id}>
       <ListItem alignItems="flex-start" sx={{ wordBreak: 'break-all', px: 0 }}>

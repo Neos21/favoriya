@@ -1,9 +1,9 @@
 import { ChangeEvent, FC, FormEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Alert, Box, Button, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material';
 
-import { snakeToCamelCaseObject } from '../../../../common/helpers/convert-case';
+import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../../common/helpers/convert-case';
 import { isValidName } from '../../../../common/helpers/validators/validator-user';
 import { userConstants } from '../../../../shared/constants/user-constants';
 import { useApiPatch } from '../../../../shared/hooks/use-api-fetch';
@@ -13,7 +13,11 @@ import type { UserApi } from '../../../../common/types/user';
 import type { Result } from '../../../../common/types/result';
 import type { RootState } from '../../../../shared/stores/store';
 
-type FormData = { name: string };
+type FormData = {
+  name: string,
+  showOwnFavouritesCount: boolean,
+  showOthersFavouritesCount: boolean
+};
 
 /** User Info Form Component */
 export const UserInfoFormComponent: FC = () => {
@@ -22,20 +26,32 @@ export const UserInfoFormComponent: FC = () => {
   
   const userState = useSelector((state: RootState) => state.user);
   
-  const [formData, setFormData] = useState<FormData>({ name: '' });
+  const [formData, setFormData] = useState<FormData>({
+    name                     : '',
+    showOwnFavouritesCount   : false,
+    showOthersFavouritesCount: false
+  });
   const [formErrors, setFormErrors] = useState<{ name?: string }>({});
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [succeededMessage, setSucceededMessage] = useState<string>(null);
   
   // 初回読み込み
   useEffect(() => {
-    setFormData({ name: userState.name });
+    setFormData({
+      name                     : userState.name,
+      showOwnFavouritesCount   : userState.showOwnFavouritesCount,
+      showOthersFavouritesCount: userState.showOthersFavouritesCount
+    });
   }, [setFormData, userState]);
   
   /** フォームの値保持 */
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onChangeText = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData(previousFormData => ({ ...previousFormData, [name]: value }));
+  };
+  const onChangeChecked = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setFormData(previousFormData => ({ ...previousFormData, [name]: checked }));
   };
   
   /** フォームの入力チェック */
@@ -53,17 +69,20 @@ export const UserInfoFormComponent: FC = () => {
     setErrorMessage(null);
     setSucceededMessage(null);
     
-    const name = formData.name;
-    if(!isValidForm(name)) return;
+    // 入力チェック
+    if(!isValidForm(formData.name)) return;
     
     try {
-      const id = userState.id;
-      const response = await apiPatch(`/users/${id}`, { name });  // Throws
+      const response = await apiPatch(`/users/${userState.id}`, camelToSnakeCaseObject(formData));  // Throws
       const updatedUserApi: Result<UserApi> = await response.json();  // Throws
       if(updatedUserApi.error != null) return setErrorMessage(updatedUserApi.error);
       
       const updatedUser = snakeToCamelCaseObject(updatedUserApi.result);
-      const user = Object.assign(Object.assign({}, userState), { name: updatedUser.name });
+      const user = Object.assign(Object.assign({}, userState), {
+        name                     : updatedUser.name,
+        showOwnFavouritesCount   : updatedUser.showOwnFavouritesCount,
+        showOthersFavouritesCount: updatedUser.showOthersFavouritesCount
+      });
       dispatch(setUser(user));
       localStorage.setItem(userConstants.localStorageKey, JSON.stringify(user));
       setSucceededMessage('ユーザ情報を更新しました');  // 成功時のメッセージを表示する
@@ -83,12 +102,14 @@ export const UserInfoFormComponent: FC = () => {
     
     <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
       <TextField
-        type="text" name="name" label="ユーザ名" value={formData.name} onChange={onChange}
+        type="text" name="name" label="ユーザ名" value={formData.name} onChange={onChangeText}
         required
         fullWidth margin="normal"
         error={formErrors.name != null}
         helperText={formErrors.name}
       />
+      <Typography component="div"><FormControlLabel control={<Checkbox name="showOwnFavouritesCount"    checked={formData.showOwnFavouritesCount   } onChange={onChangeChecked} />} label="自分の投稿のふぁぼられ数を表示する" /></Typography>
+      <Typography component="div"><FormControlLabel control={<Checkbox name="showOthersFavouritesCount" checked={formData.showOthersFavouritesCount} onChange={onChangeChecked} />} label="他人の投稿のふぁぼられ数を表示する" /></Typography>
       <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
         <Button type="submit" variant="contained">更新</Button>
       </Box>

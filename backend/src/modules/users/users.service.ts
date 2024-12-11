@@ -102,6 +102,8 @@ export class UsersService {
       if(validateResultName.error != null) return validateResultName as Result<User>;
       updateUserEntity.name = user.name;
     }
+    if(user.showOwnFavouritesCount != null) updateUserEntity.showOwnFavouritesCount = user.showOwnFavouritesCount;
+    if(user.showOthersFavouritesCount != null) updateUserEntity.showOthersFavouritesCount = user.showOthersFavouritesCount;
     
     try {
       const updateResult = await this.usersRepository.update(id, updateUserEntity);
