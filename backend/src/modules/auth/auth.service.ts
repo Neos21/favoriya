@@ -38,18 +38,7 @@ export class AuthService {
   }
   
   /** トークンをリフレッシュする */
-  public async refresh(token: string, id: string): Promise<Result<User>> {
-    let decodedPayload: { sub: string, role: string, iat: number, exp: number };
-    try {
-      decodedPayload = await this.jwtService.decode(token);
-    }
-    catch(error) {
-      this.logger.warn('トークンのデコードに失敗', error);
-      return { error: 'トークンのデコードに失敗', code: HttpStatus.UNAUTHORIZED };
-    }
-    
-    if(decodedPayload.sub !== id) return { error: 'トークンの sub とリクエスト ID が一致しませんでした', code: HttpStatus.UNAUTHORIZED };
-    
+  public async refresh(id: string): Promise<Result<User>> {
     const userEntityResult = await this.usersService.findOneByIdWithPasswordHash(id);
     if(userEntityResult.error != null) return userEntityResult;
     

@@ -39,7 +39,13 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
       await apiPost(`/users/${post.userId}/posts/${post.id}/favourites`, { user_id: userState.id });  // Throws
       // ふぁぼしたユーザ一覧に自分を追加する
       const favourites = post.favourites;
-      favourites.push({ userId: userState.id });
+      favourites.push({
+        userId: userState.id,
+        user: {
+          id: userState.id,
+          avatarUrl: userState.avatarUrl
+        }
+      });
       setPosts(previousPosts => previousPosts.map(previousPost => previousPost.id === post.id
         ? { ...previousPost, favouritesCount: post.favouritesCount + 1, favourites }
         : previousPost
@@ -90,11 +96,18 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
             <Typography component="div" sx={{ mt: 1, whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
               <FontParserComponent input={post.text} />
             </Typography>
-            <Typography component="div">
+            <Typography component="div" sx={{ mt: .25 }}>
               {// 自分自身の投稿の場合
                 post.userId === userState.id && <>
                   <IconButton sx={{ mr: .25 }} disabled size="small"><StarIcon fontSize="inherit" /></IconButton>
-                  {userState.showOwnFavouritesCount && <Typography component="span" sx={{ color: '#999', fontSize: '.86rem', verticalAlign: 'text-top' }}>{post.favouritesCount}</Typography>}
+                  {userState.showOwnFavouritesCount && <>
+                    <Typography component="span" sx={{ mr: 1, color: '#999', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
+                    {post.favourites.map(favourite =>
+                      <Link to={`/@${favourite.userId}`} key={favourite.userId}>
+                        <Avatar src={isEmptyString(favourite?.user?.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.user.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', ['& svg']: { width: '100%', marginTop: '3px' } }} />
+                      </Link>
+                    )}
+                  </>}
                 </>
               }
               {// 他人の投稿の場合
@@ -103,7 +116,14 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                   ? <IconButton sx={{ mr: .25, color: '#999' }} size="small" onClick={() => onAddFavourite(post)}><StarBorderIcon fontSize="inherit" /></IconButton>
                   : <IconButton sx={{ mr: .25 }} color="warning" size="small" onClick={() => onRemoveFavourite(post)}><StarIcon fontSize="inherit" /></IconButton>
                 }
-                {userState.showOthersFavouritesCount && <Typography component="span" sx={{ color: '#999', fontSize: '.86rem', verticalAlign: 'text-top' }}>{post.favouritesCount}</Typography>}
+                {userState.showOthersFavouritesCount && <>
+                  <Typography component="span" sx={{ mr: 1, color: '#999', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
+                  {post.favourites.map(favourite =>
+                    <Link to={`/@${favourite.userId}`} key={favourite.userId}>
+                      <Avatar src={isEmptyString(favourite?.user?.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.user.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', ['& svg']: { width: '100%', marginTop: '3px' } }} />
+                    </Link>
+                  )}
+                </>}
               </>
             }
             </Typography>

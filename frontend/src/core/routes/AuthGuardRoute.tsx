@@ -1,10 +1,11 @@
 import { FC, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
+import { httpStatus } from '../../shared/constants/http-status';
 import { userConstants } from '../../shared/constants/user-constants';
 import { setUser } from '../../shared/stores/user-slice';
 
@@ -15,6 +16,7 @@ import type { Result } from '../../common/types/result';
 /** 認証ガード */
 export const AuthGuardRoute: FC = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const userState = useSelector((state: RootState) => state.user);
@@ -23,16 +25,14 @@ export const AuthGuardRoute: FC = () => {
     // Store に情報が復元済
     if(!isEmptyString(userState.id)) {
       setIsLoggedIn(true);
-      setIsLoading(false);
-      return;
+      return setIsLoading(false);
     }
     
     // LocalStorage にユーザ情報が格納されていなければ未ログインとする
     const userStringified = localStorage.getItem(userConstants.localStorageKey);
     if(userStringified == null) {
       setIsLoggedIn(false);
-      setIsLoading(false);
-      return;
+      return setIsLoading(false);
     }
     
     // LocalStorage から情報を復元しログイン済とする・画面描画を開始する
@@ -46,14 +46,13 @@ export const AuthGuardRoute: FC = () => {
     catch(error) {
       console.error('LocalStorage からのユーザ情報パースに失敗', error);
       setIsLoggedIn(false);
-      setIsLoading(false);
-      return;
+      return setIsLoading(false);
     }
     
     // API コールして最新の情報を取得し直す
     (async () => {
       try {
-        const response = await fetch('/api/auth/refresh', {
+        const response = await fetch('/api/auth/refresh', {  // Throws
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -61,13 +60,9 @@ export const AuthGuardRoute: FC = () => {
           },
           body: JSON.stringify({ id: user.id })
         });
-        const refreshResult: Result<UserApi> = await response.json();
-        if(refreshResult.error != null) {
-          console.error('Refresh API でエラーが発生', refreshResult);
-          setIsLoggedIn(false);
-          setIsLoading(false);
-          return;
-        }
+        if(response.status !== httpStatus.ok) throw new Error(String(response.status));
+        const refreshResult: Result<UserApi> = await response.json();  // Throws
+        if(refreshResult.error != null) throw new Error(refreshResult.error);
         
         const refreshedUser: User = snakeToCamelCaseObject(refreshResult.result);
         dispatch(setUser(refreshedUser));  // Store に保存する
@@ -79,9 +74,10 @@ export const AuthGuardRoute: FC = () => {
         console.error('Refresh API のコールに失敗', error);
         setIsLoggedIn(false);
         setIsLoading(false);
+        navigate('/login');
       }
     })();
-  }, [dispatch, userState]);
+  }, [dispatch, navigate, userState]);
   
   // ロード中
   if(isLoading) return <LoadingSpinnerComponent />;

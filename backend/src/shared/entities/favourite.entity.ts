@@ -32,7 +32,7 @@ export class FavouriteEntity {
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })  // 本 `favourites.user_id` が `users.id` の Foreign Key であることを示す
   public user: UserEntity;
   
-  /** 投稿に対するふぁぼの数をまとめる・投稿削除時に本ふぁ情報も同時に削除される */
+  /** 投稿に対するふぁぼの数をまとめる・投稿削除時に本ふぁぼ情報も同時に削除される */
   @ManyToOne(() => PostEntity, postEntity => postEntity.favourites, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'favourited_post_id', referencedColumnName: 'id' })  // 本 `favourites.favourited_post_id` が `posts.id` の Foreign Key であることを示す
   public post: PostEntity;

@@ -39,6 +39,7 @@ export class PostsService {
         .createQueryBuilder('posts')
         .leftJoinAndSelect('posts.user', 'users')  // 投稿に対応する users を結合する
         .leftJoinAndSelect('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
+        .leftJoinAndMapOne('favourites.user', 'users', 'favourited_users', 'favourites.userId = favourited_users.id')  // ふぁぼられの users を結合する
         .select(selectColumns)  // 必要なカラムを選択する
         .where('posts.userId = :userId', { userId })  // 指定のユーザ ID
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
@@ -60,6 +61,7 @@ export class PostsService {
         .createQueryBuilder('posts')
         .leftJoinAndSelect('posts.user', 'users')  // 投稿に対応する users を結合する
         .leftJoinAndSelect('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
+        .leftJoinAndMapOne('favourites.user', 'users', 'favourited_users', 'favourites.userId = favourited_users.id')  // ふぁぼられの users を結合する
         .select(selectColumns)  // 必要なカラムを選択する
         .where('posts.userId = :userId AND posts.id = :postId', { userId, postId })  // 指定のユーザ ID・投稿 ID
         .getOne();

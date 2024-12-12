@@ -1,6 +1,7 @@
-import { Body, Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../common/helpers/convert-case';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
 
 import type { Result } from '../../common/types/result';
@@ -26,22 +27,15 @@ export class AuthController {
   }
   
   /** トークンをリフレッシュする */
+  @UseGuards(JwtAuthGuard)
   @Post('refresh')
   public async refresh(@Body('id') id: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<UserApi>>> {
-    const token = this.extractTokenFromHeader(request);
-    if(token == null) return response.status(HttpStatus.UNAUTHORIZED).json({ error: 'トークンが受信できませんでした' });
-    const refreshResult = await this.authService.refresh(token, id);
+    const refreshResult = await this.authService.refresh(id);
     if(refreshResult.error != null) return response.status(refreshResult.code ?? HttpStatus.UNAUTHORIZED).json(refreshResult);
     
     await this.authService.saveLoginHistory(request, id);
     
     const result: UserApi = camelToSnakeCaseObject(refreshResult.result);
     return response.status(HttpStatus.OK).json({ result });
-  }
-  
-  /** リクエストヘッダから Bearer トークンを取得する */
-  private extractTokenFromHeader(request: Request): string | null {
-    const [type, token] = (request.headers as unknown as { authorization: string }).authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : null;
   }
 }
