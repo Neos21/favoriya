@@ -91,7 +91,7 @@ export const SignupPage: FC = () => {
     
     <Divider sx={{ mt: 4 }} />
     <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
-      <Button component={Link} to="/" variant="contained">ホームに戻る</Button>
+      <Button component={Link} to="/login" variant="contained">ログインページに戻る</Button>
     </Box>
     
     <Modal open={isModalOpen}>

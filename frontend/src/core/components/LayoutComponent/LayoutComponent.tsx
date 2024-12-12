@@ -57,7 +57,7 @@ export const LayoutComponent: FC = () => {
             }
             
             <Grid2 display="flex" justifyContent="center" alignItems="center" size="grow">
-              <IconButton size="large" color="inherit" component={Link} to="/" className={ location.pathname === '/' ? 'app-bar-icon-active' : 'app-bar-icon' }>
+              <IconButton size="large" color="inherit" component={Link} to="/global-timeline" className={ location.pathname === '/global-timeline' ? 'app-bar-icon-active' : 'app-bar-icon' }>
                 <HomeIcon />
               </IconButton>
             </Grid2>

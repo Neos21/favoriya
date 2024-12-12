@@ -10,6 +10,7 @@ import { useApiGet } from '../../shared/hooks/use-api-fetch';
 
 import type { Post, PostApi } from '../../common/types/post';
 import type { Result } from '../../common/types/result';
+
 /** Global Timeline Page */
 export const GlobalTimelinePage: FC = () => {
   const apiGet = useApiGet();
@@ -49,7 +50,7 @@ export const GlobalTimelinePage: FC = () => {
     
     <PostFormComponent onAfterSubmit={onReload} />
     
-    <Typography component="p" sx={{ mt: 3 }}>現在、グローバルタイムラインは直近の50件を表示しています。</Typography>
+    <Typography component="p" sx={{ mt: 3 }}>現在、グローバルタイムラインは直近の100件を表示しています。</Typography>
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     

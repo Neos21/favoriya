@@ -19,6 +19,8 @@ import { TimelineController } from './modules/timeline/timeline.controller';
 import { TimelineService } from './modules/timeline/timeline.service';
 import { AvatarController } from './modules/users/avatar/avatar.controller';
 import { AvatarService } from './modules/users/avatar/avatar.service';
+import { LoginHistoriesController } from './modules/users/login-histories/login-histories.controller';
+import { LoginHistoriesService } from './modules/users/login-histories/login-histories.service';
 import { FavouritesController } from './modules/users/posts/favourites/favourites.controller';
 import { FavouritesService } from './modules/users/posts/favourites/favourites.service';
 import { PostsController } from './modules/users/posts/posts.controller';
@@ -26,6 +28,7 @@ import { PostsService } from './modules/users/posts/posts.service';
 import { UsersController } from './modules/users/users.controller';
 import { UsersService } from './modules/users/users.service';
 import { FavouriteEntity } from './shared/entities/favourite.entity';
+import { LoginHistoryEntity } from './shared/entities/login-history.entity';
 import { PostEntity } from './shared/entities/post.entity';
 import { UserEntity } from './shared/entities/user.entity';
 
@@ -71,7 +74,8 @@ import { UserEntity } from './shared/entities/user.entity';
     TypeOrmModule.forFeature([
       UserEntity,
       PostEntity,
-      FavouriteEntity
+      FavouriteEntity,
+      LoginHistoryEntity
     ]),
     // MinIO
     NestMinioModule.registerAsync({
@@ -91,6 +95,7 @@ import { UserEntity } from './shared/entities/user.entity';
     AuthController,
     UsersController,
     AvatarController,
+    LoginHistoriesController,
     PostsController,
     FavouritesController,
     TimelineController,
@@ -101,6 +106,7 @@ import { UserEntity } from './shared/entities/user.entity';
     AuthService,
     UsersService,
     AvatarService,
+    LoginHistoriesService,
     PostsService,
     FavouritesService,
     TimelineService,

@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 
 import type { Result } from '../../common/types/result';
 import type { UserApi } from '../../common/types/user';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 
 /** Auth Controller */
 @Controller('api/auth')
@@ -14,10 +14,12 @@ export class AuthController {
   
   /** ログイン認証する */
   @Post('login')
-  public async login(@Body() userInfoApi: UserApi, @Res() response: Response): Promise<Response<Result<UserApi>>> {
+  public async login(@Body() userInfoApi: UserApi, @Req() request: Request, @Res() response: Response): Promise<Response<Result<UserApi>>> {
     const { id, password } = snakeToCamelCaseObject(userInfoApi);
     const loginResult = await this.authService.login(id, password);
     if(loginResult.error != null) return response.status(HttpStatus.UNAUTHORIZED).json(loginResult);
+    
+    await this.authService.saveLoginHistory(request, id);
     
     const result: UserApi = camelToSnakeCaseObject(loginResult.result);
     return response.status(HttpStatus.OK).json({ result });
@@ -30,6 +32,8 @@ export class AuthController {
     if(token == null) return response.status(HttpStatus.UNAUTHORIZED).json({ error: 'トークンが受信できませんでした' });
     const refreshResult = await this.authService.refresh(token, id);
     if(refreshResult.error != null) return response.status(refreshResult.code ?? HttpStatus.UNAUTHORIZED).json(refreshResult);
+    
+    await this.authService.saveLoginHistory(request, id);
     
     const result: UserApi = camelToSnakeCaseObject(refreshResult.result);
     return response.status(HttpStatus.OK).json({ result });

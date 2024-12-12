@@ -59,7 +59,7 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
   // ログイン済
   return <List>
     <ListItem disablePadding>
-      <ListItemButton component={Link} to="/" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/'}>
+      <ListItemButton component={Link} to="/global-timeline" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/global-timeline'}>
         <ListItemIcon><HomeIcon /></ListItemIcon>
         <ListItemText primary="ホーム" />
       </ListItemButton>
@@ -80,7 +80,7 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
     </ListItem>
     
     <ListItem disablePadding>
-      <ListItemButton component={Link} to="/settings" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/settings'}>
+      <ListItemButton component={Link} to="/settings" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname.startsWith('/settings')}>
         <ListItemIcon><SettingsIcon /></ListItemIcon>
         <ListItemText primary="設定" />
       </ListItemButton>

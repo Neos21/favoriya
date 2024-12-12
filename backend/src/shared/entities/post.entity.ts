@@ -6,7 +6,7 @@ import { UserEntity } from './user.entity';
 /** 投稿 */
 @Entity('posts')
 export class PostEntity {
-  @PrimaryColumn({ type: 'bigint', unique: true })
+  @PrimaryColumn({ name: 'id', type: 'bigint', unique: true })
   public id: string;  // bigint に対応する型として string を使用する
   
   @Column({ name: 'user_id' })

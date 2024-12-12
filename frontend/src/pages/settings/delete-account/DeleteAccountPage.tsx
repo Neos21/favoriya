@@ -1,13 +1,14 @@
 import { FC, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { Alert, Box, Button, Divider, Typography } from '@mui/material';
 
 import { userConstants } from '../../../shared/constants/user-constants';
 import { useApiDelete } from '../../../shared/hooks/use-api-fetch';
-import { RootState } from '../../../shared/stores/store';
 import { initialUserState, setUser } from '../../../shared/stores/user-slice';
+
+import type { RootState } from '../../../shared/stores/store';
 
 /** Delete Account Page */
 export const DeleteAccountPage: FC = () => {
@@ -30,7 +31,7 @@ export const DeleteAccountPage: FC = () => {
       // Store・LocalStorage を削除する
       dispatch(setUser(Object.assign({}, initialUserState)));
       localStorage.removeItem(userConstants.localStorageKey);
-      navigate('/');
+      navigate('/login');
     }
     catch(error) {
       setErrorMessage('アカウントの削除処理に失敗しました。もう一度やり直してください');
@@ -41,6 +42,12 @@ export const DeleteAccountPage: FC = () => {
   
   return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>アカウントを削除する</Typography>
+    
+    <Typography component="p" sx={{ mt: 3 }}>
+      <Button component={Link} to="/settings" variant="contained">戻る</Button>
+    </Typography>
+    
+    <Divider sx={{ mt: 4 }} />
     
     <Typography component="div" sx={{ mt: 3 }}>
       <ul>
@@ -59,7 +66,7 @@ export const DeleteAccountPage: FC = () => {
       </ul>
     </Typography>
     
-    <Typography component="p" sx={{ mt: 3 }}><strong>確認ダイアログなどは出ませんので、よく確認のうえ「アカウントを削除する」ボタンを押してください。</strong></Typography>
+    <Typography component="p" sx={{ mt: 3, color: '#f00' }}><strong>確認ダイアログなどは出ませんので、よく確認のうえ「アカウントを削除する」ボタンを押してください。</strong></Typography>
     
     <Divider sx={{ mt: 4 }} />
     

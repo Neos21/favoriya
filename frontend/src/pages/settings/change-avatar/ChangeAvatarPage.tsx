@@ -1,5 +1,6 @@
 import { ChangeEvent, FC, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import styled from '@emotion/styled';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -9,9 +10,9 @@ import { commonUserConstants } from '../../../common/constants/user-constants';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { userConstants } from '../../../shared/constants/user-constants';
 import { useApiDelete } from '../../../shared/hooks/use-api-fetch';
-import { RootState } from '../../../shared/stores/store';
 import { setUser } from '../../../shared/stores/user-slice';
 
+import type { RootState } from '../../../shared/stores/store';
 import type { Result } from '../../../common/types/result';
 
 const VisuallyHiddenInput = styled('input')({
@@ -79,7 +80,7 @@ export const ChangeAvatarPage: FC = () => {
       setSucceededMessage('アバター画像が変更できました');
     }
     catch(error) {
-      setErrorMessage('画像アップロード中にエラーが発生');
+      setErrorMessage('画像アップロード中にエラーが発生しました。もう一度やり直してください');
       console.error('画像アップロード中にエラーが発生', error);
     }
     finally {
@@ -102,7 +103,7 @@ export const ChangeAvatarPage: FC = () => {
     setSucceededMessage(null);
     try {
       const response = await apiDelete(`/users/${userState.id}/avatar`);
-      if(!response.ok) return setErrorMessage('画像ファイルの削除に失敗');
+      if(!response.ok) return setErrorMessage('画像ファイルの削除に失敗しました。もう一度やり直してください');
       
       // Store・LocalStorage を更新する
       const newUserState = Object.assign({}, userState);
@@ -115,13 +116,19 @@ export const ChangeAvatarPage: FC = () => {
       setPreviewUrl(null);
     }
     catch(error) {
-      setErrorMessage('画像ファイルの削除処理に失敗');
+      setErrorMessage('画像ファイルの削除処理に失敗しました。もう一度やり直してください');
       console.error('画像ファイルの削除処理に失敗', error);
     }
   };
   
   return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>アバター変更</Typography>
+    
+    <Typography component="p" sx={{ mt: 3 }}>
+      <Button component={Link} to="/settings" variant="contained">戻る</Button>
+    </Typography>
+    
+    <Divider sx={{ mt: 4 }} />
     
     <Avatar
       src={previewUrl ?? (isEmptyString(userState.avatarUrl) ? '' : `${userConstants.ossUrl}${userState.avatarUrl}`)}

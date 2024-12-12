@@ -11,8 +11,8 @@ import { FontParserComponent } from '../../components/FontParserComponent/FontPa
 import { userConstants } from '../../constants/user-constants';
 import { useApiDelete, useApiPost } from '../../hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../services/convert-date-to-jst';
-import { RootState } from '../../stores/store';
 
+import type { RootState } from '../../stores/store';
 import type { Post } from '../../../common/types/post';
 
 type Props = {
@@ -94,16 +94,16 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               {// 自分自身の投稿の場合
                 post.userId === userState.id && <>
                   <IconButton sx={{ mr: .25 }} disabled size="small"><StarIcon fontSize="inherit" /></IconButton>
-                  {userState.showOwnFavouritesCount && <Typography component="span" sx={{ verticalAlign: 'bottom' }}>{post.favouritesCount}</Typography>}
+                  {userState.showOwnFavouritesCount && <Typography component="span" sx={{ color: '#999', fontSize: '.86rem', verticalAlign: 'text-top' }}>{post.favouritesCount}</Typography>}
                 </>
               }
               {// 他人の投稿の場合
                 post.userId !== userState.id && <>
                 {post.favourites.find(favourite => favourite.userId === userState.id) == null
-                  ? <IconButton sx={{ mr: .25 }} size="small" onClick={() => onAddFavourite(post)}><StarBorderIcon fontSize="inherit" /></IconButton>
+                  ? <IconButton sx={{ mr: .25, color: '#999' }} size="small" onClick={() => onAddFavourite(post)}><StarBorderIcon fontSize="inherit" /></IconButton>
                   : <IconButton sx={{ mr: .25 }} color="warning" size="small" onClick={() => onRemoveFavourite(post)}><StarIcon fontSize="inherit" /></IconButton>
                 }
-                {userState.showOthersFavouritesCount && <Typography component="span" sx={{ verticalAlign: 'bottom' }}>{post.favouritesCount}</Typography>}
+                {userState.showOthersFavouritesCount && <Typography component="span" sx={{ color: '#999', fontSize: '.86rem', verticalAlign: 'text-top' }}>{post.favouritesCount}</Typography>}
               </>
             }
             </Typography>

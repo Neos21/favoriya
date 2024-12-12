@@ -24,7 +24,7 @@ export class TimelineService {
         .leftJoinAndSelect('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
         .select(selectColumns)  // 必要なカラムを選択する
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
-        .limit(50)  // 上限50件
+        .limit(100)  // 上限100件
         .getMany();
       return { result: posts };
     }

@@ -11,8 +11,8 @@ import { httpStatus } from '../../../shared/constants/http-status';
 import { modalStyle } from '../../../shared/constants/modal-style';
 import { useApiDelete, useApiGet } from '../../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../../shared/services/convert-date-to-jst';
-import { RootState } from '../../../shared/stores/store';
 
+import type { RootState } from '../../../shared/stores/store';
 import type { Post, PostApi } from '../../../common/types/post';
 import type { Result } from '../../../common/types/result';
 
