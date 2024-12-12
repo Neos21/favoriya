@@ -34,7 +34,7 @@ export const UsersPage: FC = () => {
       }
       catch(error) {
         setStatus('failed');
-        return console.error('ユーザ情報一覧の取得に失敗しました', error);
+        return console.error('ユーザ情報一覧の取得に失敗', error);
       }
     })();
   }, [apiGet]);
@@ -44,7 +44,7 @@ export const UsersPage: FC = () => {
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     
-    {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>ユーザ情報一覧の取得に失敗しました</Alert>}
+    {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>ユーザ情報一覧の取得に失敗</Alert>}
     
     {status === 'succeeded' && users.length === 0 && <Typography component="p" sx={{ mt: 3 }}>ユーザは登録されていません</Typography>}
     

@@ -42,7 +42,7 @@ export const LoginPage: FC = () => {
     }
     catch(error) {
       setErrorMessage('ログイン処理に失敗しました。もう一度やり直してください');
-      console.warn('ログイン処理に失敗しました', error);
+      console.warn('ログイン処理に失敗', error);
     }
   };
   

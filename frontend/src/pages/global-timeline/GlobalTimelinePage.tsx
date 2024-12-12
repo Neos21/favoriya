@@ -10,7 +10,6 @@ import { useApiGet } from '../../shared/hooks/use-api-fetch';
 
 import type { Post, PostApi } from '../../common/types/post';
 import type { Result } from '../../common/types/result';
-
 /** Global Timeline Page */
 export const GlobalTimelinePage: FC = () => {
   const apiGet = useApiGet();
@@ -33,7 +32,7 @@ export const GlobalTimelinePage: FC = () => {
     }
     catch(error) {
       setStatus('failed');
-      console.error('グローバルタイムラインの取得に失敗しました', error);
+      console.error('グローバルタイムラインの取得に失敗', error);
     }
   }, [apiGet]);
   
@@ -60,7 +59,7 @@ export const GlobalTimelinePage: FC = () => {
       </Typography>
     }
     
-    {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>グローバルタイムラインの取得に失敗しました</Alert>}
+    {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>グローバルタイムラインの取得に失敗</Alert>}
     
     {status === 'succeeded' && <PostsListComponent propPosts={posts} />}
   </>;

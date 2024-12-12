@@ -63,7 +63,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
     }
     catch(error) {
       setErrorMessage('投稿処理に失敗しました。もう一度やり直してください');
-      console.error('投稿処理に失敗しました', error);
+      console.error('投稿処理に失敗', error);
     }
   };
   

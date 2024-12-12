@@ -1,12 +1,14 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 
 import type { Request } from 'express';
 
 /** JWT Auth Guard */
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
+  private readonly logger: Logger = new Logger(JwtAuthGuard.name);
+  
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService
@@ -29,7 +31,14 @@ export class JwtAuthGuard implements CanActivate {
       );
       request.user = payload;  // リクエストオブジェクトのこの名前に Payload が入るようにする
     }
-    catch(_error) {
+    catch(error) {
+      if(error instanceof TokenExpiredError) {
+        this.logger.warn('トークン有効期限切れ', error);
+      }
+      else {
+        this.logger.warn('トークン認証不正', error);
+      }
+      this.decodeToken(token);
       throw new UnauthorizedException();  // JWT 認証不正
     }
     return true;
@@ -39,5 +48,16 @@ export class JwtAuthGuard implements CanActivate {
   private extractTokenFromHeader(request: Request): string | null {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : null;
+  }
+  
+  /** トークンの内容をログ出力する */
+  private async decodeToken(token: string): Promise<void> {
+    try {
+      const decodedPayload = await this.jwtService.decode(token);
+      this.logger.log('トークンデコード結果', decodedPayload);
+    }
+    catch(error) {
+      this.logger.warn('トークンデコード失敗', error);
+    }
   }
 }

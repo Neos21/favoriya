@@ -53,7 +53,7 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
     onClickItem();
     dispatch(setUser(Object.assign({}, initialUserState)));
     localStorage.removeItem(userConstants.localStorageKey);
-    navigate('/');
+    navigate('/login');
   };
   
   // ログイン済

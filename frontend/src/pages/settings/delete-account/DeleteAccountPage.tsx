@@ -25,7 +25,7 @@ export const DeleteAccountPage: FC = () => {
     setIsDeleting(true);
     try {
       const response = await apiDelete(`/users/${userState.id}`);
-      if(!response.ok) return setErrorMessage('アカウントの削除処理に失敗しました');
+      if(!response.ok) return setErrorMessage('アカウントの削除処理に失敗');
       
       // Store・LocalStorage を削除する
       dispatch(setUser(Object.assign({}, initialUserState)));
@@ -35,7 +35,7 @@ export const DeleteAccountPage: FC = () => {
     catch(error) {
       setErrorMessage('アカウントの削除処理に失敗しました。もう一度やり直してください');
       setIsDeleting(false);
-      console.error('アカウントの削除処理に失敗しました', error);
+      console.error('アカウントの削除処理に失敗', error);
     }
   };
   

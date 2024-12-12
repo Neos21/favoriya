@@ -41,7 +41,7 @@ export const UserPage: FC = () => {
       }
       catch(error) {
         setStatus('failed');
-        return console.error('ユーザ情報の取得に失敗しました', error);
+        return console.error('ユーザ情報の取得に失敗', error);
       }
       
       try {
@@ -53,7 +53,7 @@ export const UserPage: FC = () => {
       }
       catch(error) {
         setStatus('failed');
-        return console.error('該当ユーザの投稿の取得に失敗しました', error);
+        return console.error('該当ユーザの投稿の取得に失敗', error);
       }
       
       setStatus('succeeded');
@@ -70,7 +70,7 @@ export const UserPage: FC = () => {
     
     {status === 'not-found' && <Alert severity="error" sx={{ mt: 3 }}>指定のユーザ ID のユーザは存在しません</Alert>}
     
-    {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>ユーザ情報の取得に失敗しました</Alert>}
+    {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>ユーザ情報の取得に失敗</Alert>}
     
     {status === 'succeeded' && <>
       <List sx={{ mt: 3, borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>

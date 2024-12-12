@@ -39,8 +39,8 @@ export const UserInfoFormComponent: FC = () => {
   useEffect(() => {
     setFormData({
       name                     : userState.name,
-      showOwnFavouritesCount   : userState.showOwnFavouritesCount,
-      showOthersFavouritesCount: userState.showOthersFavouritesCount
+      showOwnFavouritesCount   : userState.showOwnFavouritesCount    ?? false,
+      showOthersFavouritesCount: userState.showOthersFavouritesCount ?? false
     });
   }, [setFormData, userState]);
   
@@ -89,7 +89,7 @@ export const UserInfoFormComponent: FC = () => {
     }
     catch(error) {
       setErrorMessage('ユーザ情報更新処理に失敗しました。もう一度やり直してください');
-      console.error('ユーザ情報更新処理に失敗しました', error);
+      console.error('ユーザ情報更新処理に失敗', error);
     }
   };
   

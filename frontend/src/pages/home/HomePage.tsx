@@ -4,11 +4,7 @@ import { Navigate } from 'react-router-dom';
 
 import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
-import { userConstants } from '../../shared/constants/user-constants';
-import { setUser } from '../../shared/stores/user-slice';
-import { GlobalTimelinePage } from '../global-timeline/GlobalTimelinePage';
 
-import type { User } from '../../common/types/user';
 import type { RootState } from '../../shared/stores/store';
 
 /** Home Page : Auth Check */
@@ -20,20 +16,8 @@ export const HomePage: FC = () => {
   
   // 1回だけ実行するため必要
   useEffect(() => {
-    // Store に情報が復元済
-    if(!isEmptyString(userState.id)) {
-      setIsLoggedIn(true);
-      setIsLoading(false);
-      return;
-    }
-    
-    // LocalStorage にユーザ情報が格納されていればログイン済とする
-    const userStringified = localStorage.getItem(userConstants.localStorageKey);
-    if(userStringified != null) {
-      const user: User = JSON.parse(userStringified);
-      dispatch(setUser(user));
-    }
-    setIsLoggedIn(userStringified != null);
+    // Store に情報が復元済ならログイン済とする
+    setIsLoggedIn(!isEmptyString(userState.id));
     setIsLoading(false);
   }, [dispatch, userState]);
   
@@ -43,6 +27,6 @@ export const HomePage: FC = () => {
   // ログインできていなかったらログイン画面に遷移する
   if(!isLoggedIn) return <Navigate to="/login" />;
   
-  // ログインできていたらグローバルタイムラインを表示する
-  return <GlobalTimelinePage />;
+  // ログインできていたらグローバルタイムライン画面に遷移する
+  return <Navigate to="/global-timeline" />;
 };

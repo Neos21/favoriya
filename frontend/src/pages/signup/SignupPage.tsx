@@ -56,7 +56,7 @@ export const SignupPage: FC = () => {
     }
     catch(error) {
       setErrorMessage('ユーザ登録処理に失敗しました。もう一度やり直してください');
-      console.error('ユーザ登録処理に失敗しました', error);
+      console.error('ユーザ登録処理に失敗', error);
     }
   };
   

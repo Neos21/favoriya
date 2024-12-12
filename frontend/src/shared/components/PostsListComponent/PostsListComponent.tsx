@@ -46,7 +46,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
       ));
     }
     catch(error) {
-      console.error('ふぁぼ付け処理中にエラーが発生しました', error);
+      console.error('ふぁぼ付け処理中にエラーが発生', error);
     }
   };
   
@@ -64,7 +64,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
       ));
     }
     catch(error) {
-      console.error('ふぁぼ付け処理中にエラーが発生しました', error);
+      console.error('ふぁぼ外し処理中にエラーが発生', error);
     }
   };
   

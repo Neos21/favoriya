@@ -23,7 +23,7 @@ export const AdminPage: FC = () => {
     }
     catch(error) {
       setServerMetrics(null);
-      console.error('サーバメトリクス情報の取得に失敗しました', error);
+      console.error('サーバメトリクス情報の取得に失敗', error);
     }
   }, [apiGet]);
   

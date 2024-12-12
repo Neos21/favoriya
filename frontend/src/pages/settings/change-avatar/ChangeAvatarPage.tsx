@@ -79,8 +79,8 @@ export const ChangeAvatarPage: FC = () => {
       setSucceededMessage('アバター画像が変更できました');
     }
     catch(error) {
-      setErrorMessage('画像アップロード中にエラーが発生しました');
-      console.error('画像アップロード中にエラーが発生しました', error);
+      setErrorMessage('画像アップロード中にエラーが発生');
+      console.error('画像アップロード中にエラーが発生', error);
     }
     finally {
       setIsUploading(false);
@@ -102,7 +102,7 @@ export const ChangeAvatarPage: FC = () => {
     setSucceededMessage(null);
     try {
       const response = await apiDelete(`/users/${userState.id}/avatar`);
-      if(!response.ok) return setErrorMessage('画像ファイルの削除に失敗しました');
+      if(!response.ok) return setErrorMessage('画像ファイルの削除に失敗');
       
       // Store・LocalStorage を更新する
       const newUserState = Object.assign({}, userState);
@@ -115,8 +115,8 @@ export const ChangeAvatarPage: FC = () => {
       setPreviewUrl(null);
     }
     catch(error) {
-      setErrorMessage('画像ファイルの削除処理に失敗しました');
-      console.error('画像ファイルの削除処理に失敗しました', error);
+      setErrorMessage('画像ファイルの削除処理に失敗');
+      console.error('画像ファイルの削除処理に失敗', error);
     }
   };
   

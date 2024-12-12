@@ -61,7 +61,7 @@ export const ChangePasswordFormComponent: FC = () => {
     }
     catch(error) {
       setErrorMessage('パスワードの変更処理に失敗しました。もう一度やり直してください');
-      console.error('パスワードの変更処理に失敗しました', error);
+      console.error('パスワードの変更処理に失敗', error);
     }
   };
   

@@ -29,8 +29,8 @@ export class TimelineService {
       return { result: posts };
     }
     catch(error) {
-      this.logger.error('グローバルタイムラインの取得に失敗しました (DB エラー)', error);
-      return { error: 'グローバルタイムラインの取得に失敗しました' };
+      this.logger.error('グローバルタイムラインの取得に失敗 (DB エラー)', error);
+      return { error: 'グローバルタイムラインの取得に失敗' };
     }
   }
 }

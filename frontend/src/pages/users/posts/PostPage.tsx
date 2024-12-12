@@ -42,7 +42,7 @@ export const PostPage: FC = () => {
       await apiDelete(`/users/${paramUserId}/posts/${paramPostId}`);
     }
     catch(error) {
-      console.error('投稿の削除処理に失敗しました', error);
+      console.error('投稿の削除処理に失敗', error);
     }
     finally {
       navigate(`/@${paramUserId}`);  // ユーザページに遷移する
@@ -63,7 +63,7 @@ export const PostPage: FC = () => {
       }
       catch(error) {
         setStatus('failed');
-        return console.error('投稿の取得に失敗しました', error);
+        return console.error('投稿の取得に失敗', error);
       }
       
       setStatus('succeeded');
@@ -86,7 +86,7 @@ export const PostPage: FC = () => {
     
     {status === 'not-found' && <Alert severity="error" sx={{ mt: 3 }}>指定の投稿は存在しません</Alert>}
     
-    {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>投稿の取得に失敗しました</Alert>}
+    {status === 'failed' && <Alert severity="error" sx={{ mt: 3 }}>投稿の取得に失敗</Alert>}
     
     {status === 'succeeded' && <>
       <PostsListComponent propPosts={[post]} />

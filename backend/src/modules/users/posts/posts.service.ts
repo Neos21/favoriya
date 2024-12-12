@@ -27,8 +27,8 @@ export class PostsService {
       return { result: true };
     }
     catch(error) {
-      this.logger.error('投稿処理に失敗しました (DB エラー)', error);
-      return { error: '投稿処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('投稿処理に失敗 (DB エラー)', error);
+      return { error: '投稿処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -47,8 +47,8 @@ export class PostsService {
       return { result: posts };
     }
     catch(error) {
-      this.logger.error('投稿一覧の取得に失敗しました (DB エラー)', error);
-      return { error: '投稿一覧の取得に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('投稿一覧の取得に失敗 (DB エラー)', error);
+      return { error: '投稿一覧の取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -66,8 +66,8 @@ export class PostsService {
       return { result: post };
     }
     catch(error) {
-      this.logger.error('投稿の取得に失敗しました (DB エラー)', error);
-      return { error: '投稿の取得に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('投稿の取得に失敗 (DB エラー)', error);
+      return { error: '投稿の取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -78,13 +78,13 @@ export class PostsService {
       if(deleteResult.affected === 0) return { error: '削除対象の投稿は存在しませんでした', code: HttpStatus.NOT_FOUND };
       if(deleteResult.affected !== 1) {
         this.logger.error('投稿の削除処理で2件以上の削除が発生', deleteResult);
-        return { error: '投稿の削除処理で問題が発生しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+        return { error: '投稿の削除処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
       return { result: true };
     }
     catch(error) {
-      this.logger.error('投稿の削除に失敗しました (DB エラー)', error);
-      return { error: '投稿の削除に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('投稿の削除に失敗 (DB エラー)', error);
+      return { error: '投稿の削除に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -95,8 +95,8 @@ export class PostsService {
       return { result: true };
     }
     catch(error) {
-      this.logger.error('当該ユーザの全投稿の削除に失敗しました (DB エラー)', error);
-      return { error: '当該ユーザの全投稿の削除に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('当該ユーザの全投稿の削除に失敗 (DB エラー)', error);
+      return { error: '当該ユーザの全投稿の削除に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
 }

@@ -44,8 +44,8 @@ export class UsersService {
     }
     catch(error) {
       if(error instanceof QueryFailedError && (error as unknown as { code: string }).code === '23505') return { error: 'そのユーザ ID は既に使用されています', code: HttpStatus.BAD_REQUEST };
-      this.logger.error('ユーザ登録処理に失敗しました (DB エラー)', error);
-      return { error: 'ユーザ登録処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('ユーザ登録処理に失敗 (DB エラー)', error);
+      return { error: 'ユーザ登録処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -65,8 +65,8 @@ export class UsersService {
       return { result: users };
     }
     catch(error) {
-      this.logger.error('ユーザ情報一覧の取得処理に失敗しました (DB エラー)', error);
-      return { error: 'ユーザ情報一覧の取得処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('ユーザ情報一覧の取得処理に失敗 (DB エラー)', error);
+      return { error: 'ユーザ情報一覧の取得処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -87,8 +87,8 @@ export class UsersService {
       return { result: user };
     }
     catch(error) {
-      this.logger.error('ユーザ情報の取得処理に失敗しました (DB エラー)', error);
-      return { error: 'ユーザ情報の取得処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('ユーザ情報の取得処理に失敗 (DB エラー)', error);
+      return { error: 'ユーザ情報の取得処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -109,13 +109,13 @@ export class UsersService {
       const updateResult = await this.usersRepository.update(id, updateUserEntity);
       if(updateResult.affected !== 1) {  // 1件だけ更新が成功していない場合
         this.logger.error('ユーザ情報の更新処理 (Patch) で0件 or 2件以上の更新が発生', updateResult);
-        return { error: 'ユーザ情報の更新処理で問題が発生しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+        return { error: 'ユーザ情報の更新処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
       return await this.findOneById(id);
     }
     catch(error) {
-      this.logger.error('ユーザ情報の更新処理 (Patch) に失敗しました (DB エラー)', error);
-      return { error: 'ユーザ情報の更新処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('ユーザ情報の更新処理 (Patch) に失敗 (DB エラー)', error);
+      return { error: 'ユーザ情報の更新処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -147,13 +147,13 @@ export class UsersService {
       const updateResult = await this.usersRepository.update(id, updateUserEntity);
       if(updateResult.affected !== 1) {  // 1件だけ更新が成功していない場合
         this.logger.error('ユーザパスワードの更新処理で0件 or 2件以上の更新が発生', updateResult);
-        return { error: 'ユーザパスワードの更新処理で問題が発生しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+        return { error: 'ユーザパスワードの更新処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
       return { result: true };  // 成功
     }
     catch(error) {
-      this.logger.error('ユーザパスワードの更新処理に失敗しました (DB エラー)', error);
-      return { error: 'ユーザパスワードの更新処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('ユーザパスワードの更新処理に失敗 (DB エラー)', error);
+      return { error: 'ユーザパスワードの更新処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -174,13 +174,13 @@ export class UsersService {
       const deleteResult = await this.usersRepository.delete({ id });
       if(deleteResult.affected !== 1) {
         this.logger.error('ユーザ情報の削除処理で0件 or 2件以上の削除が発生', deleteResult);
-        return { error: 'ユーザ情報の削除処理で問題が発生しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+        return { error: 'ユーザ情報の削除処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
       return { result: true };
     }
     catch(error) {
-      this.logger.error('ユーザ情報の削除処理に失敗しました (DB エラー)', error);
-      return { error: 'ユーザ情報の削除処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('ユーザ情報の削除処理に失敗 (DB エラー)', error);
+      return { error: 'ユーザ情報の削除処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
 }

@@ -84,8 +84,8 @@ export class AvatarService {
       return { result: true };
     }
     catch(error) {
-      this.logger.error('バケットの確認・作成に失敗しました', error);
-      return { error: 'バケットの確認・作成に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('バケットの確認・作成に失敗', error);
+      return { error: 'バケットの確認・作成に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -107,8 +107,8 @@ export class AvatarService {
       return { result: `/${commonUserConstants.bucketName}/${fileName}` };
     }
     catch(error) {
-      this.logger.error('画像のアップロードに失敗しました', error);
-      return { error: '画像のアップロードに失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('画像のアップロードに失敗', error);
+      return { error: '画像のアップロードに失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -122,8 +122,8 @@ export class AvatarService {
       return { result: true };
     }
     catch(error) {
-      this.logger.error('既存のアバター画像の削除処理に失敗しました', error);
-      return { error: '既存のアバター画像の削除処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('既存のアバター画像の削除処理に失敗', error);
+      return { error: '既存のアバター画像の削除処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -136,8 +136,8 @@ export class AvatarService {
       return { result: user };
     }
     catch(error) {
-      this.logger.error('ユーザ情報の取得処理に失敗しました (DB エラー)', error);
-      return { error: 'ユーザ情報の取得処理に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('ユーザ情報の取得処理に失敗 (DB エラー)', error);
+      return { error: 'ユーザ情報の取得処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
@@ -148,13 +148,13 @@ export class AvatarService {
       const updateResult = await this.usersRepository.update(userId, updateUserEntity);
       if(updateResult.affected !== 1) {
         this.logger.error('ユーザ情報のアバター画像パス更新処理 (Patch) で0件 or 2件以上の更新が発生', updateResult);
-        return { error: 'ユーザ情報のアバター画像パス更新処理で問題が発生しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+        return { error: 'ユーザ情報のアバター画像パス更新処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
       return { result: true };
     }
     catch(error) {
-      this.logger.error('アバター画像アップロードに伴うユーザ情報の更新に失敗しました', error);
-      return { error: 'アバター画像アップロードに伴うユーザ情報の更新に失敗しました', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('アバター画像アップロードに伴うユーザ情報の更新に失敗', error);
+      return { error: 'アバター画像アップロードに伴うユーザ情報の更新に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
 }
