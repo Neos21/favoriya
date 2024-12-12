@@ -41,7 +41,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
       const favourites = post.favourites;
       favourites.push({
         userId: userState.id,
-        user: {
+        favouritedByUser: {
           id: userState.id,
           avatarUrl: userState.avatarUrl
         }

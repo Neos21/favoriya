@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { selectColumns } from '../../../shared/constants/find-posts';
 import { PostEntity } from '../../../shared/entities/post.entity';
 
 import type { Post } from '../../../common/types/post';
