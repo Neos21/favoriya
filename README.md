@@ -1,6 +1,8 @@
-# Favoriya
+# [Favoriya](https://pseudo.neos21.net)
 
 **[Enter The WebSite](https://pseudo.neos21.net)**
+
+[More Info (GitHub Wiki)](https://github.com/Neos21/pseudo/wiki)
 
 
 ## ローカル実行手順

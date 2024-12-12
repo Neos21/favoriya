@@ -1,6 +1,7 @@
 import { Controller, Delete, HttpStatus, Param, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
+import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { isValidJwtUserId } from '../../../shared/helpers/is-valid-jwt-user-id';
 import { AvatarService } from './avatar.service';

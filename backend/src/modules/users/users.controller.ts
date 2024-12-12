@@ -29,7 +29,7 @@ export class UsersController {
   @Get('')
   public async findAll(@Res() response: Response): Promise<Response<Result<Array<UserApi>>>> {
     const result = await this.usersService.findAll();
-    const usersApi = result.result.map(userApi => snakeToCamelCaseObject(userApi));
+    const usersApi = result.result.map(userApi => camelToSnakeCaseObject(userApi));
     return response.status(HttpStatus.OK).json({ result: usersApi });
   }
   
@@ -40,7 +40,7 @@ export class UsersController {
     const result = await this.usersService.findOneById(id);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
-    const userApi = snakeToCamelCaseObject(result.result);
+    const userApi = camelToSnakeCaseObject(result.result);
     return response.status(HttpStatus.OK).json({ result: userApi });
   }
   

@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Logger, Post, Res } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { AuthService } from './auth.service';

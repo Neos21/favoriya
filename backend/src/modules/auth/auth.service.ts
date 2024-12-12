@@ -32,8 +32,11 @@ export class AuthService {
       role: userEntity.role
     };
     try {
-      // レスポンスの元となるデータ
+      // レスポンスの元となるデータ (LocalStorage に格納されるため余計なデータは消しておく)
       const user: User = { ...userEntity };
+      delete user.passwordHash;
+      delete user.createdAt;
+      delete user.updatedAt;
       user.token = await this.jwtService.signAsync(jwtPayload);  // Throws
       return { result: user };
     }
