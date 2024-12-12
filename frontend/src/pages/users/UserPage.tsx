@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
-import { Alert, Divider, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { Alert, Button, Divider, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
@@ -16,12 +16,17 @@ import type { User, UserApi } from '../../common/types/user';
 
 /** User Page */
 export const UserPage: FC = () => {
+  const offsetAmount = 50;  // 50件ずつ読み込む
+  
   const { userId: rawParamUserId } = useParams<{ userId: string }>();
   
   const apiGet = useApiGet();
   
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'not-found' | 'failed'>('loading');
   const [user, setUser] = useState<User>(null);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [isNextLoading, setIsNextLoading] = useState<boolean>(false);
+  const [offset, setOffset] = useState<number>(0);
   const [posts, setPosts] = useState<Array<Post>>([]);
   
   // 念のため `@` を除去するテイで作っておく
@@ -45,23 +50,45 @@ export const UserPage: FC = () => {
       }
       
       try {
-        const response = await apiGet(`/users/${paramUserId}/posts`);  // Throws
+        const response = await apiGet(`/users/${paramUserId}/posts`, `?offset=0&limit=${offsetAmount}`);  // Throws
         const postsApiResult: Result<Array<PostApi>> = await response.json();  // Throws
         if(postsApiResult.error != null) return setStatus('failed');
         
         setPosts(postsApiResult.result.map(postApi => snakeToCamelCaseObject(postApi) as Post));
+        setHasMore(postsApiResult.result.length >= offsetAmount);
+        setOffset(postsApiResult.result.length);
+        setStatus('succeeded');
       }
       catch(error) {
         setStatus('failed');
         return console.error('該当ユーザの投稿の取得に失敗', error);
       }
-      
-      setStatus('succeeded');
     })();
   }, [apiGet, paramUserId, rawParamUserId]);
   
   // 先頭に `@` が付いていなかった場合は `@` 付きでリダイレクトさせる
   if(!rawParamUserId.startsWith('@')) return <Navigate to={`/@${rawParamUserId}`} />;
+  
+  /** 続きを読み込む */
+  const onFetchNextPosts = async () => {
+    setIsNextLoading(true);
+    try {
+      const response = await apiGet(`/users/${paramUserId}/posts`, `?offset=${offset}&limit=${offsetAmount}`);  // Throws
+      const postsApi: Result<Array<PostApi>> = await response.json();  // Throws
+      if(postsApi.error != null) return console.error('ユーザ投稿の続きの読み込みに失敗', postsApi);
+      
+      const fetchedPosts: Array<Post> = postsApi.result.map(postApi => snakeToCamelCaseObject(postApi) as Post);
+      setPosts(previousPosts => [...previousPosts, ...fetchedPosts]);
+      setHasMore(fetchedPosts.length >= offsetAmount);  // オフセット値以下の件数しか取れなかったら続きがないとみなす
+      setOffset(previousOffset => previousOffset + fetchedPosts.length);  // 取得した投稿数を足す
+    }
+    catch(error) {
+      console.error('ユーザ投稿の続きの読み込み処理に失敗', error);
+    }
+    finally {
+      setIsNextLoading(false);
+    }
+  };
   
   return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>@{paramUserId}</Typography>
@@ -83,9 +110,14 @@ export const UserPage: FC = () => {
         <ListItem><ListItemText primary="登録日" secondary={epochTimeMsToJstString(user.createdAt as string, 'YYYY-MM-DD')} /></ListItem>
       </List>
       
-      <Typography component="p" sx={{ mt: 3 }}>現在、ユーザの投稿は直近の50件を表示しています。</Typography>
-      
       <PostsListComponent propPosts={posts} />
+      
+      <Typography component="p" sx={{ mt: 3, textAlign: 'right' }}>
+        {hasMore
+          ? <Button variant="contained" onClick={onFetchNextPosts} disabled={isNextLoading}>続きを読む</Button>
+          : <Button variant="contained" disabled>フィードの終わり</Button>
+        }
+      </Typography>
     </>}
   </>;
 };

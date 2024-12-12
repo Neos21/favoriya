@@ -33,7 +33,7 @@ export class PostsService {
   }
   
   /** 投稿一覧を取得する */
-  public async findById(userId: string): Promise<Result<Array<PostEntity>>> {
+  public async findById(userId: string, offset: number = 0, limit: number = 50): Promise<Result<Array<PostEntity>>> {
     try {
       const posts = await this.postsRepository
         .createQueryBuilder('posts')
@@ -42,7 +42,8 @@ export class PostsService {
         .select(selectColumns)  // 必要なカラムを選択する
         .where('posts.userId = :userId', { userId })  // 指定のユーザ ID
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
-        .limit(50)  // 上限50件
+        .skip(offset)
+        .take(limit)
         .getMany();
       return { result: posts };
     }

@@ -16,7 +16,7 @@ export class TimelineService {
   constructor(@InjectRepository(PostEntity) private readonly postsRepository: Repository<PostEntity>) { }
   
   /** グローバルタイムラインを取得する */
-  public async getGlobalTimeline(): Promise<Result<Array<PostEntity>>> {
+  public async getGlobalTimeline(offset: number = 0, limit: number = 100): Promise<Result<Array<PostEntity>>> {
     try {
       const posts = await this.postsRepository
         .createQueryBuilder('posts')
@@ -24,7 +24,8 @@ export class TimelineService {
         .leftJoinAndSelect('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
         .select(selectColumns)  // 必要なカラムを選択する
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
-        .limit(100)  // 上限100件
+        .skip(offset)
+        .take(limit)
         .getMany();
       return { result: posts };
     }

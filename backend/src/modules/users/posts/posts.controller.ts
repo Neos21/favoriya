@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
@@ -30,8 +30,8 @@ export class PostsController {
   /** 投稿一覧を取得する */
   @UseGuards(JwtAuthGuard)
   @Get(':userId/posts')
-  public async findById(@Param('userId') userId: string, @Res() response: Response): Promise<Response<Result<Array<PostApi>>>> {
-    const result = await this.postsService.findById(userId);
+  public async findById(@Param('userId') userId: string, @Query('offset', ParseIntPipe) offset: number = 0, @Query('limit', ParseIntPipe) limit: number = 50, @Res() response: Response): Promise<Response<Result<Array<PostApi>>>> {
+    const result = await this.postsService.findById(userId, offset, limit);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
     const posts: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity));

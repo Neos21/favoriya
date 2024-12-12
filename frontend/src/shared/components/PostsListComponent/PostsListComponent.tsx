@@ -40,9 +40,9 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
       // ふぁぼしたユーザ一覧に自分を追加する
       const favourites = post.favourites;
       favourites.push({ userId: userState.id });
-      setPosts(prevPosts => prevPosts.map(prevPost => prevPost.id === post.id
-        ? { ...prevPost, favouritesCount: post.favouritesCount + 1, favourites }
-        : prevPost
+      setPosts(previousPosts => previousPosts.map(previousPost => previousPost.id === post.id
+        ? { ...previousPost, favouritesCount: post.favouritesCount + 1, favourites }
+        : previousPost
       ));
     }
     catch(error) {
@@ -58,9 +58,9 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
       const favourites = post.favourites;
       const favouritesIndex = favourites.findIndex(favourite => favourite.userId === userState.id);
       favourites.splice(favouritesIndex, 1);
-      setPosts(prevPosts => prevPosts.map(prevPost => prevPost.id === post.id
-        ? { ...prevPost, favouritesCount: post.favouritesCount - 1, favourites }
-        : prevPost
+      setPosts(previousPosts => previousPosts.map(previousPost => previousPost.id === post.id
+        ? { ...previousPost, favouritesCount: post.favouritesCount - 1, favourites }
+        : previousPost
       ));
     }
     catch(error) {
