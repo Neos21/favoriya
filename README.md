@@ -4,6 +4,8 @@
 
 [More Info (GitHub Wiki)](https://github.com/Neos21/pseudo/wiki)
 
+[![Lines of Code](https://img.shields.io/endpoint?color=blue&url=https://ghloc.vercel.app/api/neos21/pseudo/badge)](https://ghloc.vercel.app/Neos21/pseudo)
+
 
 ## ローカル実行手順
 
