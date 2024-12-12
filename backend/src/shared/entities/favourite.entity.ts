@@ -27,10 +27,14 @@ export class FavouriteEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   public readonly updatedAt: Date;
   
-  /** ユーザが対象の投稿に対してふぁぼを行ったことを示す・ユーザ削除時に本ふぁぼ情報も同時に削除される */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.favourites, { onDelete: 'CASCADE' })
+  /** ふぁぼられたユーザ */
+  @ManyToOne(() => UserEntity, userEntity => userEntity.id)
+  public favouritedToUser: UserEntity;
+  
+  /** ふぁぼったユーザ : ユーザが対象の投稿に対してふぁぼを行ったことを示す・ユーザ削除時に本ふぁぼ情報も同時に削除される */
+  @ManyToOne(() => UserEntity, userEntity => userEntity.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })  // 本 `favourites.user_id` が `users.id` の Foreign Key であることを示す
-  public user: UserEntity;
+  public favouritedByUser: UserEntity;
   
   /** 投稿に対するふぁぼの数をまとめる・投稿削除時に本ふぁぼ情報も同時に削除される */
   @ManyToOne(() => PostEntity, postEntity => postEntity.favourites, { onDelete: 'CASCADE' })

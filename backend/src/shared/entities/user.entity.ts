@@ -39,9 +39,5 @@ export class UserEntity {
   @OneToMany(() => PostEntity, postEntity => postEntity.user, { createForeignKeyConstraints: false })
   public posts: Array<PostEntity>;
   
-  /** このユーザがふぁぼった内容との関係を示す */
-  @OneToMany(() => FavouriteEntity, favouriteEntity => favouriteEntity.user, { createForeignKeyConstraints: false })
-  public favourites: Array<FavouriteEntity>;
-  
   constructor(partial: Partial<UserEntity>) { Object.assign(this, partial); }
 }

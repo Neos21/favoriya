@@ -9,7 +9,7 @@ export type Favourite = {
   favouritedPostId?: string;
   userId?: string;
   
-  user?: User;
+  favouritedByUser?: User;
 };
 
 export type FavouriteApi = CamelToSnakeCaseObject<Favourite>;

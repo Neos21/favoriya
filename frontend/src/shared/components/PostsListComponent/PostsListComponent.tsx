@@ -104,7 +104,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                     <Typography component="span" sx={{ mr: 1, color: '#999', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
                     {post.favourites.map(favourite =>
                       <Link to={`/@${favourite.userId}`} key={favourite.userId}>
-                        <Avatar src={isEmptyString(favourite?.user?.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.user.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', ['& svg']: { width: '100%', marginTop: '3px' } }} />
+                        <Avatar src={isEmptyString(favourite?.favouritedByUser?.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
                       </Link>
                     )}
                   </>}
@@ -120,7 +120,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                   <Typography component="span" sx={{ mr: 1, color: '#999', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
                   {post.favourites.map(favourite =>
                     <Link to={`/@${favourite.userId}`} key={favourite.userId}>
-                      <Avatar src={isEmptyString(favourite?.user?.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.user.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', ['& svg']: { width: '100%', marginTop: '3px' } }} />
+                      <Avatar src={isEmptyString(favourite?.favouritedByUser?.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
                     </Link>
                   )}
                 </>}

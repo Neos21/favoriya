@@ -37,10 +37,15 @@ export class PostsService {
     try {
       const posts = await this.postsRepository
         .createQueryBuilder('posts')
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.favouritesCount', 'posts.createdAt'])  // 投稿内容
         .leftJoinAndSelect('posts.user', 'users')  // 投稿に対応する users を結合する
+        .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
         .leftJoinAndSelect('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
-        .leftJoinAndMapOne('favourites.user', 'users', 'favourited_users', 'favourites.userId = favourited_users.id')  // ふぁぼられの users を結合する
-        .select(selectColumns)  // 必要なカラムを選択する
+        .addSelect(['favourites.id'])
+        .leftJoinAndSelect('favourites.favouritedToUser', 'favourited_to_users')  // ふぁぼられたユーザ情報
+        .addSelect(['favourited_to_users.id', 'favourited_to_users.avatarUrl'])
+        .leftJoinAndSelect('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
+        .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
         .where('posts.userId = :userId', { userId })  // 指定のユーザ ID
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
         .skip(offset)
@@ -59,10 +64,15 @@ export class PostsService {
     try {
       const post = await this.postsRepository
         .createQueryBuilder('posts')
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.favouritesCount', 'posts.createdAt'])  // 投稿内容
         .leftJoinAndSelect('posts.user', 'users')  // 投稿に対応する users を結合する
+        .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
         .leftJoinAndSelect('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
-        .leftJoinAndMapOne('favourites.user', 'users', 'favourited_users', 'favourites.userId = favourited_users.id')  // ふぁぼられの users を結合する
-        .select(selectColumns)  // 必要なカラムを選択する
+        .addSelect(['favourites.id'])
+        .leftJoinAndSelect('favourites.favouritedToUser', 'favourited_to_users')  // ふぁぼられたユーザ情報
+        .addSelect(['favourited_to_users.id', 'favourited_to_users.avatarUrl'])
+        .leftJoinAndSelect('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
+        .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
         .where('posts.userId = :userId AND posts.id = :postId', { userId, postId })  // 指定のユーザ ID・投稿 ID
         .getOne();
       if(post == null) return { error: '指定の投稿は存在しません', code: HttpStatus.NOT_FOUND };
