@@ -26,7 +26,7 @@ export class PostsService {
       return { result: true };
     }
     catch(error) {
-      this.logger.error('投稿処理に失敗 (DB エラー)', error);
+      this.logger.error('投稿処理に失敗', error);
       return { error: '投稿処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
@@ -37,13 +37,11 @@ export class PostsService {
       const posts = await this.postsRepository
         .createQueryBuilder('posts')
         .select(['posts.id', 'posts.userId', 'posts.text', 'posts.favouritesCount', 'posts.createdAt'])  // 投稿内容
-        .leftJoinAndSelect('posts.user', 'users')  // 投稿に対応する users を結合する
+        .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
         .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
-        .leftJoinAndSelect('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
+        .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
         .addSelect(['favourites.id'])
-        .leftJoinAndSelect('favourites.favouritedToUser', 'favourited_to_users')  // ふぁぼられたユーザ情報
-        .addSelect(['favourited_to_users.id', 'favourited_to_users.avatarUrl'])
-        .leftJoinAndSelect('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
+        .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
         .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
         .where('posts.userId = :userId', { userId })  // 指定のユーザ ID
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
@@ -53,7 +51,7 @@ export class PostsService {
       return { result: posts };
     }
     catch(error) {
-      this.logger.error('投稿一覧の取得に失敗 (DB エラー)', error);
+      this.logger.error('投稿一覧の取得に失敗', error);
       return { error: '投稿一覧の取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
@@ -64,13 +62,11 @@ export class PostsService {
       const post = await this.postsRepository
         .createQueryBuilder('posts')
         .select(['posts.id', 'posts.userId', 'posts.text', 'posts.favouritesCount', 'posts.createdAt'])  // 投稿内容
-        .leftJoinAndSelect('posts.user', 'users')  // 投稿に対応する users を結合する
+        .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
         .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
-        .leftJoinAndSelect('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
+        .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
         .addSelect(['favourites.id'])
-        .leftJoinAndSelect('favourites.favouritedToUser', 'favourited_to_users')  // ふぁぼられたユーザ情報
-        .addSelect(['favourited_to_users.id', 'favourited_to_users.avatarUrl'])
-        .leftJoinAndSelect('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
+        .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
         .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
         .where('posts.userId = :userId AND posts.id = :postId', { userId, postId })  // 指定のユーザ ID・投稿 ID
         .getOne();
@@ -78,7 +74,7 @@ export class PostsService {
       return { result: post };
     }
     catch(error) {
-      this.logger.error('投稿の取得に失敗 (DB エラー)', error);
+      this.logger.error('投稿の取得に失敗', error);
       return { error: '投稿の取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
@@ -95,7 +91,7 @@ export class PostsService {
       return { result: true };
     }
     catch(error) {
-      this.logger.error('投稿の削除に失敗 (DB エラー)', error);
+      this.logger.error('投稿の削除に失敗', error);
       return { error: '投稿の削除に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
@@ -107,7 +103,7 @@ export class PostsService {
       return { result: true };
     }
     catch(error) {
-      this.logger.error('当該ユーザの全投稿の削除に失敗 (DB エラー)', error);
+      this.logger.error('当該ユーザの全投稿の削除に失敗', error);
       return { error: '当該ユーザの全投稿の削除に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }

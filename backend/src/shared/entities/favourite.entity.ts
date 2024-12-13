@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { PostEntity } from './post.entity';
 import { UserEntity } from './user.entity';
@@ -22,14 +22,10 @@ export class FavouriteEntity {
   public userId: string;
   
   @CreateDateColumn({ name: 'created_at' })
-  public createdAt: Date;
+  public readonly createdAt: Date;
   
   @UpdateDateColumn({ name: 'updated_at' })
   public readonly updatedAt: Date;
-  
-  /** ふぁぼられたユーザ */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.id)
-  public favouritedToUser: UserEntity;
   
   /** ふぁぼったユーザ : ユーザが対象の投稿に対してふぁぼを行ったことを示す・ユーザ削除時に本ふぁぼ情報も同時に削除される */
   @ManyToOne(() => UserEntity, userEntity => userEntity.id, { onDelete: 'CASCADE' })

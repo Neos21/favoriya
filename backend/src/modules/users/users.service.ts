@@ -44,7 +44,7 @@ export class UsersService {
     }
     catch(error) {
       if(error instanceof QueryFailedError && (error as unknown as { code: string }).code === '23505') return { error: 'そのユーザ ID は既に使用されています', code: HttpStatus.BAD_REQUEST };
-      this.logger.error('ユーザ登録処理に失敗 (DB エラー)', error);
+      this.logger.error('ユーザ登録処理に失敗', error);
       return { error: 'ユーザ登録処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
@@ -65,7 +65,7 @@ export class UsersService {
       return { result: users };
     }
     catch(error) {
-      this.logger.error('ユーザ情報一覧の取得処理に失敗 (DB エラー)', error);
+      this.logger.error('ユーザ情報一覧の取得処理に失敗', error);
       return { error: 'ユーザ情報一覧の取得処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
@@ -87,7 +87,7 @@ export class UsersService {
       return { result: user };
     }
     catch(error) {
-      this.logger.error('ユーザ情報の取得処理に失敗 (DB エラー)', error);
+      this.logger.error('ユーザ情報の取得処理に失敗', error);
       return { error: 'ユーザ情報の取得処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
@@ -114,7 +114,7 @@ export class UsersService {
       return await this.findOneById(id);
     }
     catch(error) {
-      this.logger.error('ユーザ情報の更新処理 (Patch) に失敗 (DB エラー)', error);
+      this.logger.error('ユーザ情報の更新処理 (Patch) に失敗', error);
       return { error: 'ユーザ情報の更新処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
@@ -152,7 +152,7 @@ export class UsersService {
       return { result: true };  // 成功
     }
     catch(error) {
-      this.logger.error('ユーザパスワードの更新処理に失敗 (DB エラー)', error);
+      this.logger.error('ユーザパスワードの更新処理に失敗', error);
       return { error: 'ユーザパスワードの更新処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
@@ -179,7 +179,7 @@ export class UsersService {
       return { result: true };
     }
     catch(error) {
-      this.logger.error('ユーザ情報の削除処理に失敗 (DB エラー)', error);
+      this.logger.error('ユーザ情報の削除処理に失敗', error);
       return { error: 'ユーザ情報の削除処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }

@@ -28,7 +28,7 @@ export class FavouritesService {
       if(postEntity == null) return { error: 'ふぁぼ対象の投稿が見つかりません', code: HttpStatus.NOT_FOUND };
     }
     catch(error) {
-      this.logger.error('ふぁぼ対象の投稿の取得に失敗 (DB エラー)', error);
+      this.logger.error('ふぁぼ対象の投稿の取得に失敗', error);
       return { error: 'ふぁぼ対象の投稿の取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
     
@@ -41,7 +41,7 @@ export class FavouritesService {
       await this.favouritesRepository.insert(newFavouriteEntity);
     }
     catch(error) {
-      this.logger.error('ふぁぼ付け処理に失敗 (DB エラー)', error);
+      this.logger.error('ふぁぼ付け処理に失敗', error);
       return { error: 'ふぁぼ付け処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
     
@@ -52,13 +52,12 @@ export class FavouritesService {
         this.logger.error('ふぁぼ数の更新処理で0件 or 2件以上の更新が発生', updateResult);
         return { error: 'ふぁぼ数の更新処理でが発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
+      return { result: true };
     }
     catch(error) {
-      this.logger.error('ふぁぼ数の更新処理に失敗 (DB エラー)', error);
+      this.logger.error('ふぁぼ数の更新処理に失敗', error);
       return { error: 'ふぁぼ数の更新処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
-    
-    return { result: true };
   }
   
   /** ふぁぼを外す */
@@ -66,11 +65,11 @@ export class FavouritesService {
     let postEntity;
     try {
       postEntity = await this.postsRepository.findOneBy({ id: favouritedPostId, userId: favouritedPostsUserId });
-      if(postEntity == null) return { error: 'ふぁぼ対象の投稿が見つかりません', code: HttpStatus.NOT_FOUND };
+      if(postEntity == null) return { error: 'ふぁぼ外し対象の投稿が見つかりません', code: HttpStatus.NOT_FOUND };
     }
     catch(error) {
-      this.logger.error('ふぁぼ対象の投稿の取得に失敗 (DB エラー)', error);
-      return { error: 'ふぁぼ対象の投稿の取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('ふぁぼ外し対象の投稿の取得に失敗', error);
+      return { error: 'ふぁぼ外し対象の投稿の取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
     
     try {
@@ -82,7 +81,7 @@ export class FavouritesService {
       }
     }
     catch(error) {
-      this.logger.error('ふぁぼ外し処理に失敗 (DB エラー)', error);
+      this.logger.error('ふぁぼ外し処理に失敗', error);
       return { error: 'ふぁぼ外し処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
     
@@ -93,12 +92,11 @@ export class FavouritesService {
         this.logger.error('ふぁぼ数の更新処理で0件 or 2件以上の更新が発生', updateResult);
         return { error: 'ふぁぼ数の更新処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
+      return { result: true };
     }
     catch(error) {
-      this.logger.error('ふぁぼ数の更新処理に失敗 (DB エラー)', error);
+      this.logger.error('ふぁぼ数の更新処理に失敗', error);
       return { error: 'ふぁぼ数の更新処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
-    
-    return { result: true };
   }
 }

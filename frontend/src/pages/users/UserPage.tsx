@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Navigate, useParams } from 'react-router-dom';
 
 import { Alert, Button, Divider, List, ListItem, ListItemText, Typography } from '@mui/material';
@@ -13,6 +14,7 @@ import { epochTimeMsToJstString } from '../../shared/services/convert-date-to-js
 import type { Post, PostApi } from '../../common/types/post';
 import type { Result } from '../../common/types/result';
 import type { User, UserApi } from '../../common/types/user';
+import type { RootState } from '../../shared/stores/store';
 
 /** User Page */
 export const UserPage: FC = () => {
@@ -20,6 +22,7 @@ export const UserPage: FC = () => {
   
   const { userId: rawParamUserId } = useParams<{ userId: string }>();
   
+  const userState = useSelector((state: RootState) => state.user);
   const apiGet = useApiGet();
   
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'not-found' | 'failed'>('loading');
@@ -90,6 +93,10 @@ export const UserPage: FC = () => {
     }
   };
   
+  const onFollow = async () => {
+    
+  };
+  
   return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>@{paramUserId}</Typography>
     
@@ -109,6 +116,12 @@ export const UserPage: FC = () => {
         <Divider component="li" variant="middle" />
         <ListItem><ListItemText primary="登録日" secondary={epochTimeMsToJstString(user.createdAt as string, 'YYYY-MM-DD')} /></ListItem>
       </List>
+      
+      {user.id !== userState.id &&
+        <Typography component="p" sx={{ mt: 3 }}>
+          <Button variant="contained" onClick={onFollow}>フォローする</Button>
+        </Typography>
+      }
       
       <PostsListComponent propPosts={posts} />
       

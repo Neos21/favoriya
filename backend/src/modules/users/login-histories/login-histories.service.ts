@@ -25,7 +25,7 @@ export class LoginHistoriesService {
       return { result: loginHistories };
     }
     catch(error) {
-      this.logger.error('ログイン履歴一覧の取得に失敗 (DB エラー)', error);
+      this.logger.error('ログイン履歴一覧の取得に失敗', error);
       return { error: 'ログイン履歴一覧の取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }

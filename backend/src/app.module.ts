@@ -19,6 +19,10 @@ import { TimelineController } from './modules/timeline/timeline.controller';
 import { TimelineService } from './modules/timeline/timeline.service';
 import { AvatarController } from './modules/users/avatar/avatar.controller';
 import { AvatarService } from './modules/users/avatar/avatar.service';
+import { FollowersController } from './modules/users/followers/followers.controller';
+import { FollowersService } from './modules/users/followers/followers.service';
+import { FollowingsController } from './modules/users/followings/followings.controller';
+import { FollowingsService } from './modules/users/followings/followings.service';
 import { LoginHistoriesController } from './modules/users/login-histories/login-histories.controller';
 import { LoginHistoriesService } from './modules/users/login-histories/login-histories.service';
 import { FavouritesController } from './modules/users/posts/favourites/favourites.controller';
@@ -28,6 +32,7 @@ import { PostsService } from './modules/users/posts/posts.service';
 import { UsersController } from './modules/users/users.controller';
 import { UsersService } from './modules/users/users.service';
 import { FavouriteEntity } from './shared/entities/favourite.entity';
+import { FollowEntity } from './shared/entities/follow.entity';
 import { LoginHistoryEntity } from './shared/entities/login-history.entity';
 import { PostEntity } from './shared/entities/post.entity';
 import { UserEntity } from './shared/entities/user.entity';
@@ -75,6 +80,7 @@ import { UserEntity } from './shared/entities/user.entity';
       UserEntity,
       PostEntity,
       FavouriteEntity,
+      FollowEntity,
       LoginHistoryEntity
     ]),
     // MinIO
@@ -99,7 +105,9 @@ import { UserEntity } from './shared/entities/user.entity';
     PostsController,
     FavouritesController,
     TimelineController,
-    AdminController
+    AdminController,
+    FollowingsController,
+    FollowersController
   ],
   providers: [
     AppService,
@@ -110,7 +118,9 @@ import { UserEntity } from './shared/entities/user.entity';
     PostsService,
     FavouritesService,
     TimelineService,
-    AdminService
+    AdminService,
+    FollowersService,
+    FollowingsService
   ]
 })
 export class AppModule {

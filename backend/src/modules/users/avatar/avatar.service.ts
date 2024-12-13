@@ -136,7 +136,7 @@ export class AvatarService {
       return { result: user };
     }
     catch(error) {
-      this.logger.error('ユーザ情報の取得処理に失敗 (DB エラー)', error);
+      this.logger.error('ユーザ情報の取得処理に失敗', error);
       return { error: 'ユーザ情報の取得処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }

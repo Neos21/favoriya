@@ -103,8 +103,8 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                   {userState.showOwnFavouritesCount && <>
                     <Typography component="span" sx={{ mr: 1, color: '#999', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
                     {post.favourites.map(favourite =>
-                      <Link to={`/@${favourite.userId}`} key={favourite.userId}>
-                        <Avatar src={isEmptyString(favourite?.favouritedByUser?.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
+                      <Link to={`/@${favourite.favouritedByUser.id}`} key={favourite.favouritedByUser.id}>
+                        <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
                       </Link>
                     )}
                   </>}
@@ -112,15 +112,15 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               }
               {// 他人の投稿の場合
                 post.userId !== userState.id && <>
-                {post.favourites.find(favourite => favourite.userId === userState.id) == null
+                {post.favourites.find(favourite => favourite.favouritedByUser.id === userState.id) == null
                   ? <IconButton sx={{ mr: .25, color: '#999' }} size="small" onClick={() => onAddFavourite(post)}><StarBorderIcon fontSize="inherit" /></IconButton>
                   : <IconButton sx={{ mr: .25 }} color="warning" size="small" onClick={() => onRemoveFavourite(post)}><StarIcon fontSize="inherit" /></IconButton>
                 }
                 {userState.showOthersFavouritesCount && <>
                   <Typography component="span" sx={{ mr: 1, color: '#999', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
                   {post.favourites.map(favourite =>
-                    <Link to={`/@${favourite.userId}`} key={favourite.userId}>
-                      <Avatar src={isEmptyString(favourite?.favouritedByUser?.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
+                    <Link to={`/@${favourite.favouritedByUser.id}`} key={favourite.favouritedByUser.id}>
+                      <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
                     </Link>
                   )}
                 </>}
