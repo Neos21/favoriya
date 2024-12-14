@@ -24,3 +24,9 @@ export const isValidName = (name: string): Result<boolean> => {
   if(name.length > 50) return { error: 'ユーザ名は50文字以内である必要があります' };
   return { result: true };
 };
+
+/** プロフィールテキストの入力チェック */
+export const isValidProfileText = (profileText: string): Result<boolean> => {
+  if(profileText.length > 500) return { error: 'プロフィールテキストは500文字以内である必要があります' };
+  return { result: true };
+};

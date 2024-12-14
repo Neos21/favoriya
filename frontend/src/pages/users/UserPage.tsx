@@ -5,6 +5,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { Alert, Button, Divider, Grid2, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
+import { FontParserComponent } from '../../shared/components/FontParserComponent/FontParserComponent';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { PostsListComponent } from '../../shared/components/PostsListComponent/PostsListComponent';
 import { httpStatus } from '../../shared/constants/http-status';
@@ -157,13 +158,21 @@ export const UserPage: FC = () => {
     
     {status === 'succeeded' && <>
       <List sx={{ mt: 3, borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
-        <ListItem><ListItemText primary="ユーザ ID" secondary={`@${user.id}`} /></ListItem>
-        <Divider component="li" variant="middle" />
-        <ListItem><ListItemText primary="ユーザ名" secondary={user.name} /></ListItem>
-        <Divider component="li" variant="middle" />
-        <ListItem><ListItemText primary="ロール" secondary={user.role} /></ListItem>
-        <Divider component="li" variant="middle" />
-        <ListItem><ListItemText primary="登録日" secondary={epochTimeMsToJstString(user.createdAt as string, 'YYYY-MM-DD')} /></ListItem>
+        <ListItem><ListItemText primary={
+          <Grid2 container>
+            <Grid2 size={9} sx={{ fontWeight: 'bold' }}>
+              {user.name}
+              {user.role !== 'Normal' && <Typography component="span" sx={{ ml: 1, color: '#999', fontSize: '.8rem' }}>({user.role})</Typography>}
+            </Grid2>
+            <Grid2 size={3} sx={{ textAlign: 'right', color: '#999', fontSize: '.8rem' }}>
+              {epochTimeMsToJstString(user.createdAt as string, 'YYYY-MM-DD')}
+            </Grid2>
+          </Grid2>
+        } /></ListItem>
+        <Divider component="li" />
+        <ListItem><ListItemText sx={{ mt: 1.25, pb: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }} primary={
+          <FontParserComponent input={user.profileText} />
+        } /></ListItem>
       </List>
       
       <Grid2 container spacing={1} sx={{ mt: 3 }}>

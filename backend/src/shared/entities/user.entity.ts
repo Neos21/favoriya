@@ -21,6 +21,9 @@ export class UserEntity {
   @Column({ name: 'avatar_url', nullable: true })
   public avatarUrl: string;
   
+  @Column({ name: 'profile_text', nullable: true })
+  public profileText: string;
+  
   /** 自分自身の投稿のふぁぼ数を見えるようにするか否か */
   @Column({ name: 'show_own_favourites_count', default: true })
   public showOwnFavouritesCount: boolean;

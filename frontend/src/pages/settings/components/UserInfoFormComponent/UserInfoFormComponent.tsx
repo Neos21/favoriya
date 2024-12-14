@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Alert, Box, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material';
 
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../../common/helpers/convert-case';
-import { isValidName } from '../../../../common/helpers/validators/validator-user';
+import { isValidName, isValidProfileText } from '../../../../common/helpers/validators/validator-user';
 import { userConstants } from '../../../../shared/constants/user-constants';
 import { useApiPatch } from '../../../../shared/hooks/use-api-fetch';
 import { setUser } from '../../../../shared/stores/user-slice';
@@ -14,8 +14,9 @@ import type { Result } from '../../../../common/types/result';
 import type { RootState } from '../../../../shared/stores/store';
 
 type FormData = {
-  name: string,
-  showOwnFavouritesCount: boolean,
+  name                     : string,
+  profileText              : string,
+  showOwnFavouritesCount   : boolean,
   showOthersFavouritesCount: boolean
 };
 
@@ -28,10 +29,14 @@ export const UserInfoFormComponent: FC = () => {
   
   const [formData, setFormData] = useState<FormData>({
     name                     : '',
+    profileText              : '',
     showOwnFavouritesCount   : false,
     showOthersFavouritesCount: false
   });
-  const [formErrors, setFormErrors] = useState<{ name?: string }>({});
+  const [formErrors, setFormErrors] = useState<{
+    name?       : string,
+    profileText?: string
+  }>({});
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [succeededMessage, setSucceededMessage] = useState<string>(null);
   
@@ -39,6 +44,7 @@ export const UserInfoFormComponent: FC = () => {
   useEffect(() => {
     setFormData({
       name                     : userState.name,
+      profileText              : userState.profileText,
       showOwnFavouritesCount   : userState.showOwnFavouritesCount    ?? false,
       showOthersFavouritesCount: userState.showOthersFavouritesCount ?? false
     });
@@ -55,9 +61,10 @@ export const UserInfoFormComponent: FC = () => {
   };
   
   /** フォームの入力チェック */
-  const isValidForm = (name: string): boolean => {
-    const newErrors: { name: string } = {
-      name: isValidName(name).error
+  const isValidForm = (name: string, profileText: string): boolean => {
+    const newErrors: { name: string, profileText: string } = {
+      name       : isValidName(name).error,
+      profileText: isValidProfileText(profileText).error
     };
     setFormErrors(newErrors);
     return Object.values(newErrors).every(newError => newError == null);
@@ -70,7 +77,7 @@ export const UserInfoFormComponent: FC = () => {
     setSucceededMessage(null);
     
     // 入力チェック
-    if(!isValidForm(formData.name)) return;
+    if(!isValidForm(formData.name, formData.profileText)) return;
     
     try {
       const response = await apiPatch(`/users/${userState.id}`, camelToSnakeCaseObject(formData));  // Throws
@@ -80,6 +87,7 @@ export const UserInfoFormComponent: FC = () => {
       const updatedUser = snakeToCamelCaseObject(updatedUserApi.result);
       const user = Object.assign(Object.assign({}, userState), {
         name                     : updatedUser.name,
+        profileText              : updatedUser.profileText,
         showOwnFavouritesCount   : updatedUser.showOwnFavouritesCount,
         showOthersFavouritesCount: updatedUser.showOthersFavouritesCount
       });
@@ -107,6 +115,12 @@ export const UserInfoFormComponent: FC = () => {
         fullWidth margin="normal"
         error={formErrors.name != null}
         helperText={formErrors.name}
+      />
+      <TextField
+        multiline name="profileText" label="プロフィールテキスト" value={formData.profileText} onChange={onChangeText}
+        fullWidth rows={4} margin="normal"
+        error={formErrors.profileText != null}
+        helperText={formErrors.profileText}
       />
       <Typography component="div"><FormControlLabel control={<Checkbox name="showOwnFavouritesCount"    checked={formData.showOwnFavouritesCount   } onChange={onChangeChecked} />} label="自分の投稿のふぁぼられ数を表示する" /></Typography>
       <Typography component="div"><FormControlLabel control={<Checkbox name="showOthersFavouritesCount" checked={formData.showOthersFavouritesCount} onChange={onChangeChecked} />} label="他人の投稿のふぁぼられ数を表示する" /></Typography>

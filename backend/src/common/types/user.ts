@@ -8,6 +8,7 @@ export type User = {
   name?: string;
   role?: string;
   avatarUrl?: string;
+  profileText?: string;
   showOwnFavouritesCount?: boolean;
   showOthersFavouritesCount?: boolean;
   createdAt?: Date | string;

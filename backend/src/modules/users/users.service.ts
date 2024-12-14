@@ -4,7 +4,7 @@ import { QueryFailedError, Repository } from 'typeorm';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { isValidId, isValidName, isValidPassword } from '../../common/helpers/validators/validator-user';
+import { isValidId, isValidName, isValidPassword, isValidProfileText } from '../../common/helpers/validators/validator-user';
 import { authUserConstants } from '../../shared/constants/auth-user';
 import { UserEntity } from '../../shared/entities/user.entity';
 import { AvatarService } from './avatar/avatar.service';
@@ -73,9 +73,9 @@ export class UsersService {
   /** ユーザ ID を条件にユーザ情報を取得する (パスワードハッシュは取得しない) */
   public async findOneById(id: string): Promise<Result<UserEntity>> {
     const userResult = await this.findOneByIdWithPasswordHash(id);
-    if(userResult.error) return userResult;
+    if(userResult.error != null) return userResult;
     
-    userResult.result.passwordHash = null;  // パスワードハッシュ欄をクリアする
+    delete userResult.result.passwordHash;  // パスワードハッシュ欄をクリアする
     return userResult;
   }
   
@@ -101,6 +101,11 @@ export class UsersService {
       const validateResultName = isValidName(user.name);
       if(validateResultName.error != null) return validateResultName as Result<User>;
       updateUserEntity.name = user.name;
+    }
+    if(user.profileText != null) {
+      const validateResultProfileText = isValidProfileText(user.profileText);
+      if(validateResultProfileText.error != null) return validateResultProfileText as Result<User>;
+      updateUserEntity.profileText = user.profileText;
     }
     if(user.showOwnFavouritesCount != null) updateUserEntity.showOwnFavouritesCount = user.showOwnFavouritesCount;
     if(user.showOthersFavouritesCount != null) updateUserEntity.showOthersFavouritesCount = user.showOthersFavouritesCount;
@@ -168,6 +173,9 @@ export class UsersService {
     // ユーザに紐付く投稿を全て削除する
     const removeAllPostsResult = await this.postsService.removeAllByUserId(id);
     if(removeAllPostsResult.error != null) return removeAllPostsResult;
+    
+    // TODO : ユーザがフォローした情報を全て削除する
+    // TODO : ユーザがフォローされた情報を全て削除する
     
     // ユーザ情報を削除する
     try {
