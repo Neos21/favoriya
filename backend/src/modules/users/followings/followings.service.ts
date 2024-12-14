@@ -13,91 +13,27 @@ import type { Result } from '../../../common/types/result';
 export class FollowingsService {
   private readonly logger: Logger = new Logger(FollowingsService.name);
   
-  constructor(
-    @InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>,
-    @InjectRepository(FollowEntity) private readonly followsRepository: Repository<FollowEntity>,
-  ) { }
+  constructor(@InjectRepository(FollowEntity) private readonly followsRepository: Repository<FollowEntity>) { }
   
   /** `userId` がフォローしているユーザ一覧を取得する */
-  public async findAll(userId: string): Promise<Result<Array<FollowEntity>>> {
+  public async findAll(userId: string): Promise<Result<Array<UserEntity>>> {
     try {
       const followings = await this.followsRepository.find({
-        where: { follower: { id: userId } },
-        relations: ['following']
+        select: { follower: {
+          id: true,
+          name: true,
+          avatarUrl: true
+        } },
+        where: { followingUserId: userId },
+        relations: ['follower'],
+        order: { id: 'DESC' }
       });
-      console.log(followings);  // TODO
-      return { result: followings };
+      const followingUsers: Array<UserEntity> = followings.map(following => following.follower);
+      return { result: followingUsers };
     }
     catch(error) {
       this.logger.error('対象ユーザがフォロー中であるユーザ一覧の取得に失敗', error);
       return { error: '対象ユーザがフォロー中であるユーザ一覧の取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
-    }
-  }
-  
-  /** `followingUserId` が `followerUserId` のことをフォローする */
-  public async follow(followerUserId: string, followingUserId: string): Promise<Result<boolean>> {
-    if(followerUserId === followingUserId) return { error: 'フォローするユーザと、フォローしようとしている相手ユーザの ID が同一です', code: HttpStatus.BAD_REQUEST };
-    
-    try {
-      const follower = await this.usersRepository.findOneBy({ id: followerUserId });
-      if(follower == null) return { error: 'フォロー対象ユーザが見つかりません', code: HttpStatus.NOT_FOUND };
-    }
-    catch(error) {
-      this.logger.error('フォロー対象ユーザの取得に失敗', error);
-      return { error: 'フォロー対象ユーザの取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
-    }
-    
-    try {
-      const following = await this.usersRepository.findOneBy({ id: followingUserId });
-      if(following == null) return { error: 'フォローしようとしているログインユーザの情報が見つかりません', code: HttpStatus.NOT_FOUND };
-    }
-    catch(error) {
-      this.logger.error('フォローしようとしているログインユーザの情報取得に失敗', error);
-      return { error: 'フォローしようとしているログインユーザの情報取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
-    }
-    
-    try {
-      await this.followsRepository.insert({ followerUserId, followingUserId });
-      return { result: true };
-    }
-    catch(error) {
-      this.logger.error('フォロー情報の登録に失敗', error);
-      return { error: 'フォロー情報の登録に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
-    }
-  }
-  
-  /** `followingUserId` が `followerUserId` のフォローを外す */
-  public async unfollow(followerUserId: string, followingUserId: string): Promise<Result<boolean>> {
-    try {
-      const follower = await this.usersRepository.findOneBy({ id: followerUserId });
-      if(follower == null) return { error: 'アンフォロー対象ユーザが見つかりません', code: HttpStatus.NOT_FOUND };
-    }
-    catch(error) {
-      this.logger.error('アンフォロー対象ユーザの取得に失敗', error);
-      return { error: 'アンフォロー対象ユーザの取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
-    }
-    
-    try {
-      const following = await this.usersRepository.findOneBy({ id: followingUserId });
-      if(following == null) return { error: 'アンフォローしようとしているログインユーザの情報が見つかりません', code: HttpStatus.NOT_FOUND };
-    }
-    catch(error) {
-      this.logger.error('アンフォローしようとしているログインユーザの情報取得に失敗', error);
-      return { error: 'アンフォローしようとしているログインユーザの情報取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
-    }
-    
-    try {
-      const deleteResult = await this.followsRepository.delete({ followerUserId, followingUserId });
-      if(deleteResult.affected === 0) return { error: '削除対象のフォロー関係は存在しませんでした', code: HttpStatus.NOT_FOUND };
-      if(deleteResult.affected !== 1) {
-        this.logger.error('アンフォロー処理で2件以上の削除が発生', deleteResult);
-        return { error: 'アンフォロー処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
-      }
-      return { result: true };
-    }
-    catch(error) {
-      this.logger.error('フォロー情報の削除 (アンフォロー) に失敗', error);
-      return { error: 'フォロー情報の削除 (アンフォロー) に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
 }

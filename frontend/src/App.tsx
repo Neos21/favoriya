@@ -15,6 +15,8 @@ import { DeleteAccountPage } from './pages/settings/delete-account/DeleteAccount
 import { LoginHistoriesPage } from './pages/settings/login-histories/LoginHistoriesPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
 import { SignupPage } from './pages/signup/SignupPage';
+import { FollowersPage } from './pages/users/followers/FollowersPage';
+import { FollowingsPage } from './pages/users/followings/FollowingsPage';
 import { PostPage } from './pages/users/posts/PostPage';
 import { UserPage } from './pages/users/UserPage';
 import { UsersPage } from './pages/users/UsersPage';
@@ -43,9 +45,11 @@ export const App = () => (
                 
                 <Route path="/users"                 element={<UsersPage />} />
                 
-                <Route path="/:userId/posts/:postId" element={<PostPage  />} />
-                <Route path="/:userId/posts"         element={<UserPage  />} />
-                <Route path="/:userId"               element={<UserPage  />} />
+                <Route path="/:userId/followers"     element={<FollowersPage  />} />
+                <Route path="/:userId/followings"    element={<FollowingsPage />} />
+                <Route path="/:userId/posts/:postId" element={<PostPage       />} />
+                <Route path="/:userId/posts"         element={<UserPage       />} />
+                <Route path="/:userId"               element={<UserPage       />} />
                 
                 <Route path="/admin/*" element={<AdminGuardRoute />} />
                 
