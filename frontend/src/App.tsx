@@ -8,6 +8,7 @@ import { LayoutComponent } from './core/components/LayoutComponent/LayoutCompone
 import { AuthGuardRoute } from './core/routes/AuthGuardRoute';
 import { theme } from './core/theme';
 import { GlobalTimelinePage } from './pages/global-timeline/GlobalTimelinePage';
+import { HomeTimelinePage } from './pages/home-timeline/HomeTimelinePage';
 import { HomePage } from './pages/home/HomePage';
 import { LoginPage } from './pages/login/LoginPage';
 import { ChangeAvatarPage } from './pages/settings/change-avatar/ChangeAvatarPage';
@@ -36,6 +37,7 @@ export const App = () => (
           <Routes>
             <Route element={<LayoutComponent />}>
               <Route element={<AuthGuardRoute />}>
+                <Route path="/home-timeline"   element={<HomeTimelinePage   />} />
                 <Route path="/global-timeline" element={<GlobalTimelinePage />} />
                 
                 <Route path="/settings/login-histories" element={<LoginHistoriesPage />} />

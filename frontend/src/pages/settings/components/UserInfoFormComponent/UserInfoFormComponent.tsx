@@ -43,8 +43,8 @@ export const UserInfoFormComponent: FC = () => {
   // 初回読み込み
   useEffect(() => {
     setFormData({
-      name                     : userState.name,
-      profileText              : userState.profileText,
+      name                     : userState.name                      ?? '',
+      profileText              : userState.profileText               ?? '',
       showOwnFavouritesCount   : userState.showOwnFavouritesCount    ?? false,
       showOthersFavouritesCount: userState.showOthersFavouritesCount ?? false
     });

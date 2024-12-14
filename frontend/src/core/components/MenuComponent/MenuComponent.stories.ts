@@ -4,10 +4,7 @@ import { MenuComponent } from './MenuComponent';
 
 const meta = {
   title: 'MenuComponent',
-  component: MenuComponent,
-  parameters: {
-    Menu: 'fullscreen'
-  }
+  component: MenuComponent
 } satisfies Meta<typeof MenuComponent>;
 export default meta;
 

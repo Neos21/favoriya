@@ -176,8 +176,8 @@ export const UserPage: FC = () => {
       </List>
       
       <Grid2 container spacing={1} sx={{ mt: 3 }}>
-        <Grid2 size={6}><Link to={`/@${user.id}/followings`} className="hover-underline">フォロー中一覧</Link></Grid2>
-        <Grid2 size={6} sx={{ textAlign: 'right' }}><Link to={`/@${user.id}/followers`} className="hover-underline">フォロワー一覧</Link></Grid2>
+        <Grid2 size={6}><Link to={`/@${user.id}/followings`} className="hover-underline">フォロー中</Link></Grid2>
+        <Grid2 size={6} sx={{ textAlign: 'right' }}><Link to={`/@${user.id}/followers`} className="hover-underline">フォロワー</Link></Grid2>
       </Grid2>
       
       {user.id !== userState.id &&

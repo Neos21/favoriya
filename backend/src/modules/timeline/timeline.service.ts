@@ -37,4 +37,30 @@ export class TimelineService {
       return { error: 'グローバルタイムラインの取得に失敗' };
     }
   }
+  
+  /** ホームタイムラインを取得する */
+  public async getHomeTimeline(userId: string, offset: number = 0, limit: number = 100): Promise<Result<Array<PostEntity>>> {
+    try {
+      const posts = await this.postsRepository
+        .createQueryBuilder('posts')
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.favouritesCount', 'posts.createdAt'])  // 投稿内容
+        .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
+        .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
+        .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
+        .addSelect(['favourites.id'])
+        .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
+        .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
+        .leftJoin('follows', 'follows', 'follows.followerUserId = posts.userId AND follows.followingUserId = :userId', { userId })  // ログインユーザがフォローしている人を条件にする
+        .where('follows.followerUserId IS NOT NULL OR posts.userId = :userId', { userId })  // ログインユーザ自身の投稿も含める
+        .orderBy('posts.createdAt', 'DESC')  // created_at の降順
+        .skip(offset)
+        .take(limit)
+        .getMany();
+      return { result: posts };
+    }
+    catch(error) {
+      this.logger.error('ホームタイムラインの取得に失敗', error);
+      return { error: 'ホームタイムラインの取得に失敗' };
+    }
+  }
 }

@@ -38,7 +38,7 @@ export const LoginPage: FC = () => {
       const user = loginResult.result;
       dispatch(setUser(user));  // Store に保存する
       localStorage.setItem(userConstants.localStorageKey, JSON.stringify(user));  // 初期起動時に参照する LocalStorage
-      navigate('/');
+      navigate('/global-timeline');
     }
     catch(error) {
       setErrorMessage('ログイン処理に失敗しました。もう一度やり直してください');

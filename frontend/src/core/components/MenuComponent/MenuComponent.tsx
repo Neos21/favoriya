@@ -11,6 +11,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
+import PublicIcon from '@mui/icons-material/Public';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
@@ -59,9 +60,16 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
   // ログイン済
   return <List>
     <ListItem disablePadding>
-      <ListItemButton component={Link} to="/global-timeline" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/global-timeline'}>
+      <ListItemButton component={Link} to="/home-timeline" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/home-timeline'}>
         <ListItemIcon><HomeIcon /></ListItemIcon>
         <ListItemText primary="ホーム" />
+      </ListItemButton>
+    </ListItem>
+    
+    <ListItem disablePadding>
+      <ListItemButton component={Link} to="/global-timeline" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/global-timeline'}>
+        <ListItemIcon><PublicIcon /></ListItemIcon>
+        <ListItemText primary="グローバル" />
       </ListItemButton>
     </ListItem>
     
