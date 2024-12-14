@@ -11,7 +11,7 @@ import type { Result } from '../../common/types/result';
 @Injectable()
 export class NotificationsService {
   /** 1ユーザにつき残す通知履歴の最大件数 */
-  private readonly maxNotificationsPerUser: number = 5;
+  private readonly maxNotificationsPerUser: number = 50;
   /** 1ユーザにつき残す通知履歴の日数 */
   private readonly daysToKeep: number = 30;
   
