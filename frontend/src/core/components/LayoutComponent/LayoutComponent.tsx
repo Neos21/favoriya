@@ -1,17 +1,21 @@
 import { FC, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
 
 import { Box, Container, Drawer, useMediaQuery } from '@mui/material';
 
+import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { AppBarComponent } from '../AppBarComponent/AppBarComponent';
 import { MenuComponent } from '../MenuComponent/MenuComponent';
 
+import type { RootState } from '../../../shared/stores/store';
 /** Layout Component */
 export const LayoutComponent: FC = () => {
   const drawerWidth = 240;
   
   const location = useLocation();
   const isNarrowWindow = useMediaQuery('(max-width: 599.98px)');  // 画面幅が 600px 以内かどうか
+  const userState = useSelector((state: RootState) => state.user);
   
   const [isOpen, setIsOpen] = useState<boolean>(false);  // Drawer を開いているか否か
   
@@ -21,6 +25,9 @@ export const LayoutComponent: FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+  
+  // 未ログイン時は枠を出さない
+  if(isEmptyString(userState.id)) return <Outlet />;
   
   return <Box component="div" sx={{ display: 'flex', height: '100vh' }}>
     <Drawer
