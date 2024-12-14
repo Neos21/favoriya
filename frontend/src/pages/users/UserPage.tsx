@@ -19,7 +19,8 @@ import type { RootState } from '../../shared/stores/store';
 
 /** User Page */
 export const UserPage: FC = () => {
-  const offsetAmount = 50;  // 50件ずつ読み込む
+  /** 1回につき読み込む件数 */
+  const offsetAmount = 50;
   
   const { userId: rawParamUserId } = useParams<{ userId: string }>();
   
@@ -53,7 +54,7 @@ export const UserPage: FC = () => {
         const userApiResult: Result<UserApi> = await response.json();  // Throws
         if(userApiResult.error != null) return setStatus(response.status === httpStatus.notFound ? 'not-found' : 'failed');
         
-        setUser(snakeToCamelCaseObject(userApiResult.result));
+        setUser(snakeToCamelCaseObject(userApiResult.result) as User);
       }
       catch(error) {
         setStatus('failed');

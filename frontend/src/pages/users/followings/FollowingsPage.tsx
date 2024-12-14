@@ -35,7 +35,7 @@ export const FollowingsPage: FC = () => {
         const followingUsersApiResult: Result<Array<UserApi>> = await response.json();  // Throws
         if(followingUsersApiResult.error != null) return setStatus('failed');
         
-        setFollowingUsers(followingUsersApiResult.result.map(followingUserApi => snakeToCamelCaseObject(followingUserApi)));
+        setFollowingUsers(followingUsersApiResult.result.map(followingUserApi => snakeToCamelCaseObject(followingUserApi)) as Array<User>);
         setStatus('succeeded');
       }
       catch(error) {

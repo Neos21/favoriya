@@ -8,7 +8,6 @@ export type Follow = {
   followerUserId: string;
   followingUserId: string;
   createdAt?: Date | string;
-  updatedAt?: Date | string;
   
   follower?: User;
   following?: User;

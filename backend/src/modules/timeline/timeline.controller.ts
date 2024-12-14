@@ -22,7 +22,7 @@ export class TimelineController {
     const result: Result<Array<PostEntity>> = await this.timelineService.getGlobalTimeline(offset, limit);
     if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
     
-    const postsApi: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity));
+    const postsApi: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity)) as unknown as Array<PostApi>;
     return response.status(HttpStatus.OK).json({ result: postsApi });
   }
   
@@ -35,7 +35,7 @@ export class TimelineController {
     const result: Result<Array<PostEntity>> = await this.timelineService.getHomeTimeline(userId, offset, limit);
     if(result.error != null) return response.status(HttpStatus.BAD_REQUEST).json(result);
     
-    const postsApi: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity));
+    const postsApi: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity)) as unknown as Array<PostApi>;
     return response.status(HttpStatus.OK).json({ result: postsApi });
   }
 }

@@ -19,7 +19,7 @@ export const apiLogin = async (id: string, password: string): Promise<Result<Use
     const responseResult: Result<UserApi> = await response.json();  // Throws
     if(!response.ok) return { error: responseResult.error };
     
-    const result: User = snakeToCamelCaseObject(responseResult.result);
+    const result: User = snakeToCamelCaseObject(responseResult.result) as User;
     return { result };
   }
   catch(error) {

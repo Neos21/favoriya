@@ -17,7 +17,7 @@ export class UsersController {
   /** ユーザ登録する */
   @Post('')
   public async create(@Body() userApi: UserApi, @Res() response: Response): Promise<Response<Result<null>>> {
-    const user: User = snakeToCamelCaseObject(userApi);
+    const user: User = snakeToCamelCaseObject(userApi) as User;
     const result = await this.usersService.create(user);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
@@ -50,7 +50,7 @@ export class UsersController {
   public async patch(@Param('userId') id: string, @Body() userApi: UserApi, @Req() request: Request, @Res() response: Response): Promise<Response<Result<UserApi>>> {
     if(!isValidJwtUserId(request, response, id)) return;
     
-    const user: User = snakeToCamelCaseObject(userApi);
+    const user: User = snakeToCamelCaseObject(userApi) as User;
     const result = await this.usersService.patch(id, user);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     

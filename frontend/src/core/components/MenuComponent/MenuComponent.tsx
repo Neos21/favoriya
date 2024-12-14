@@ -74,7 +74,7 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
     </ListItem>
     
     <ListItem disablePadding>
-      <ListItemButton disabled className="menu-component-list-item">
+      <ListItemButton component={Link} to="/notifications" onClick={onClickItem} className="menu-component-list-item" selected={location.pathname === '/notifications'}>
         <ListItemIcon><NotificationsIcon /></ListItemIcon>
         <ListItemText primary="通知" />
       </ListItemButton>

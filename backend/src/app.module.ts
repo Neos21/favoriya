@@ -15,6 +15,8 @@ import { AdminController } from './modules/admin/admin.controller';
 import { AdminService } from './modules/admin/admin.service';
 import { AuthController } from './modules/auth/auth.controller';
 import { AuthService } from './modules/auth/auth.service';
+import { NotificationsController } from './modules/notifications/notifications.controller';
+import { NotificationsService } from './modules/notifications/notifications.service';
 import { TimelineController } from './modules/timeline/timeline.controller';
 import { TimelineService } from './modules/timeline/timeline.service';
 import { AvatarController } from './modules/users/avatar/avatar.controller';
@@ -34,6 +36,7 @@ import { UsersService } from './modules/users/users.service';
 import { FavouriteEntity } from './shared/entities/favourite.entity';
 import { FollowEntity } from './shared/entities/follow.entity';
 import { LoginHistoryEntity } from './shared/entities/login-history.entity';
+import { NotificationEntity } from './shared/entities/notification.entity';
 import { PostEntity } from './shared/entities/post.entity';
 import { UserEntity } from './shared/entities/user.entity';
 
@@ -73,15 +76,16 @@ import { UserEntity } from './shared/entities/user.entity';
         entities: [`${__dirname}/**/*.entity{.ts,.js}`],
         synchronize: true,  // スキーマを自動同期する
         logging: true,
-        autoLoadEntities: true  // forFeature() をなくす
+        autoLoadEntities: true
       })
     }),
     TypeOrmModule.forFeature([
-      UserEntity,
-      PostEntity,
       FavouriteEntity,
       FollowEntity,
-      LoginHistoryEntity
+      LoginHistoryEntity,
+      NotificationEntity,
+      PostEntity,
+      UserEntity
     ]),
     // MinIO
     NestMinioModule.registerAsync({
@@ -98,29 +102,33 @@ import { UserEntity } from './shared/entities/user.entity';
   ],
   controllers: [
     AppController,
-    AuthController,
-    UsersController,
-    AvatarController,
-    LoginHistoriesController,
-    PostsController,
-    FavouritesController,
-    TimelineController,
+    
     AdminController,
+    AuthController,
+    AvatarController,
+    FavouritesController,
+    FollowersController,
     FollowingsController,
-    FollowersController
+    LoginHistoriesController,
+    NotificationsController,
+    PostsController,
+    TimelineController,
+    UsersController
   ],
   providers: [
     AppService,
-    AuthService,
-    UsersService,
-    AvatarService,
-    LoginHistoriesService,
-    PostsService,
-    FavouritesService,
-    TimelineService,
+    
     AdminService,
+    AuthService,
+    AvatarService,
+    FavouritesService,
     FollowersService,
-    FollowingsService
+    FollowingsService,
+    LoginHistoriesService,
+    NotificationsService,
+    PostsService,
+    TimelineService,
+    UsersService
   ]
 })
 export class AppModule {

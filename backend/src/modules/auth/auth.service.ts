@@ -16,6 +16,9 @@ import type { User } from '../../common/types/user';
 /** Auth Service */
 @Injectable()
 export class AuthService {
+  /** 1ユーザにつき残すログイン履歴の最大件数 */
+  private readonly keepLoginHistoriesPerUser: number = 10;
+  
   private readonly logger: Logger = new Logger(AuthService.name);
   
   constructor(
@@ -27,7 +30,7 @@ export class AuthService {
   /** ログイン認証する */
   public async login(id: string, password: string): Promise<Result<User>> {
     const userEntityResult = await this.usersService.findOneByIdWithPasswordHash(id);
-    if(userEntityResult.error != null) return userEntityResult;
+    if(userEntityResult.error != null) return userEntityResult as Result<User>;
     
     const userEntity = userEntityResult.result;
     const isValidPassword = await bcryptjs.compare(password, userEntity.passwordHash);
@@ -40,7 +43,7 @@ export class AuthService {
   /** トークンをリフレッシュする */
   public async refresh(id: string): Promise<Result<User>> {
     const userEntityResult = await this.usersService.findOneByIdWithPasswordHash(id);
-    if(userEntityResult.error != null) return userEntityResult;
+    if(userEntityResult.error != null) return userEntityResult as Result<User>;
     
     const result = await this.generateToken(userEntityResult.result);
     return result;
@@ -60,13 +63,13 @@ export class AuthService {
     catch(error) {
       this.logger.warn('ログイン履歴の保存に失敗', error);
     }
-    // 古い履歴を削除する (最新5件のみ保持する)
+    // 古い履歴を削除する (最新の指定件数のみ保持する)
     try {
       const oldRecords = await this.loginHistoriesRepository
         .createQueryBuilder('login_histories')
         .where('user_id = :userId', { userId: id })
         .orderBy('updated_at', 'DESC')
-        .skip(5)  // 最新5件は除外する
+        .skip(this.keepLoginHistoriesPerUser)  // 最新の指定件数は除外する
         .getMany();
       if(oldRecords.length > 0) {
         for await (const oldRecord of oldRecords) {
@@ -92,7 +95,7 @@ export class AuthService {
     };
     try {
       // レスポンスの元となるデータ (LocalStorage に格納されるため余計なデータは消しておく)
-      const user: User = { ...userEntity };
+      const user: User = { ...userEntity } as unknown as User;
       delete user.passwordHash;
       delete user.createdAt;
       delete user.updatedAt;

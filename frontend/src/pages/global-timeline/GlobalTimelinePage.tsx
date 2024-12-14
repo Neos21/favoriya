@@ -13,7 +13,8 @@ import type { Result } from '../../common/types/result';
 
 /** Global Timeline Page */
 export const GlobalTimelinePage: FC = () => {
-  const offsetAmount = 100;  // 100件ずつ読み込む
+  /** 1回につき読み込む件数 */
+  const offsetAmount = 100;
   
   const apiGet = useApiGet();
   

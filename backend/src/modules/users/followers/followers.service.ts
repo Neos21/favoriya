@@ -4,7 +4,9 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { FollowEntity } from '../../../shared/entities/follow.entity';
+import { NotificationEntity } from '../../../shared/entities/notification.entity';
 import { UserEntity } from '../../../shared/entities/user.entity';
+import { NotificationsService } from '../../notifications/notifications.service';
 
 import type { Result } from '../../../common/types/result';
 
@@ -15,7 +17,8 @@ export class FollowersService {
   
   constructor(
     @InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>,
-    @InjectRepository(FollowEntity) private readonly followsRepository: Repository<FollowEntity>
+    @InjectRepository(FollowEntity) private readonly followsRepository: Repository<FollowEntity>,
+    private readonly notificationsService: NotificationsService
   ) { }
   
   /** `userId` のフォロワー (`userId` のことをフォローしているユーザ) 一覧を取得する */
@@ -23,8 +26,8 @@ export class FollowersService {
     try {
       const followers = await this.followsRepository.find({
         select: { following: {
-          id: true,
-          name: true,
+          id       : true,
+          name     : true,
           avatarUrl: true
         } },
         where: { followerUserId: userId },
@@ -78,12 +81,22 @@ export class FollowersService {
     
     try {
       await this.followsRepository.insert({ followerUserId, followingUserId });
-      return { result: true };
     }
     catch(error) {
       this.logger.error('フォロー情報の登録に失敗', error);
       return { error: 'フォロー情報の登録に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
+    
+    // フォロー通知を飛ばす
+    const notificationEntity = new NotificationEntity({
+      notificationType: 'follow',
+      message         : `@${followingUserId} さんがあなたをフォローしました`,
+      recipientUserId : followerUserId,
+      actorUserId     : followingUserId
+    });
+    await this.notificationsService.create(notificationEntity);  // エラーは無視する
+    
+    return { result: true };
   }
   
   /** `followingUserId` が `followerUserId` のフォローを外す */

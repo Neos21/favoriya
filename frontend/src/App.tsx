@@ -11,6 +11,7 @@ import { GlobalTimelinePage } from './pages/global-timeline/GlobalTimelinePage';
 import { HomeTimelinePage } from './pages/home-timeline/HomeTimelinePage';
 import { HomePage } from './pages/home/HomePage';
 import { LoginPage } from './pages/login/LoginPage';
+import { NotificationsPage } from './pages/notifications/NotificationsPage';
 import { ChangeAvatarPage } from './pages/settings/change-avatar/ChangeAvatarPage';
 import { DeleteAccountPage } from './pages/settings/delete-account/DeleteAccountPage';
 import { LoginHistoriesPage } from './pages/settings/login-histories/LoginHistoriesPage';
@@ -45,7 +46,8 @@ export const App = () => (
                 <Route path="/settings/change-avatar"   element={<ChangeAvatarPage   />} />
                 <Route path="/settings"                 element={<SettingsPage       />} />
                 
-                <Route path="/users"                 element={<UsersPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/users"         element={<UsersPage         />} />
                 
                 <Route path="/:userId/followers"     element={<FollowersPage  />} />
                 <Route path="/:userId/followings"    element={<FollowingsPage />} />

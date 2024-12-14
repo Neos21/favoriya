@@ -33,7 +33,7 @@ export class FollowersController {
     const result = await this.followersService.findOne(followerUserId, followingUserId);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);  // フォロー関係になかった場合は 404
     
-    const followApi: FollowApi = camelToSnakeCaseObject(result.result);
+    const followApi: FollowApi = camelToSnakeCaseObject(result.result) as unknown as FollowApi;
     return response.status(HttpStatus.OK).json({ result: followApi });
   }
   

@@ -82,7 +82,7 @@ export const AppBarComponent: FC<Props> = ({ drawerWidth, isNarrowWindow, onTogg
         </Grid2>
         
         <Grid2 display="flex" justifyContent="center" alignItems="center" size="grow">
-          <IconButton size="large" color="inherit" disabled>
+          <IconButton size="large" color="inherit" component={Link} to="/notifications" className={ location.pathname === '/notifications' ? 'app-bar-icon-active' : 'app-bar-icon' }>
             <NotificationsIcon />
           </IconButton>
         </Grid2>

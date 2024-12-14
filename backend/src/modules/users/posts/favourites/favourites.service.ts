@@ -4,7 +4,9 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { FavouriteEntity } from '../../../../shared/entities/favourite.entity';
+import { NotificationEntity } from '../../../../shared/entities/notification.entity';
 import { PostEntity } from '../../../../shared/entities/post.entity';
+import { NotificationsService } from '../../../notifications/notifications.service';
 
 import type { Result } from '../../../../common/types/result';
 
@@ -15,7 +17,8 @@ export class FavouritesService {
   
   constructor(
     @InjectRepository(FavouriteEntity) private readonly favouritesRepository: Repository<FavouriteEntity>,
-    @InjectRepository(PostEntity) private readonly postsRepository: Repository<PostEntity>
+    @InjectRepository(PostEntity) private readonly postsRepository: Repository<PostEntity>,
+    private readonly notificationsService: NotificationsService
   ) { }
   
   /** ふぁぼを付ける */
@@ -52,12 +55,22 @@ export class FavouritesService {
         this.logger.error('ふぁぼ数の更新処理で0件 or 2件以上の更新が発生', updateResult);
         return { error: 'ふぁぼ数の更新処理でが発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
-      return { result: true };
     }
     catch(error) {
       this.logger.error('ふぁぼ数の更新処理に失敗', error);
       return { error: 'ふぁぼ数の更新処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
+    
+    const notificationEntity = new NotificationEntity({
+      notificationType: 'favourite',
+      message         : `@${userId} さんがあなたの投稿をふぁぼりました`,
+      recipientUserId : favouritedPostsUserId,
+      actorUserId     : userId,
+      postId          : favouritedPostId
+    });
+    await this.notificationsService.create(notificationEntity);  // エラーは無視する
+    
+    return { result: true };
   }
   
   /** ふぁぼを外す */

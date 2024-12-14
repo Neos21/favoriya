@@ -64,7 +64,7 @@ export const AuthGuardRoute: FC = () => {
         const refreshResult: Result<UserApi> = await response.json();  // Throws
         if(refreshResult.error != null) throw new Error(refreshResult.error);
         
-        const refreshedUser: User = snakeToCamelCaseObject(refreshResult.result);
+        const refreshedUser: User = snakeToCamelCaseObject(refreshResult.result) as User;
         dispatch(setUser(refreshedUser));  // Store に保存する
         localStorage.setItem(userConstants.localStorageKey, JSON.stringify(refreshedUser));
         setIsLoggedIn(true);

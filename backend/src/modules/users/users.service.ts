@@ -116,7 +116,7 @@ export class UsersService {
         this.logger.error('ユーザ情報の更新処理 (Patch) で0件 or 2件以上の更新が発生', updateResult);
         return { error: 'ユーザ情報の更新処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
-      return await this.findOneById(id);
+      return await this.findOneById(id) as Result<User>;
     }
     catch(error) {
       this.logger.error('ユーザ情報の更新処理 (Patch) に失敗', error);

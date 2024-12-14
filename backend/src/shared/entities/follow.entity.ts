@@ -19,9 +19,6 @@ export class FollowEntity {
   @CreateDateColumn({ name: 'created_at' })
   public readonly createdAt: Date;
   
-  @UpdateDateColumn({ name: 'updated_at' })
-  public readonly updatedAt: Date;
-  
   /** User 自身のことをフォローしているフォロワーたち */
   @ManyToOne(() => UserEntity, userEntity => userEntity.followings, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'follower_user_id', referencedColumnName: 'id' })

@@ -34,7 +34,7 @@ export class PostsController {
     const result = await this.postsService.findById(userId, offset, limit);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
-    const posts: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity));
+    const posts: Array<PostApi> = result.result.map(postEntity => camelToSnakeCaseObject(postEntity)) as unknown as Array<PostApi>;
     return response.status(HttpStatus.OK).json({ result: posts });
   }
   
@@ -45,7 +45,7 @@ export class PostsController {
     const result = await this.postsService.findOneById(userId, postId);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
-    const post: PostApi = camelToSnakeCaseObject(result.result);
+    const post: PostApi = camelToSnakeCaseObject(result.result) as unknown as PostApi;
     return response.status(HttpStatus.OK).json({ result: post });
   }
   

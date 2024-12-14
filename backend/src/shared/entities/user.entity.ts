@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
 import { FollowEntity } from './follow.entity';
+import { NotificationEntity } from './notification.entity';
 import { PostEntity } from './post.entity';
 
 /** ユーザ情報 */
@@ -47,8 +48,16 @@ export class UserEntity {
   public followers: Array<FollowEntity>;
   
   /** 自身がフォローしている人たち */
-  @OneToMany(() => FollowEntity, followEntity => followEntity.following)
+  @OneToMany(() => FollowEntity, followEntity => followEntity.following, { createForeignKeyConstraints: false })
   public followings: Array<FollowEntity>;
+  
+  /** ユーザが受信する通知 */
+  @OneToMany(() => NotificationEntity, notificationEntity => notificationEntity.recipientUser, { createForeignKeyConstraints: false })
+  public recipientNotifications: Array<NotificationEntity>;
+  
+  /** ユーザが送信した通知 */
+  @OneToMany(() => NotificationEntity, notificationEntity => notificationEntity.actorUser, { createForeignKeyConstraints: false })
+  public actorNotifications: Array<NotificationEntity>;
   
   constructor(partial: Partial<UserEntity>) { Object.assign(this, partial); }
 }

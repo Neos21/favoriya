@@ -29,7 +29,7 @@ export const UsersPage: FC = () => {
         const usersApiResult: Result<Array<UserApi>> = await response.json();  // Throws
         if(usersApiResult.error != null) return setStatus('failed');
         
-        setUsers(usersApiResult.result.map(userApi => snakeToCamelCaseObject(userApi)));
+        setUsers(usersApiResult.result.map(userApi => snakeToCamelCaseObject(userApi)) as Array<User>);
         setStatus('succeeded');
       }
       catch(error) {

@@ -1,5 +1,8 @@
 import { CamelToSnakeCaseObject } from './cases';
 
+import type { Follow } from './follow';
+import type { Post } from './post';
+
 /** ユーザ情報 */
 export type User = {
   // UserEntity と同じカラム
@@ -13,6 +16,12 @@ export type User = {
   showOthersFavouritesCount?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  
+  posts?: Array<Post>;
+  followers?: Array<Follow>;
+  followings?: Array<Follow>;
+  recipientNotifications?: Array<Notification>;
+  actorNotifications?: Array<Notification>;
   
   // 追加分
   password?: string;

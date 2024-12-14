@@ -38,6 +38,10 @@ a.normal-link {
   transition: none !important;  /* Drawer 関連のアニメーションを切る */
 }
 
+
+/* App Bar Component
+ * ================================================================================ */
+
 .app-bar-icon {
   color: #ccc !important;
 }
