@@ -177,13 +177,13 @@ export const UserPage: FC = () => {
       </List>
       
       <Grid2 container spacing={1} sx={{ mt: 3 }}>
-        <Grid2 size={6}><Link to={`/@${user.id}/followings`} className="hover-underline">フォロー中</Link></Grid2>
-        <Grid2 size={6} sx={{ textAlign: 'right' }}><Link to={`/@${user.id}/followers`} className="hover-underline">フォロワー</Link></Grid2>
+        <Grid2 size={6}                            ><Link to={`/@${user.id}/followings`} className="normal-link">フォロー中</Link></Grid2>
+        <Grid2 size={6} sx={{ textAlign: 'right' }}><Link to={`/@${user.id}/followers` } className="normal-link">フォロワー</Link></Grid2>
       </Grid2>
       
       {user.id !== userState.id &&
         <Typography component="p" sx={{ mt: 3, textAlign: 'right' }}>
-          {!isFollowing && <Button variant="contained" onClick={onFollow}>フォローする</Button>}
+          {!isFollowing && <Button variant="contained" onClick={onFollow  }>フォローする</Button>}
           { isFollowing && <Button variant="contained" onClick={onUnfollow}>フォロー解除する</Button>}
         </Typography>
       }
