@@ -5,9 +5,17 @@ html {
   cursor: default;
 }
 
-html.dark,
+html.dark {
+  background-color: #001020 !important;
+}
+@media (prefers-color-scheme: dark) {
+  html {
+    background-color: #183e61 !important;
+  }
+}
+
 html.light {
-  background-color: transparent !important;
+  background-color: var(--mui-palette-background-default) !important;
 }
 
 body {
