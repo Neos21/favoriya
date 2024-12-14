@@ -2,11 +2,9 @@ import { lazy, Suspense } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-import { CssBaseline, ThemeProvider } from '@mui/material';
-
 import { LayoutComponent } from './core/components/LayoutComponent/LayoutComponent';
 import { AuthGuardRoute } from './core/routes/AuthGuardRoute';
-import { theme } from './core/theme';
+import { ThemeModeProvider } from './core/themes/ThemeModeContextProvider';
 import { GlobalTimelinePage } from './pages/global-timeline/GlobalTimelinePage';
 import { HomeTimelinePage } from './pages/home-timeline/HomeTimelinePage';
 import { HomePage } from './pages/home/HomePage';
@@ -33,8 +31,7 @@ export const App = () => (
   <Suspense fallback={<LoadingSpinnerComponent />}>
     <BrowserRouter>
       <Provider store={store}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
+        <ThemeModeProvider>
           <Routes>
             <Route element={<LayoutComponent />}>
               <Route element={<AuthGuardRoute />}>
@@ -57,16 +54,15 @@ export const App = () => (
                 
                 <Route path="/admin/*" element={<AdminGuardRoute />} />
                 
-                <Route path="/" element={<HomePage />} />
               </Route>
-              
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/login"  element={<LoginPage  />} />
-              
-              <Route path="*" element={<Navigate to="/" />} />
             </Route>
+            
+            <Route path="/" element={<HomePage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login"  element={<LoginPage  />} />
+            <Route path="*"       element={<Navigate to="/" />} />
           </Routes>
-        </ThemeProvider>
+        </ThemeModeProvider>
       </Provider>
     </BrowserRouter>
   </Suspense>

@@ -2,7 +2,7 @@ import { FC, FormEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Alert, Box, Button, Divider, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Container, Divider, TextField, Typography } from '@mui/material';
 
 import { userConstants } from '../../shared/constants/user-constants';
 import { initialUserState, setUser } from '../../shared/stores/user-slice';
@@ -46,28 +46,33 @@ export const LoginPage: FC = () => {
     }
   };
   
-  return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>ログイン</Typography>
-    
-    {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
-    
-    <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
-      <TextField
-        type="text" name="id" label="ユーザ ID"
-        required autoFocus
-        fullWidth margin="normal"
-      />
-      <TextField
-        type="password" name="password" label="パスワード"
-        required autoComplete="current-password"
-        fullWidth margin="normal"
-      />
-      <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }}>ログイン</Button>
-    </Box>
-    
-    <Divider sx={{ mt: 4 }} />
-    <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
-      <Button component={Link} to="/signup" variant="contained">登録</Button>
-    </Box>
-  </>;
+  return <Box component="div" sx={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
+    <Container maxWidth="sm" sx={{ minWidth: 300, py: 1 }}>
+      <Typography component="div" sx={{ textAlign: 'center' }}>
+        <img src="/apple-touch-icon.png" width="64" height="64" alt="Favoriya" loading="lazy" />
+      </Typography>
+      <Typography component="h1" variant="h3" sx={{ textAlign: 'center' }}>Favoriya</Typography>
+      
+      {errorMessage != null && <Alert severity="error" sx={{ mt: 2 }}>{errorMessage}</Alert>}
+      
+      <Box component="form" onSubmit={onSubmit} sx={{ mt: 2 }}>
+        <TextField
+          type="text" name="id" label="User ID"
+          required autoFocus
+          fullWidth margin="normal"
+        />
+        <TextField
+          type="password" name="password" label="Password"
+          required autoComplete="current-password"
+          fullWidth margin="normal"
+        />
+        <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }}>Log In</Button>
+      </Box>
+      
+      <Divider sx={{ mt: 4 }} />
+      <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
+        <Button component={Link} to="/signup" variant="outlined">Sign Up</Button>
+      </Box>
+    </Container>
+  </Box>;
 };

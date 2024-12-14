@@ -2,7 +2,7 @@ import { FC, FormEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Alert, Box, Button, Divider, Modal, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Container, Divider, Modal, TextField, Typography } from '@mui/material';
 
 import { isValidId, isValidPassword } from '../../common/helpers/validators/validator-user';
 import { modalStyle } from '../../shared/constants/modal-style';
@@ -66,42 +66,47 @@ export const SignupPage: FC = () => {
     navigate('/login');
   };
   
-  return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>登録</Typography>
-    
-    {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
-    
-    <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
-      <TextField
-        type="text" name="id" label="ユーザ ID"
-        required autoFocus
-        fullWidth margin="normal"
-        error={formErrors.id != null}
-        helperText={formErrors.id}
-      />
-      <TextField
-        type="password" name="password" label="パスワード"
-        required autoComplete="current-password"
-        fullWidth margin="normal"
-        error={formErrors.password != null}
-        helperText={formErrors.password}
-      />
-      <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }}>登録</Button>
-    </Box>
-    
-    <Divider sx={{ mt: 4 }} />
-    <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
-      <Button component={Link} to="/login" variant="contained">ログインページに戻る</Button>
-    </Box>
-    
-    <Modal open={isModalOpen}>
-      <Box component="div" sx={modalStyle}>
-        <Typography component="h2" variant="h5">ユーザ登録が完了しました</Typography>
-        <Typography component="p" sx={{ mt: 3 }}>ログイン画面でログインしてください</Typography>
-        <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>
-          <Button variant="contained" autoFocus onClick={onCloseModal}>OK</Button>
-        </Box>
+  return <Box component="div" sx={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
+    <Container maxWidth="sm" sx={{ minWidth: 300, py: 1 }}>
+      <Typography component="div" sx={{ textAlign: 'center' }}>
+        <img src="/apple-touch-icon.png" width="64" height="64" alt="Favoriya" loading="lazy" />
+      </Typography>
+      <Typography component="h1" variant="h3" sx={{ textAlign: 'center' }}>Sign Up</Typography>
+      
+      {errorMessage != null && <Alert severity="error" sx={{ mt: 2 }}>{errorMessage}</Alert>}
+      
+      <Box component="form" onSubmit={onSubmit} sx={{ mt: 2 }}>
+        <TextField
+          type="text" name="id" label="User ID"
+          required autoFocus
+          fullWidth margin="normal"
+          error={formErrors.id != null}
+          helperText={formErrors.id}
+        />
+        <TextField
+          type="password" name="password" label="Password"
+          required autoComplete="current-password"
+          fullWidth margin="normal"
+          error={formErrors.password != null}
+          helperText={formErrors.password}
+        />
+        <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }}>Sign Up</Button>
       </Box>
-    </Modal>
-  </>;
+      
+      <Divider sx={{ mt: 4 }} />
+      <Box component="div" sx={{ mt: 4 }}>
+        <Button component={Link} to="/login" variant="outlined">Login</Button>
+      </Box>
+      
+      <Modal open={isModalOpen}>
+        <Box component="div" sx={modalStyle}>
+          <Typography component="h2" variant="h5">ユーザ登録が完了しました</Typography>
+          <Typography component="p" sx={{ mt: 3 }}>ログイン画面でログインしてください</Typography>
+          <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>
+            <Button variant="contained" autoFocus onClick={onCloseModal}>OK</Button>
+          </Box>
+        </Box>
+      </Modal>
+    </Container>
+  </Box>;
 };

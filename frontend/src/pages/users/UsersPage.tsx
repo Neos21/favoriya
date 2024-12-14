@@ -52,6 +52,19 @@ export const UsersPage: FC = () => {
       <Typography component="p" sx={{ mt: 3, textAlign: 'right' }}>全 {users.length} 人</Typography>
       <List sx={{ mt: 3 }}>
         <Divider component="li" />
+        <ListItem alignItems="center" sx={{ px: 0 }}>
+          <ListItemText inset
+            primary={
+              <Grid2 container spacing={1} sx={{ fontWeight: 'bold' }}>
+                <Grid2 size={{ xs: 6, sm: 6, md: 4 }}>ユーザ名</Grid2>
+                <Grid2 size={{ xs: 6, sm: 6, md: 4 }}>ユーザ ID</Grid2>
+                <Grid2 size={{ xs: 6, sm: 6, md: 2 }}>ロール</Grid2>
+                <Grid2 size={{ xs: 6, sm: 6, md: 2 }}>登録日</Grid2>
+              </Grid2>
+            }
+          />
+        </ListItem>
+        <Divider component="li" />
         {users.map(user => <Fragment key={user.id}>
           <ListItem alignItems="center" sx={{ px: 0 }}>
             <ListItemAvatar>
@@ -59,17 +72,17 @@ export const UsersPage: FC = () => {
             </ListItemAvatar>
             <ListItemText
               primary={
-                <Grid2 container spacing={1}>
-                  <Grid2 size={{ xs: 6, sm: 6, md: 4 }} sx={{ fontWeight: 'bold', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                <Grid2 container spacing={1} sx={{ color: 'grey.600', whiteSpace: 'nowrap' }}>
+                  <Grid2 size={{ xs: 6, sm: 6, md: 4 }} sx={{ color: 'text.primary', fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     <Link to={`/@${user.id}`} className="hover-underline">{user.name}</Link>
                   </Grid2>
-                  <Grid2 size={{ xs: 6, sm: 6, md: 4 }} sx={{ color: '#999', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                  <Grid2 size={{ xs: 6, sm: 6, md: 4 }} sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     @{user.id}
                   </Grid2>
-                  <Grid2 size={{ xs: 6, sm: 6, md: 2 }} sx={{ color: '#999', whiteSpace: 'nowrap' }}>
+                  <Grid2 size={{ xs: 6, sm: 6, md: 2 }}>
                     {user.role}
                   </Grid2>
-                  <Grid2 size={{ xs: 6, sm: 6, md: 2 }} sx={{ color: '#999', whiteSpace: 'nowrap' }}>
+                  <Grid2 size={{ xs: 6, sm: 6, md: 2 }}>
                     {epochTimeMsToJstString(user.createdAt as string, 'YYYY-MM-DD')}
                   </Grid2>
                 </Grid2>

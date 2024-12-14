@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" style="height: 100%; background-color: #001020;">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#001020">
     
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Favoriya">
@@ -24,8 +25,34 @@
     <link rel="icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.webmanifest">
+    
+    <script>
+try {
+  const localStorageKey = 'theme';
+  
+  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  darkModeMediaQuery.onchange = event => {
+    document.documentElement.classList.add   (event.matches ? 'dark'  : 'light');
+    document.documentElement.classList.remove(event.matches ? 'light' : 'dark' );
+    localStorage.setItem(localStorageKey,     event.matches ? 'dark'  : 'light');
+  };
+  
+  const lastTheme = localStorage.getItem(localStorageKey);
+  if(lastTheme == null) {
+    document.documentElement.classList.add   (darkModeMediaQuery.matches ? 'dark'  : 'light');
+    document.documentElement.classList.remove(darkModeMediaQuery.matches ? 'light' : 'dark' );
+    localStorage.setItem(localStorageKey,     darkModeMediaQuery.matches ? 'dark'  : 'light');
+  }
+  else {
+    document.documentElement.classList.add(lastTheme);
+  }
+}
+catch(error) {
+  console.warn('Failed To Setup Theme', error);
+}
+    </script>
   </head>
-  <body>
+  <body style="margin: 0; height: 100%; background-color: #001020;">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

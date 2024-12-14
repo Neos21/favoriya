@@ -76,7 +76,7 @@ export const FollowingsPage: FC = () => {
                   <Grid2 size={6} sx={{ fontWeight: 'bold', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                     <Link to={`/@${followingUser.id}`} className="hover-underline">{followingUser.name}</Link>
                   </Grid2>
-                  <Grid2 size={6} sx={{ color: '#999', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                  <Grid2 size={6} sx={{ color: 'grey.600', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                     @{followingUser.id}
                   </Grid2>
                 </Grid2>

@@ -11,7 +11,8 @@ export const modalStyle = {
   maxHeight: '100%',
   overflowY: 'auto',
   bgcolor: 'background.paper',
-  border: '2px solid #999',
+  border: '2px solid',
+  borderColor: 'grey.600',
   borderRadius: 2,
   boxShadow: 24,
   p: 3

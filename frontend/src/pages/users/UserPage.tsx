@@ -163,9 +163,9 @@ export const UserPage: FC = () => {
           <Grid2 container>
             <Grid2 size={9} sx={{ fontWeight: 'bold' }}>
               {user.name}
-              {user.role !== 'Normal' && <Typography component="span" sx={{ ml: 1, color: '#999', fontSize: '.8rem' }}>({user.role})</Typography>}
+              {user.role !== 'Normal' && <Typography component="span" sx={{ ml: 1, color: 'grey.600', fontSize: '.8rem' }}>({user.role})</Typography>}
             </Grid2>
-            <Grid2 size={3} sx={{ textAlign: 'right', color: '#999', fontSize: '.8rem' }}>
+            <Grid2 size={3} sx={{ textAlign: 'right', color: 'grey.600', fontSize: '.8rem' }}>
               {epochTimeMsToJstString(user.createdAt as string, 'YYYY-MM-DD')}
             </Grid2>
           </Grid2>

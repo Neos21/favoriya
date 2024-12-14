@@ -83,12 +83,12 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
         <ListItemText
           primary={<>
             <Grid2 container spacing={1}>
-              <Grid2 size="grow" sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                <Typography component={Link} to={`/@${post.userId}`} className="hover-underline" sx={{ mr: 1, fontWeight: 'bold' }}>{post.user.name}</Typography>
-                <Typography component="span" sx={{ color: '#999' }}>@{post.userId}</Typography>
+              <Grid2 size="grow" sx={{ color: 'grey.600', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                <Typography component={Link} to={`/@${post.userId}`} className="hover-underline" sx={{ mr: 1, color: 'text.primary', fontWeight: 'bold' }}>{post.user.name}</Typography>
+                <Typography component="span">@{post.userId}</Typography>
               </Grid2>
               <Grid2>
-                <Typography component={Link} to={`/@${post.userId}/posts/${post.id}`} className="hover-underline" sx={{ color: '#999', fontSize: '.8rem' }}>
+                <Typography component={Link} to={`/@${post.userId}/posts/${post.id}`} className="hover-underline" sx={{ color: 'grey.600', fontSize: '.8rem' }}>
                   {epochTimeMsToJstString(post.id, 'YYYY-MM-DD HH:mm:SS')}
                 </Typography>
               </Grid2>
@@ -101,7 +101,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                 post.userId === userState.id && <>
                   <IconButton sx={{ mr: .25 }} disabled size="small"><StarIcon fontSize="inherit" /></IconButton>
                   {userState.showOwnFavouritesCount && <>
-                    <Typography component="span" sx={{ mr: 1, color: '#999', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
+                    <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
                     {post.favourites.map(favourite =>
                       <Link to={`/@${favourite.favouritedByUser.id}`} key={favourite.favouritedByUser.id}>
                         <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
@@ -113,11 +113,11 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               {// 他人の投稿の場合
                 post.userId !== userState.id && <>
                 {post.favourites.find(favourite => favourite.favouritedByUser.id === userState.id) == null
-                  ? <IconButton sx={{ mr: .25, color: '#999' }} size="small" onClick={() => onAddFavourite(post)}><StarBorderIcon fontSize="inherit" /></IconButton>
+                  ? <IconButton sx={{ mr: .25, color: 'grey.600' }} size="small" onClick={() => onAddFavourite(post)}><StarBorderIcon fontSize="inherit" /></IconButton>
                   : <IconButton sx={{ mr: .25 }} color="warning" size="small" onClick={() => onRemoveFavourite(post)}><StarIcon fontSize="inherit" /></IconButton>
                 }
                 {userState.showOthersFavouritesCount && <>
-                  <Typography component="span" sx={{ mr: 1, color: '#999', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
+                  <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
                   {post.favourites.map(favourite =>
                     <Link to={`/@${favourite.favouritedByUser.id}`} key={favourite.favouritedByUser.id}>
                       <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />

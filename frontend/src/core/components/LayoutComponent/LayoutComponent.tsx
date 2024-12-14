@@ -27,6 +27,7 @@ export const LayoutComponent: FC = () => {
       variant={isNarrowWindow ? 'temporary' : 'persistent'}
       open={isNarrowWindow ? isOpen : true}
       onClose={onCloseDrawer}
+      className="layout-component-drawer"
       sx={{
         width: drawerWidth,
         flexShrink: 0,

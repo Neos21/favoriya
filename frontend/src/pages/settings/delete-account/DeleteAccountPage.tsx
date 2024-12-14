@@ -66,7 +66,7 @@ export const DeleteAccountPage: FC = () => {
       </ul>
     </Typography>
     
-    <Typography component="p" sx={{ mt: 3, color: '#f00' }}><strong>確認ダイアログなどは出ませんので、よく確認のうえ「アカウントを削除する」ボタンを押してください。</strong></Typography>
+    <Typography component="p" sx={{ mt: 3, color: 'error.main', fontWeight: 'bold' }}>確認ダイアログなどは出ませんので、よく確認のうえ「アカウントを削除する」ボタンを押してください。</Typography>
     
     <Divider sx={{ mt: 4 }} />
     

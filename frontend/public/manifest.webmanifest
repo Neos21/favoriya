@@ -2,8 +2,8 @@
   "name": "Favoriya",
   "short_name": "Favoriya",
   "lang": "ja",
-  "theme_color": "#000000",
-  "background_color": "#000000",
+  "theme_color": "#001020",
+  "background_color": "#001020",
   "display": "standalone",
   "start_url": "https://pseudo.neos21.net",
   "icons": [
