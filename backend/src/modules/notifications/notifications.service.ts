@@ -30,6 +30,7 @@ export class NotificationsService {
           actorUserId     : true,
           postId          : true,
           isRead          : true,
+          createdAt       : true,
           actorUser: {  // 通知の送信者情報を一緒に返す
             id       : true,
             name     : true,

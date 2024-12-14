@@ -62,8 +62,17 @@ a.normal-link {
 /* App Bar Component
  * ================================================================================ */
 
-.app-bar-component {
-  background: rgba(var(--mui-palette-primary-lightChannel) / .3) !important;
+html.dark .app-bar-component {
+  background-color: #183e61 !important;
+}
+@media (prefers-color-scheme: dark) {
+  .app-bar-component {
+    background-color: #183e61 !important;
+  }
+}
+
+html.light .app-bar-component {
+  background-color: #c7e3fb !important;
 }
 
 .app-bar-component-icon {
@@ -89,8 +98,6 @@ html.dark .menu-component-list .Mui-selected {
   }
 }
 
-.menu-component-list :hover .MuiButtonBase-root,
-.menu-component-list .Mui-selected,
 html.light .menu-component-list :hover .MuiButtonBase-root,
 html.light .menu-component-list .Mui-selected {
   background-color: rgba(243, 33, 150, .3) !important;
@@ -146,7 +153,7 @@ html.light .font-parser-component code,
 html.light .font-parser-component var,
 html.light .font-parser-component samp,
 html.light .font-parser-component kbd {
-  background: rgba(0, 0, 0, .1);
+  background: rgba(0, 0, 0, .075);
 }
 
 .font-parser-component code { color: #f0a; }

@@ -32,7 +32,7 @@ export const AppBarComponent: FC<Props> = ({ drawerWidth, isNarrowWindow, onTogg
       <Grid2 container spacing={3} width="100%">
         {isNarrowWindow &&
           <Grid2 display="flex" justifyContent="center" alignItems="center" size="grow">
-            <IconButton size="large" color="inherit" onClick={onToggleDrawer}>
+            <IconButton size="large" color="inherit" onClick={onToggleDrawer} className="app-bar-component-icon-active">
               <MenuIcon />
             </IconButton>
           </Grid2>

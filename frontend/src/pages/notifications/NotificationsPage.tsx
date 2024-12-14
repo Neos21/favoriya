@@ -12,11 +12,11 @@ import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { userConstants } from '../../shared/constants/user-constants';
 import { useApiGet, useApiPatch } from '../../shared/hooks/use-api-fetch';
+import { epochTimeMsToJstString } from '../../shared/services/convert-date-to-jst';
 
 import type { Result } from '../../common/types/result';
 import type { RootState } from '../../shared/stores/store';
 import type { Notification, NotificationApi } from '../../common/types/notification';
-
 /** Notifications Page */
 export const NotificationsPage: FC = () => {
   const userState = useSelector((state: RootState) => state.user);
@@ -97,7 +97,9 @@ export const NotificationsPage: FC = () => {
               </Link>
             </ListItemAvatar>
             <ListItemText
+              sx={{ mr: 6 }}
               primary={<>
+                <Typography component="div" sx={{ color: 'grey.600', fontSize: '.86rem' }}>{epochTimeMsToJstString(notification.createdAt as string, 'YYYY-MM-DD HH:mm:SS')}</Typography>
                 {notification.notificationType === 'favourite' && <Link to={`/@${userState.id}/posts/${notification.postId}`} className="hover-underline">{notification.message}</Link>}
                 {notification.notificationType === 'follow'    && <Link to={`/@${notification.actorUserId}`} className="hover-underline">{notification.message}</Link>}
               </>}
