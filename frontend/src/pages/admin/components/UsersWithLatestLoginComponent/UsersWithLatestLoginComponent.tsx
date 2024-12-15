@@ -57,7 +57,7 @@ export const UsersWithLatestLoginComponent: FC = () => {
                   @{user.id}
                 </Grid2>
                 <Grid2 size={6}>
-                  {epochTimeMsToJstString(user.updatedAt as string, 'YYYY-MM-DD HH:mm:SS')}
+                  {user.updatedAt == null ? '-' : epochTimeMsToJstString(user.updatedAt as string, 'YYYY-MM-DD HH:mm:SS')}
                 </Grid2>
               </Grid2>
             }

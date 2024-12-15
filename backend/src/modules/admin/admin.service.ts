@@ -50,7 +50,8 @@ export class AdminService {
         .addSelect('users.avatar_url', 'avatar_url')
         .leftJoin(`(${subQuery})`, 'latest', 'latest.user_id = users.id')
         .addSelect('latest.latest_login_at', 'updated_at')
-        .orderBy('updated_at', 'DESC')
+        .orderBy('CASE WHEN latest.latest_login_at IS NULL THEN 1 ELSE 0 END', 'ASC')  // NULL を最後にする
+        .addOrderBy('updated_at', 'DESC')  // NULL 以外を降順にする
         .getRawMany();
       return { result };
     }
