@@ -1,14 +1,27 @@
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
+import { Repository } from 'typeorm';
 
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
+import { LoginHistoryEntity } from '../../shared/entities/login-history.entity';
+import { UserEntity } from '../../shared/entities/user.entity';
 
 import type { Result } from '../../common/types/result';
 import type { CpuInfo, DiskInfo, RamInfo, RawCpuInfo, ServerMetrics } from '../../common/types/admin/server-metrics';
+import type { UserApi } from '../../common/types/user';
 
 /** Admin Service */
 @Injectable()
 export class AdminService {
+  private readonly logger: Logger = new Logger(AdminService.name);
+  
+  constructor(
+    @InjectRepository(LoginHistoryEntity) private readonly loginHistoriesRepository: Repository<LoginHistoryEntity>,
+    @InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>,
+  ) { }
+  
   /** サーバメトリクスを取得する */
   public async getServerMetrics(): Promise<Result<ServerMetrics>> {
     const cpu  = await this.getCpuInfo();
@@ -17,6 +30,34 @@ export class AdminService {
     
     const result = { cpu, ram, disk };
     return { result };
+  }
+  
+  /** ユーザごとの最終ログイン日時を取得する */
+  public async getUsersWithLatestLogin(): Promise<Result<Array<UserApi>>> {
+    try {
+      const subQuery = this.loginHistoriesRepository
+        .createQueryBuilder('login_histories')
+        .subQuery()
+        .select('MAX(login_histories.updated_at)', 'latest_login_at')
+        .addSelect('login_histories.user_id', 'user_id')
+        .from('login_histories', 'login_histories')
+        .groupBy('login_histories.user_id')
+        .getQuery();
+      const result = await this.usersRepository
+        .createQueryBuilder('users')
+        .select   ('users.id'        , 'id')
+        .addSelect('users.name'      , 'name')
+        .addSelect('users.avatar_url', 'avatar_url')
+        .leftJoin(`(${subQuery})`, 'latest', 'latest.user_id = users.id')
+        .addSelect('latest.latest_login_at', 'updated_at')
+        .orderBy('updated_at', 'DESC')
+        .getRawMany();
+      return { result };
+    }
+    catch(error) {
+      this.logger.error('ユーザごとの最終ログイン日時取得に失敗', error);
+      return { error: 'ユーザごとの最終ログイン日時取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+    }
   }
   
   /** CPU 情報を取得する */
