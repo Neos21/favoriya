@@ -19,6 +19,17 @@ export default defineConfig(props => {
         }
       }
     },
-    define: envWithProcessPrefix
+    define: envWithProcessPrefix,
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            react: ['react', 'react-dom', 'react-router-dom'],
+            mui  : ['@emotion/react', '@emotion/styled', '@mui/icons-material', '@mui/material'],
+            redux: ['@reduxjs/toolkit', 'react-redux']
+          }
+        }
+      }
+    }
   };
 });

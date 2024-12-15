@@ -10,7 +10,7 @@ html.dark {
 }
 @media (prefers-color-scheme: dark) {
   html {
-    background-color: #183e61 !important;
+    background-color: #001020 !important;
   }
 }
 
@@ -71,11 +71,11 @@ a.normal-link {
  * ================================================================================ */
 
 html.dark .app-bar-component {
-  background-color: #183e61 !important;
+  background-color: #001838 !important;
 }
 @media (prefers-color-scheme: dark) {
   .app-bar-component {
-    background-color: #183e61 !important;
+    background-color: #001838 !important;
   }
 }
 
@@ -84,7 +84,8 @@ html.light .app-bar-component {
 }
 
 .app-bar-component-icon {
-  color: var(--mui-palette-grey-600) !important;
+  color: var(--mui-palette-text-primary) !important;
+  opacity: .6;
 }
 
 .app-bar-component-icon-active {
@@ -173,7 +174,9 @@ html.light .font-parser-component kbd {
   50% { opacity: 0; }
 }
 
-.font-parser-component marquee { display: block; }
+.font-parser-component marquee {
+  display: block;
+}
 
 @keyframes scroll-left {
   from { transform: translateX( 100%); }
