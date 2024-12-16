@@ -5,6 +5,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { Alert, Button, Divider, Grid2, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
+import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { FontParserComponent } from '../../shared/components/FontParserComponent/FontParserComponent';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { PostsListComponent } from '../../shared/components/PostsListComponent/PostsListComponent';
@@ -16,7 +17,6 @@ import type { Post, PostApi } from '../../common/types/post';
 import type { Result } from '../../common/types/result';
 import type { User, UserApi } from '../../common/types/user';
 import type { RootState } from '../../shared/stores/store';
-
 /** User Page */
 export const UserPage: FC = () => {
   /** 1回につき読み込む件数 */
@@ -172,7 +172,7 @@ export const UserPage: FC = () => {
         } /></ListItem>
         <Divider component="li" />
         <ListItem><ListItemText sx={{ mt: 1.25, pb: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }} primary={
-          <FontParserComponent input={user.profileText} />
+          <FontParserComponent input={isEmptyString(user.profileText) ? '<font color="var(--mui-palette-grey-600)">プロフィールテキストはまだありません</font>' : user.profileText} />
         } /></ListItem>
       </List>
       

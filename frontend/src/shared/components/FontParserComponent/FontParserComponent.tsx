@@ -2,20 +2,20 @@ import DOMPurify from 'dompurify';
 
 const fontSizeMap: Record<string, string> = {
   '1' : '0.75rem',
-  '2' : '0.875rem',
+  '2' : '0.85rem',
   '3' : '1rem',
-  '4' : '1.125rem',
-  '5' : '1.25rem',
-  '6' : '1.5rem',
+  '4' : '1.25rem',
+  '5' : '1.5rem',
+  '6' : '1.75rem',
   '7' : '2rem',
   '-4': '0.5rem',
-  '-3': '0.625rem',
+  '-3': '0.65rem',
   '-2': '0.75rem',
-  '-1': '0.875rem',
+  '-1': '0.85rem',
   '0' : '1rem',
-  '+1': '1.125rem',
-  '+2': '1.25rem',
-  '+3': '1.5rem',
+  '+1': '1.25rem',
+  '+2': '1.5rem',
+  '+3': '1.75rem',
   '+4': '2rem'
 };
 
