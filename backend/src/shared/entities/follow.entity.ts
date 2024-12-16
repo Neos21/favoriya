@@ -20,12 +20,12 @@ export class FollowEntity {
   public readonly createdAt: Date;
   
   /** User 自身のことをフォローしているフォロワーたち */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.followings, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, userEntity => userEntity.followings, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'follower_user_id', referencedColumnName: 'id' })
   public follower: UserEntity;
   
   /** User 自身がフォローしている人たち */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.followers, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, userEntity => userEntity.followers, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'following_user_id', referencedColumnName: 'id' })
   public following: UserEntity;
   

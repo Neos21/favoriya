@@ -5,7 +5,7 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { isValidId, isValidName, isValidPassword, isValidProfileText } from '../../common/helpers/validators/validator-user';
-import { authUserConstants } from '../../shared/constants/auth-user';
+import { authUserConstants } from '../../shared/constants/auth-user-constants';
 import { UserEntity } from '../../shared/entities/user.entity';
 import { AvatarService } from './avatar/avatar.service';
 import { PostsService } from './posts/posts.service';
@@ -23,6 +23,28 @@ export class UsersService {
     private readonly avatarService: AvatarService,
     private readonly postsService: PostsService
   ) { }
+  
+  /** 匿名さんユーザを登録する */
+  public async onModuleInit(): Promise<void> {
+    try {
+      const existsAnonymous = await this.usersRepository.findOneBy({ id: 'anonymous' });
+      if(existsAnonymous != null) return this.logger.debug('匿名さん作成済');
+      
+      const insertResult = await this.usersRepository.insert(new UserEntity({
+        id          : 'anonymous',
+        passwordHash: '',
+        name        : '匿名さん',
+        role        : 'Anonymous',
+        profileText : '匿名投稿用のユーザです',
+        createdAt   : new Date(0),
+        updatedAt   : new Date(0)
+      }));
+      this.logger.debug('匿名さんを作成', JSON.stringify(insertResult));
+    }
+    catch(error) {
+      this.logger.warn('匿名さんの作成に失敗', error);
+    }
+  }
   
   /** ユーザ登録する */
   public async create(user: User): Promise<Result<boolean>> {

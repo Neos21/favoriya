@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { Avatar, Divider, Grid2, IconButton, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import { Avatar, Divider, Grid2, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
 
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { FontParserComponent } from '../../components/FontParserComponent/FontParserComponent';
@@ -78,7 +78,11 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
     {posts.map(post => <Fragment key={post.id}>
       <ListItem alignItems="flex-start" sx={{ wordBreak: 'break-all', px: 0 }}>
         <ListItemAvatar>
-          <Avatar src={isEmptyString(post.user.avatarUrl) ? '' : `${userConstants.ossUrl}${post.user.avatarUrl}`} />
+          <Tooltip title={post.userId} placement="top">
+            <Link to={`/@${post.userId}`}>
+              <Avatar src={isEmptyString(post.user.avatarUrl) ? '' : `${userConstants.ossUrl}${post.user.avatarUrl}`} />
+            </Link>
+          </Tooltip>
         </ListItemAvatar>
         <ListItemText
           primary={<>
@@ -103,9 +107,11 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                   {userState.showOwnFavouritesCount && <>
                     <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
                     {post.favourites.map(favourite =>
-                      <Link to={`/@${favourite.favouritedByUser.id}`} key={favourite.favouritedByUser.id}>
-                        <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
-                      </Link>
+                      <Tooltip title={favourite.favouritedByUser.id} placement="top">
+                        <Link to={`/@${favourite.favouritedByUser.id}`} key={favourite.favouritedByUser.id}>
+                          <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
+                        </Link>
+                      </Tooltip>
                     )}
                   </>}
                 </>
@@ -119,9 +125,11 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                 {userState.showOthersFavouritesCount && <>
                   <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
                   {post.favourites.map(favourite =>
-                    <Link to={`/@${favourite.favouritedByUser.id}`} key={favourite.favouritedByUser.id}>
-                      <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
-                    </Link>
+                    <Tooltip title={favourite.favouritedByUser.id} placement="top">
+                      <Link to={`/@${favourite.favouritedByUser.id}`} key={favourite.favouritedByUser.id}>
+                        <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
+                      </Link>
+                    </Tooltip>
                   )}
                 </>}
               </>

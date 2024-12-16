@@ -1,9 +1,11 @@
+import DOMPurify from 'dompurify';
 import { ChangeEvent, FC, FormEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
-import { Alert, Box, Button, IconButton, Modal, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, FormControl, Grid2, IconButton, InputLabel, MenuItem, Modal, Select, TextField, Typography } from '@mui/material';
 
+import { topicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { isValidText } from '../../../common/helpers/validators/validator-post';
 import { modalStyle } from '../../constants/modal-style';
@@ -13,20 +15,25 @@ import type { RootState } from '../../stores/store';
 
 import type { PostApi } from '../../../common/types/post';
 import type { Result } from '../../../common/types/result';
-
 type Props = {
   /** 投稿が完了した後に呼ばれる関数 */
   onAfterSubmit?: () => void;
 }
 
-type FormData = { text: string };
+type FormData = {
+  topicId: number,
+  text   : string,
+};
 
 /** Post Form Component */
 export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
   const apiPost = useApiPost();
   const userState = useSelector((state: RootState) => state.user);
   
-  const [formData, setFormData] = useState<FormData>({ text: '' });
+  const [formData, setFormData] = useState<FormData>({
+    topicId: topicsConstants.normal.id,
+    text   : ''
+  });
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
@@ -41,14 +48,22 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
     event.preventDefault();
     setErrorMessage(null);
     
-    const userId = userState.id;
-    const text   = formData.text;
+    const userId  = userState.id;
+    const text    = formData.text.trim();
+    const topicId = formData.topicId;
     
-    // 入力チェック
+    // 基本的な入力チェック
     const validationText = isValidText(text);
     if(validationText.error != null) return setErrorMessage(validationText.error);
     
-    const newPostApi: PostApi = camelToSnakeCaseObject({ userId, text });
+    // トピックごとの入力チェック
+    const topic = Object.values(topicsConstants).find(topic => topic.id === topicId);
+    if(topic == null) return setErrorMessage('不正なトピックです');
+    const textContent = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+    const validationResult = topic.validateFunction(textContent);
+    if(validationResult.error != null) return setErrorMessage(validationResult.error);
+    
+    const newPostApi: PostApi = camelToSnakeCaseObject({ userId, text, topicId });
     try {
       const response = await apiPost(`/users/${userId}/posts`, newPostApi);  // Throws
       
@@ -58,7 +73,10 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
       }
       
       // 投稿成功
-      setFormData({ text: '' });
+      setFormData({
+        topicId: topicsConstants.normal.id,
+        text   : ''
+      });
       onAfterSubmit();
     }
     catch(error) {
@@ -79,10 +97,22 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
     {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
     
     <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
-      <Box component="div" sx={{ textAlign: 'right' }}>
-        <IconButton sx={{ mr: 3 }} onClick={() => setIsModalOpen(true)}><HelpOutlineOutlinedIcon /></IconButton>
-        <Button type="submit" variant="contained">投稿</Button>
-      </Box>
+      <Grid2 container>
+        <Grid2 size="grow">
+          <FormControl fullWidth size="small">
+            <InputLabel id="post-form-select-topic">トピック</InputLabel>
+            <Select labelId="post-form-select-topic" name="topicId" label="トピック" value={formData.topicId} onChange={onChange}>
+              {Object.values(topicsConstants).map(topic => (
+                <MenuItem key={topic.id} value={topic.id}>{topic.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid2>
+        <Grid2 size="grow" sx={{ placeSelf: 'end', textAlign: 'right' }}>
+          <IconButton sx={{ mr: 3 }} onClick={() => setIsModalOpen(true)}><HelpOutlineOutlinedIcon /></IconButton>
+          <Button type="submit" variant="contained">投稿</Button>
+        </Grid2>
+      </Grid2>
       <TextField
         multiline name="text" label="投稿" value={formData.text} onChange={onChange} onKeyDown={onKeyDown}
         required

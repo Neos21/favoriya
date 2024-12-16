@@ -6,7 +6,7 @@ import type { Post } from './post';
 /** ユーザ情報 */
 export type User = {
   // UserEntity と同じカラム
-  id: string;
+  id?: string;
   passwordHash?: string;
   name?: string;
   role?: string;

@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
+import { PostValidationService } from './post-validation.service';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 
 describe('PostsController', () => {
   let controller: PostsController;
+  let fakePostValidationService: Partial<PostValidationService>;
   let fakePostsService: Partial<PostsService>;
   
   beforeEach(async () => {
@@ -13,7 +15,10 @@ describe('PostsController', () => {
     
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostsController],
-      providers: [{ provide: PostsService, useValue: fakePostsService }]
+      providers: [
+        { provide: PostValidationService, useValue: fakePostValidationService },
+        { provide: PostsService, useValue: fakePostsService }
+      ]
     })
       .overrideGuard(JwtAuthGuard)
       .useValue(fakeJwtAuthGuard)

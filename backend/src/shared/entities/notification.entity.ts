@@ -36,12 +36,12 @@ export class NotificationEntity {
   public readonly createdAt: Date;
   
   /** 通知の受信者 */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.recipientNotifications)
+  @ManyToOne(() => UserEntity, userEntity => userEntity.recipientNotifications, { createForeignKeyConstraints: false })
   @JoinColumn({ name: 'recipient_user_id', referencedColumnName: 'id' })
   public recipientUser: UserEntity;
   
   /** 通知の送信者 */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.actorNotifications)
+  @ManyToOne(() => UserEntity, userEntity => userEntity.actorNotifications, { createForeignKeyConstraints: false })
   @JoinColumn({ name: 'actor_user_id', referencedColumnName: 'id' })
   public actorUser: UserEntity;
   

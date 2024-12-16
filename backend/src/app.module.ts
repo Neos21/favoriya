@@ -19,6 +19,7 @@ import { NotificationsController } from './modules/notifications/notifications.c
 import { NotificationsService } from './modules/notifications/notifications.service';
 import { TimelineController } from './modules/timeline/timeline.controller';
 import { TimelineService } from './modules/timeline/timeline.service';
+import { TopicsService } from './modules/topics/topics.service';
 import { AvatarController } from './modules/users/avatar/avatar.controller';
 import { AvatarService } from './modules/users/avatar/avatar.service';
 import { FollowersController } from './modules/users/followers/followers.controller';
@@ -29,6 +30,7 @@ import { LoginHistoriesController } from './modules/users/login-histories/login-
 import { LoginHistoriesService } from './modules/users/login-histories/login-histories.service';
 import { FavouritesController } from './modules/users/posts/favourites/favourites.controller';
 import { FavouritesService } from './modules/users/posts/favourites/favourites.service';
+import { PostValidationService } from './modules/users/posts/post-validation.service';
 import { PostsController } from './modules/users/posts/posts.controller';
 import { PostsService } from './modules/users/posts/posts.service';
 import { UsersController } from './modules/users/users.controller';
@@ -38,6 +40,7 @@ import { FollowEntity } from './shared/entities/follow.entity';
 import { LoginHistoryEntity } from './shared/entities/login-history.entity';
 import { NotificationEntity } from './shared/entities/notification.entity';
 import { PostEntity } from './shared/entities/post.entity';
+import { TopicEntity } from './shared/entities/topic.entity';
 import { UserEntity } from './shared/entities/user.entity';
 
 /** App Module */
@@ -85,6 +88,7 @@ import { UserEntity } from './shared/entities/user.entity';
       LoginHistoryEntity,
       NotificationEntity,
       PostEntity,
+      TopicEntity,
       UserEntity
     ]),
     // MinIO
@@ -127,7 +131,9 @@ import { UserEntity } from './shared/entities/user.entity';
     LoginHistoriesService,
     NotificationsService,
     PostsService,
+    PostValidationService,
     TimelineService,
+    TopicsService,
     UsersService
   ]
 })

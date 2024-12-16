@@ -27,6 +27,6 @@ export const HomePage: FC = () => {
   // ログインできていなかったらログイン画面に遷移する
   if(!isLoggedIn) return <Navigate to="/login" />;
   
-  // ログインできていたらホームタイムライン画面に遷移する
-  return <Navigate to="/home-timeline" />;
+  // ログインできていたらグローバルタイムライン画面に遷移する
+  return <Navigate to="/global-timeline" />;
 };

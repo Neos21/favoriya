@@ -3,11 +3,11 @@ import { Repository } from 'typeorm';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { topicsConstants } from '../../../common/constants/topics-constants';
 import { PostEntity } from '../../../shared/entities/post.entity';
 
 import type { Post } from '../../../common/types/post';
 import type { Result } from '../../../common/types/result';
-
 /** Posts Service */
 @Injectable()
 export class PostsService {
@@ -19,8 +19,9 @@ export class PostsService {
   public async create(post: Post): Promise<Result<boolean>> {
     try {
       const newPostEntity = new PostEntity({
-        userId: post.userId,
-        text  : post.text
+        userId : post.topicId === topicsConstants.anonymous.id ? 'anonymous' : post.userId,
+        text   : post.text,
+        topicId: post.topicId
       });
       await this.postsRepository.insert(newPostEntity);
       return { result: true };

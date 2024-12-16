@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Q
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { isValidJwtUserId } from '../../../shared/helpers/is-valid-jwt-user-id';
+import { PostValidationService } from './post-validation.service';
 import { PostsService } from './posts.service';
 
 import type { Request, Response } from 'express';
@@ -12,7 +13,10 @@ import type { Post as TypePost, PostApi } from '../../../common/types/post';
 /** Posts Controller */
 @Controller('api/users')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) { }
+  constructor(
+    private readonly postValidationService: PostValidationService,
+    private readonly postsService: PostsService
+  ) { }
   
   /** 投稿する */
   @UseGuards(JwtAuthGuard)
@@ -21,6 +25,11 @@ export class PostsController {
     if(!isValidJwtUserId(request, response, userId)) return;
     
     const post: TypePost = snakeToCamelCaseObject(postApi) as TypePost;
+    
+    // トピックごとに入力チェックする
+    const validationResult = this.postValidationService.validateText(post.text, post.topicId);
+    if(validationResult.error != null) return response.status(validationResult.code ?? HttpStatus.BAD_REQUEST).json(validationResult);
+    
     const result = await this.postsService.create(post);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     

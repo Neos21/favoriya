@@ -1,6 +1,7 @@
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
 import { FavouriteEntity } from './favourite.entity';
+import { TopicEntity } from './topic.entity';
 import { UserEntity } from './user.entity';
 
 /** 投稿 */
@@ -14,6 +15,9 @@ export class PostEntity {
   
   @Column({ name: 'text' })
   public text: string;
+  
+  @Column({ name: 'topic_id', nullable: true })
+  public topicId: number;
   
   /** この投稿がふぁぼられた数 (キャッシュ用) */
   @Column({ name: 'favourites_count', default: 0 })
@@ -33,6 +37,11 @@ export class PostEntity {
   /** この投稿がふぁぼられた情報との関係を示す */
   @OneToMany(() => FavouriteEntity, favouriteEntity => favouriteEntity.post, { createForeignKeyConstraints: false })
   public favourites: Array<FavouriteEntity>;
+  
+  /** この投稿のトピック */
+  @ManyToOne(() => TopicEntity, topicEntity => topicEntity.posts, { eager: true, createForeignKeyConstraints: false })  // eager によって紐付いて取得される
+  @JoinColumn({ name: 'topic_id', referencedColumnName: 'id' })
+  public topic: TopicEntity;
   
   constructor(partial: Partial<PostEntity>) { Object.assign(this, partial); }
   
