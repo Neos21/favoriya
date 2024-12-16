@@ -2,6 +2,7 @@ import { FC, FormEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
+import GitHubIcon from '@mui/icons-material/GitHub';
 import { Alert, Box, Button, Container, Divider, TextField, Typography } from '@mui/material';
 
 import { userConstants } from '../../shared/constants/user-constants';
@@ -72,6 +73,11 @@ export const LoginPage: FC = () => {
       <Divider sx={{ mt: 4 }} />
       <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
         <Button component={Link} to="/signup" variant="outlined">Sign Up</Button>
+      </Box>
+      
+      <Divider sx={{ mt: 4 }} />
+      <Box component="div" sx={{ mt: 4, textAlign: 'center', color: 'grey.500' }}>
+        <Button variant="outlined" color="inherit" startIcon={<GitHubIcon />} onClick={() => window.open('https://github.com/Neos21/pseudo')}>GitHub</Button>
       </Box>
     </Container>
   </Box>;
