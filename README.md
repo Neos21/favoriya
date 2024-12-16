@@ -1,10 +1,13 @@
-# [Favoriya](https://pseudo.neos21.net)
+<h1 align="center"><a href="https://pseudo.neos21.net" target="_blank" title="Powered By AI">Favoriya</a></h1>
 
-**[Enter The WebSite](https://pseudo.neos21.net)**
+<h2 align="center"><a href="https://github.com/Neos21/pseudo/wiki" target="_blank">More Info (Wiki)</a></h2>
 
-[More Info (GitHub Wiki)](https://github.com/Neos21/pseudo/wiki)
+<p align="right">
+  <a href="https://ghloc.vercel.app/Neos21/pseudo" target="_blank"><img src="https://img.shields.io/endpoint?color=blue&url=https://ghloc.vercel.app/api/neos21/pseudo/badge" alt="Lines of Code" title="Lines of Code"></a>
+</p>
 
-[![Lines of Code](https://img.shields.io/endpoint?color=blue&url=https://ghloc.vercel.app/api/neos21/pseudo/badge)](https://ghloc.vercel.app/Neos21/pseudo)
+
+-----
 
 
 ## ローカル実行手順
