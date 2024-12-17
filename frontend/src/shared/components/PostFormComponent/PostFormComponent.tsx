@@ -3,7 +3,7 @@ import { ChangeEvent, FC, FormEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
-import { Alert, Box, Button, FormControl, Grid2, IconButton, InputLabel, MenuItem, Modal, Select, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, FormControl, Grid2, IconButton, InputLabel, MenuItem, Modal, Select, TextField, Tooltip, Typography } from '@mui/material';
 
 import { topicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
@@ -96,6 +96,11 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
   return <>
     {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
     
+    {formData.topicId === topicsConstants.englishOnly.id && <Alert severity="info" sx={{ mt: 3 }}>「英語のみ」モードでは英語のみが投稿できます。</Alert>}
+    {formData.topicId === topicsConstants.kanjiOnly.id   && <Alert severity="info" sx={{ mt: 3 }}>「漢字のみ」モードでは漢字のみが投稿できます。</Alert>}
+    {formData.topicId === topicsConstants.senryu.id      && <Alert severity="info" sx={{ mt: 3 }}>「川柳」モードでは改行または全角スペースで文章を区切り、五・七・五の形式にすると投稿できます。</Alert>}
+    {formData.topicId === topicsConstants.anonymous.id   && <Alert severity="info" sx={{ mt: 3 }}>「匿名投稿」モードでは「匿名さん」による代理投稿ができます。その代わり投稿の削除ができませんのでご注意ください。</Alert>}
+    
     <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
       <Grid2 container>
         <Grid2 size="grow">
@@ -109,7 +114,9 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
           </FormControl>
         </Grid2>
         <Grid2 size="grow" sx={{ placeSelf: 'end', textAlign: 'right' }}>
-          <IconButton sx={{ mr: 3 }} onClick={() => setIsModalOpen(true)}><HelpOutlineOutlinedIcon /></IconButton>
+          <Tooltip title="ヘルプ">
+            <IconButton sx={{ mr: 3 }} onClick={() => setIsModalOpen(true)}><HelpOutlineOutlinedIcon /></IconButton>
+          </Tooltip>
           <Button type="submit" variant="contained">投稿</Button>
         </Grid2>
       </Grid2>
@@ -123,14 +130,14 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
     <Modal open={isModalOpen}>
       <Box component="div" sx={modalStyle}>
         <Typography component="h2" variant="h5">投稿で使える機能</Typography>
-        <Box component="div" sx={{ mt: 3, maxHeight: '47vh', overflowY: 'auto' }}>
+        <Box component="div" sx={{ mt: 2, maxHeight: '47vh', overflowY: 'auto' }}>
           <Typography component="p">以下の HTML タグが利用できます :</Typography>
           <ul style={{ margin: '1rem 0 0', paddingLeft: '1.25rem' }} className="font-parser-component">
             <li>font :
               <ul style={{ margin: '0', paddingLeft: '1rem' }}>
                 <li>size … 1 ～ 7・-4 ～ +4</li>
                 <li>color</li>
-                <li>face</li>
+                <li>face … serif で明朝体、など</li>
               </ul>
             </li>
             <li>marquee : direction・scrollamout</li>
@@ -140,7 +147,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
             <li><code>code</code>・<var>var</var>・<samp>samp</samp>・<kbd>kbd</kbd></li>
           </ul>
         </Box>
-        <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>
+        <Box component="div" sx={{ mt: 2, textAlign: 'right' }}>
           <Button variant="contained" color="primary" onClick={() => setIsModalOpen(false)}>OK</Button>
         </Box>
       </Box>

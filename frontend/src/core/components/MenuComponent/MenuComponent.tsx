@@ -12,8 +12,9 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
 import PublicIcon from '@mui/icons-material/Public';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Avatar, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
+import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { themeConstants } from '../../../shared/constants/theme-constants';
 import { userConstants } from '../../../shared/constants/user-constants';
 import { useThemeMode } from '../../../shared/hooks/use-theme-mode';
@@ -74,7 +75,10 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
     
     <ListItem disablePadding>
       <ListItemButton component={Link} to={`/@${userState.id}`} onClick={onClickItem} selected={location.pathname === `/@${userState.id}`}>
-        <ListItemIcon><AccountCircleIcon /></ListItemIcon>
+        <ListItemIcon>
+          { isEmptyString(userState.avatarUrl) && <AccountCircleIcon />}
+          {!isEmptyString(userState.avatarUrl) && <Avatar src={`${userConstants.ossUrl}${userState.avatarUrl}`} sx={{ width: '24px', height: '24px' }} />}
+        </ListItemIcon>
         <ListItemText primary="プロフィール" />
       </ListItemButton>
     </ListItem>

@@ -7,8 +7,10 @@ import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PublicIcon from '@mui/icons-material/Public';
-import { AppBar, Grid2, IconButton, Toolbar } from '@mui/material';
+import { AppBar, Avatar, Grid2, IconButton, Toolbar } from '@mui/material';
 
+import { isEmptyString } from '../../../common/helpers/is-empty-string';
+import { userConstants } from '../../../shared/constants/user-constants';
 import { RootState } from '../../../shared/stores/store';
 
 type Props = {
@@ -57,8 +59,9 @@ export const AppBarComponent: FC<Props> = ({ drawerWidth, isNarrowWindow, onTogg
         </Grid2>
         
         <Grid2 display="flex" justifyContent="center" alignItems="center" size="grow">
-          <IconButton size="large" color="inherit" component={Link} to={`/@${userState.id}`} className={ location.pathname === `/@${userState.id}` ? 'app-bar-component-icon-active' : 'app-bar-component-icon' }>
-            <AccountCircleIcon />
+          <IconButton size="large" color="inherit" component={Link} to={`/@${userState.id}`} className={ location.pathname === `/@${userState.id}` || !isEmptyString(userState.avatarUrl) ? 'app-bar-component-icon-active' : 'app-bar-component-icon' }>
+            { isEmptyString(userState.avatarUrl) && <AccountCircleIcon />}
+            {!isEmptyString(userState.avatarUrl) && <Avatar src={`${userConstants.ossUrl}${userState.avatarUrl}`} sx={{ width: '24px', height: '24px' }} />}
           </IconButton>
         </Grid2>
       </Grid2>

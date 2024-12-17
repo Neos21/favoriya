@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { Avatar, Divider, Grid2, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
+import { Alert, Avatar, Divider, Grid2, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
 
+import { topicsConstants } from '../../../common/constants/topics-constants';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { FontParserComponent } from '../../components/FontParserComponent/FontParserComponent';
 import { userConstants } from '../../constants/user-constants';
@@ -14,7 +15,6 @@ import { epochTimeMsToJstString } from '../../services/convert-date-to-jst';
 
 import type { RootState } from '../../stores/store';
 import type { Post } from '../../../common/types/post';
-
 type Props = {
   propPosts: Array<Post>
 }
@@ -97,6 +97,10 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                 </Typography>
               </Grid2>
             </Grid2>
+            {post.topicId === topicsConstants.englishOnly.id && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>英語のみモード</Alert>}
+            {post.topicId === topicsConstants.kanjiOnly.id   && <Alert severity="error"   icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>漢字のみモード</Alert>}
+            {post.topicId === topicsConstants.senryu.id      && <Alert severity="success" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>川柳モード</Alert>}
+            {post.topicId === topicsConstants.anonymous.id   && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25, borderColor: 'grey.500', color: 'grey.500' }}>匿名投稿モード</Alert>}
             <Typography component="div" sx={{ mt: 1, whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
               <FontParserComponent input={post.text} />
             </Typography>
@@ -107,8 +111,8 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                   {userState.showOwnFavouritesCount && <>
                     <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
                     {post.favourites.map(favourite =>
-                      <Tooltip title={favourite.favouritedByUser.id} placement="top">
-                        <Link to={`/@${favourite.favouritedByUser.id}`} key={favourite.favouritedByUser.id}>
+                      <Tooltip title={favourite.favouritedByUser.id} placement="top" key={favourite.favouritedByUser.id}>
+                        <Link to={`/@${favourite.favouritedByUser.id}`}>
                           <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
                         </Link>
                       </Tooltip>
@@ -125,8 +129,8 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                 {userState.showOthersFavouritesCount && <>
                   <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
                   {post.favourites.map(favourite =>
-                    <Tooltip title={favourite.favouritedByUser.id} placement="top">
-                      <Link to={`/@${favourite.favouritedByUser.id}`} key={favourite.favouritedByUser.id}>
+                    <Tooltip title={favourite.favouritedByUser.id} placement="top" key={favourite.favouritedByUser.id}>
+                      <Link to={`/@${favourite.favouritedByUser.id}`}>
                         <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
                       </Link>
                     </Tooltip>

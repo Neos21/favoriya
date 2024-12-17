@@ -2,8 +2,10 @@ import { FC, FormEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-import GitHubIcon from '@mui/icons-material/GitHub';
-import { Alert, Box, Button, Container, Divider, Modal, TextField, Typography } from '@mui/material';
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import { Alert, Box, Button, Container, Divider, Modal, TextField, Tooltip, Typography } from '@mui/material';
 
 import { isValidId, isValidPassword } from '../../common/helpers/validators/validator-user';
 import { modalStyle } from '../../shared/constants/modal-style';
@@ -70,7 +72,7 @@ export const SignupPage: FC = () => {
   return <Box component="div" sx={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
     <Container maxWidth="sm" sx={{ minWidth: 300, py: 1 }}>
       <Typography component="div" sx={{ textAlign: 'center' }}>
-        <img src="/apple-touch-icon.png" width="64" height="64" alt="Favoriya" loading="lazy" />
+        <img src="/apple-touch-icon.png" width="80" height="80" alt="Favoriya" loading="lazy" />
       </Typography>
       <Typography component="h1" variant="h3" sx={{ textAlign: 'center' }}>Sign Up</Typography>
       
@@ -91,17 +93,19 @@ export const SignupPage: FC = () => {
           error={formErrors.password != null}
           helperText={formErrors.password}
         />
-        <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }}>Sign Up</Button>
+        <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }} endIcon={<PersonAddAlt1Icon />}>Sign Up</Button>
       </Box>
       
       <Divider sx={{ mt: 4 }} />
       <Box component="div" sx={{ mt: 4 }}>
-        <Button component={Link} to="/login" variant="outlined">Log In</Button>
+        <Button component={Link} to="/login" variant="outlined" endIcon={<LoginIcon />}>Log In</Button>
       </Box>
       
       <Divider sx={{ mt: 4 }} />
       <Box component="div" sx={{ mt: 4, textAlign: 'center', color: 'grey.500' }}>
-        <Button variant="outlined" color="inherit" startIcon={<GitHubIcon />} onClick={() => window.open('https://github.com/Neos21/pseudo')}>GitHub</Button>
+        <Tooltip title="Help (GitHub Wiki)">
+          <Button variant="outlined" color="inherit" endIcon={<HelpOutlineOutlinedIcon />} onClick={() => window.open('https://github.com/Neos21/pseudo/wiki')}>About</Button>
+        </Tooltip>
       </Box>
       
       <Modal open={isModalOpen}>

@@ -2,8 +2,10 @@ import { FC, FormEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-import GitHubIcon from '@mui/icons-material/GitHub';
-import { Alert, Box, Button, Container, Divider, TextField, Typography } from '@mui/material';
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import { Alert, Box, Button, Container, Divider, TextField, Tooltip, Typography } from '@mui/material';
 
 import { userConstants } from '../../shared/constants/user-constants';
 import { initialUserState, setUser } from '../../shared/stores/user-slice';
@@ -50,7 +52,7 @@ export const LoginPage: FC = () => {
   return <Box component="div" sx={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
     <Container maxWidth="sm" sx={{ minWidth: 300, py: 1 }}>
       <Typography component="div" sx={{ textAlign: 'center' }}>
-        <img src="/apple-touch-icon.png" width="64" height="64" alt="Favoriya" loading="lazy" />
+        <img src="/apple-touch-icon.png" width="80" height="80" alt="Favoriya" loading="lazy" />
       </Typography>
       <Typography component="h1" variant="h3" sx={{ textAlign: 'center' }}>Favoriya</Typography>
       
@@ -67,17 +69,19 @@ export const LoginPage: FC = () => {
           required autoComplete="current-password"
           fullWidth margin="normal"
         />
-        <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }}>Log In</Button>
+        <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }} endIcon={<LoginIcon />}>Log In</Button>
       </Box>
       
       <Divider sx={{ mt: 4 }} />
       <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
-        <Button component={Link} to="/signup" variant="outlined">Sign Up</Button>
+        <Button component={Link} to="/signup" variant="outlined" endIcon={<PersonAddAlt1Icon />}>Sign Up</Button>
       </Box>
       
       <Divider sx={{ mt: 4 }} />
       <Box component="div" sx={{ mt: 4, textAlign: 'center', color: 'grey.500' }}>
-        <Button variant="outlined" color="inherit" startIcon={<GitHubIcon />} onClick={() => window.open('https://github.com/Neos21/pseudo')}>GitHub</Button>
+        <Tooltip title="Help (GitHub Wiki)">
+          <Button variant="outlined" color="inherit" endIcon={<HelpOutlineOutlinedIcon />} onClick={() => window.open('https://github.com/Neos21/pseudo/wiki')}>About</Button>
+        </Tooltip>
       </Box>
     </Container>
   </Box>;
