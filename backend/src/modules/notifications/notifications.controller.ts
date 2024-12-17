@@ -27,6 +27,18 @@ export class NotificationsController {
     return response.status(HttpStatus.OK).json({ result: notificationsApi });
   }
   
+  /** 未読件数を取得する */
+  @UseGuards(JwtAuthGuard)
+  @Get('number-of-unreads')
+  public async getNumberOfUnreads(@Query('user_id') userId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<number>>> {
+    if(!isValidJwtUserId(request, response, userId)) return;
+    
+    const result = await this.notificationsService.getNumberOfUnreads(userId);
+    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
+    
+    return response.status(HttpStatus.OK).json(result);
+  }
+  
   /** 通知を既読にする */
   @UseGuards(JwtAuthGuard)
   @Patch(':id')

@@ -5,23 +5,43 @@ import { Link, useNavigate } from 'react-router-dom';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import { Alert, Box, Button, Container, Divider, TextField, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, Container, Divider, Fade, TextField, Tooltip, Typography } from '@mui/material';
 
 import { userConstants } from '../../shared/constants/user-constants';
+import { apiGetWithoutToken } from '../../shared/services/api/api-fetch';
 import { initialUserState, setUser } from '../../shared/stores/user-slice';
 import { apiLogin } from './services/api-login';
+
+import type { Result } from '../../common/types/result';
 
 /** Login Page */
 export const LoginPage: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
+  const [isIn, setIsIn] = useState<boolean>(false);
+  const [numberOfUsersMessage, setNumberOfUsersMessage] = useState<string>('AI に作らせる SNS。');
   const [errorMessage, setErrorMessage] = useState<string>(null);
   
-  // 本画面に遷移してきた時はログイン済の情報があったら削除する
   useEffect(() => {
+    // 本画面に遷移してきた時はログイン済の情報があったら削除する
     dispatch(setUser(Object.assign({}, initialUserState)));
     localStorage.removeItem(userConstants.localStorageKey);
+    
+    setTimeout(() => {
+      setIsIn(true);
+    }, 500);
+    
+    (async () => {
+      try {
+        const response = await apiGetWithoutToken('/public/number-of-users');
+        const result: Result<number> = await response.json();
+        if(result.result !== -1) setNumberOfUsersMessage(`ユーザ数 : ${result.result} 人`);
+      }
+      catch(error) {
+        console.warn('Failed To Get Number Of Users', error);
+      }
+    })();
   }, [dispatch]);
   
   /** On Submit */
@@ -56,9 +76,13 @@ export const LoginPage: FC = () => {
       </Typography>
       <Typography component="h1" variant="h3" sx={{ textAlign: 'center' }}>Favoriya</Typography>
       
+      <Fade in={isIn}>
+        <Typography component="p" sx={{ mt: 2, color: 'grey.500', textAlign: 'center'}}>{numberOfUsersMessage}</Typography>
+      </Fade>
+      
       {errorMessage != null && <Alert severity="error" sx={{ mt: 2 }}>{errorMessage}</Alert>}
       
-      <Box component="form" onSubmit={onSubmit} sx={{ mt: 2 }}>
+      <Box component="form" onSubmit={onSubmit} sx={{ mt: 1 }}>
         <TextField
           type="text" name="id" label="User ID"
           required autoFocus

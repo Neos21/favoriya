@@ -1,5 +1,5 @@
 import { FC, Fragment, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -13,14 +13,17 @@ import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerC
 import { userConstants } from '../../shared/constants/user-constants';
 import { useApiGet, useApiPatch } from '../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../shared/services/convert-date-to-jst';
+import { setUnreadNotifications, setUnreadNotificationsDecrement } from '../../shared/stores/notifications-slice';
 
 import type { Result } from '../../common/types/result';
 import type { RootState } from '../../shared/stores/store';
 import type { Notification, NotificationApi } from '../../common/types/notification';
+
 /** Notifications Page */
 export const NotificationsPage: FC = () => {
   const userState = useSelector((state: RootState) => state.user);
   
+  const dispatch = useDispatch();
   const apiGet = useApiGet();
   const apiPatch = useApiPatch();
   
@@ -37,6 +40,7 @@ export const NotificationsPage: FC = () => {
         if(notificationsApiResult.error != null) return setStatus('failed');
         
         setNotifications(notificationsApiResult.result.map(notificationApi => snakeToCamelCaseObject(notificationApi)) as Array<Notification>);
+        dispatch(setUnreadNotifications({ unreadNotifications: notificationsApiResult.result.filter(notificationApi => notificationApi.is_read === false).length }));
         setStatus('succeeded');
       }
       catch(error) {
@@ -44,7 +48,7 @@ export const NotificationsPage: FC = () => {
         return console.error('通知一覧の取得に失敗', error);
       }
     })();
-  }, [apiGet, userState.id]);
+  }, [apiGet, dispatch, userState.id]);
   
   /** 通知を既読にする */
   const onReadItem = async (id: number) => {
@@ -62,6 +66,7 @@ export const NotificationsPage: FC = () => {
         if(notification.id === id) notification.isRead = true;
         return notification;
       }));
+      dispatch(setUnreadNotificationsDecrement());
     }
   };
   

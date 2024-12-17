@@ -12,7 +12,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
 import PublicIcon from '@mui/icons-material/Public';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Avatar, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Avatar, Badge, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { themeConstants } from '../../../shared/constants/theme-constants';
@@ -32,6 +32,7 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const userState = useSelector((state: RootState) => state.user);
+  const notificationsState = useSelector((state: RootState) => state.notifications);
   const { toggleTheme, mode } = useThemeMode();
   
   /** On Click */
@@ -68,7 +69,11 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
     
     <ListItem disablePadding>
       <ListItemButton component={Link} to="/notifications" onClick={onClickItem} selected={location.pathname === '/notifications'}>
-        <ListItemIcon><NotificationsIcon /></ListItemIcon>
+        <ListItemIcon>
+          <Badge badgeContent={notificationsState.unreadNotifications} color="error">
+            <NotificationsIcon />
+          </Badge>
+        </ListItemIcon>
         <ListItemText primary="通知" />
       </ListItemButton>
     </ListItem>

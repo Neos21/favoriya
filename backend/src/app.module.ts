@@ -17,6 +17,8 @@ import { AuthController } from './modules/auth/auth.controller';
 import { AuthService } from './modules/auth/auth.service';
 import { NotificationsController } from './modules/notifications/notifications.controller';
 import { NotificationsService } from './modules/notifications/notifications.service';
+import { PublicController } from './modules/public/public.controller';
+import { PublicService } from './modules/public/public.service';
 import { TimelineController } from './modules/timeline/timeline.controller';
 import { TimelineService } from './modules/timeline/timeline.service';
 import { TopicsService } from './modules/topics/topics.service';
@@ -116,6 +118,7 @@ import { UserEntity } from './shared/entities/user.entity';
     LoginHistoriesController,
     NotificationsController,
     PostsController,
+    PublicController,
     TimelineController,
     UsersController
   ],
@@ -132,6 +135,7 @@ import { UserEntity } from './shared/entities/user.entity';
     NotificationsService,
     PostsService,
     PostValidationService,
+    PublicService,
     TimelineService,
     TopicsService,
     UsersService

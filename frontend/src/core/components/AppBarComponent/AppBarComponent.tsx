@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -7,11 +7,12 @@ import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PublicIcon from '@mui/icons-material/Public';
-import { AppBar, Avatar, Grid2, IconButton, Toolbar } from '@mui/material';
+import { AppBar, Avatar, Badge, Grid2, IconButton, Toolbar } from '@mui/material';
 
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { userConstants } from '../../../shared/constants/user-constants';
-import { RootState } from '../../../shared/stores/store';
+
+import type { RootState } from '../../../shared/stores/store';
 
 type Props = {
   drawerWidth   : number,
@@ -23,11 +24,7 @@ type Props = {
 export const AppBarComponent: FC<Props> = ({ drawerWidth, isNarrowWindow, onToggleDrawer }) => {
   const location = useLocation();
   const userState = useSelector((state: RootState) => state.user);
-  
-  // 画面遷移ごとに実行する
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+  const notificationsState = useSelector((state: RootState) => state.notifications);
   
   return <AppBar position="fixed" sx={{ paddingLeft: (isNarrowWindow ? 0 : `${drawerWidth}px`), paddingRight: '0 !important' }} className="app-bar-component">
     <Toolbar>
@@ -54,7 +51,9 @@ export const AppBarComponent: FC<Props> = ({ drawerWidth, isNarrowWindow, onTogg
         
         <Grid2 display="flex" justifyContent="center" alignItems="center" size="grow">
           <IconButton size="large" color="inherit" component={Link} to="/notifications" className={ location.pathname === '/notifications' ? 'app-bar-component-icon-active' : 'app-bar-component-icon' }>
-            <NotificationsIcon />
+            <Badge badgeContent={notificationsState.unreadNotifications} color="error">
+              <NotificationsIcon />
+            </Badge>
           </IconButton>
         </Grid2>
         

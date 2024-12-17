@@ -1,25 +1,45 @@
 import { FC, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
 
 import { Box, Container, Drawer, useMediaQuery } from '@mui/material';
 
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
+import { useApiGet } from '../../../shared/hooks/use-api-fetch';
+import { setUnreadNotifications } from '../../../shared/stores/notifications-slice';
 import { AppBarComponent } from '../AppBarComponent/AppBarComponent';
 import { MenuComponent } from '../MenuComponent/MenuComponent';
 
 import type { RootState } from '../../../shared/stores/store';
+import type { Result } from '../../../common/types/result';
+
 /** Layout Component */
 export const LayoutComponent: FC = () => {
   const drawerWidth = 240;
   
   const location = useLocation();
+  const dispatch = useDispatch();
   const isNarrowWindow = useMediaQuery('(max-width: 599.98px)');  // 画面幅が 600px 以内かどうか
   const userState = useSelector((state: RootState) => state.user);
+  const apiGet = useApiGet();
   
   const [isOpen, setIsOpen] = useState<boolean>(false);  // Drawer を開いているか否か
   
   const onCloseDrawer = () => setIsOpen(false);
+  
+  // 画面初期表示時に未読件数を取得する
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await apiGet('/notifications/number-of-unreads', `?user_id=${userState.id}`);
+        const result: Result<number> = await response.json();
+        dispatch(setUnreadNotifications({ unreadNotifications: result.result }));
+      }
+      catch(error) {
+        console.warn('未読件数の取得に失敗', error);
+      }
+    })();
+  }, [apiGet, dispatch, userState.id]);
   
   // 画面遷移ごとに実行する
   useEffect(() => {

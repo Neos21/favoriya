@@ -49,6 +49,23 @@ export class NotificationsService {
     }
   }
   
+  /** 未読件数を取得する */
+  public async getNumberOfUnreads(userId: string): Promise<Result<number>> {
+    try {
+      const numberOfUnreads = await this.notificationsRepository.count({
+        where: {
+          recipientUserId: userId,
+          isRead         : false
+        }
+      });
+      return { result: numberOfUnreads };
+    }
+    catch(error) {
+      this.logger.error('未読件数の取得に失敗', error);
+      return { error: '未読件数の取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+    }
+  }
+  
   /** 通知を作成する */
   public async create(notificationEntity: NotificationEntity): Promise<Result<boolean>> {
     try {

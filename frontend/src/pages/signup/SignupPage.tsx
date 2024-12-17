@@ -5,27 +5,47 @@ import { Link, useNavigate } from 'react-router-dom';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import { Alert, Box, Button, Container, Divider, Modal, TextField, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, Container, Divider, Fade, Modal, TextField, Tooltip, Typography } from '@mui/material';
 
 import { isValidId, isValidPassword } from '../../common/helpers/validators/validator-user';
 import { modalStyle } from '../../shared/constants/modal-style';
 import { userConstants } from '../../shared/constants/user-constants';
+import { apiGetWithoutToken } from '../../shared/services/api/api-fetch';
 import { initialUserState, setUser } from '../../shared/stores/user-slice';
 import { apiSignup } from './services/api-signup';
+
+import type { Result } from '../../common/types/result';
 
 /** Signup Page */
 export const SignupPage: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
+  const [isIn, setIsIn] = useState<boolean>(false);
+  const [numberOfUsersMessage, setNumberOfUsersMessage] = useState<string>('AI に作らせる SNS。');
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [formErrors, setFormErrors] = useState<{ id?: string; password?: string }>({});
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
-  // 本画面に遷移してきた時はログイン済の情報があったら削除する
   useEffect(() => {
+    // 本画面に遷移してきた時はログイン済の情報があったら削除する
     dispatch(setUser(Object.assign({}, initialUserState)));
     localStorage.removeItem(userConstants.localStorageKey);
+    
+    setTimeout(() => {
+      setIsIn(true);
+    }, 500);
+    
+    (async () => {
+      try {
+        const response = await apiGetWithoutToken('/public/number-of-users');
+        const result: Result<number> = await response.json();
+        if(result.result !== -1) setNumberOfUsersMessage(`ユーザ数 : ${result.result} 人`);
+      }
+      catch(error) {
+        console.warn('Failed To Get Number Of Users', error);
+      }
+    })();
   }, [dispatch]);
   
   /** 入力チェック : エラーがあれば formErrors にメッセージをセット・エラーがなければ `true` を返す */
@@ -76,9 +96,13 @@ export const SignupPage: FC = () => {
       </Typography>
       <Typography component="h1" variant="h3" sx={{ textAlign: 'center' }}>Sign Up</Typography>
       
+      <Fade in={isIn}>
+        <Typography component="p" sx={{ mt: 2, color: 'grey.500', textAlign: 'center'}}>{numberOfUsersMessage}</Typography>
+      </Fade>
+      
       {errorMessage != null && <Alert severity="error" sx={{ mt: 2 }}>{errorMessage}</Alert>}
       
-      <Box component="form" onSubmit={onSubmit} sx={{ mt: 2 }}>
+      <Box component="form" onSubmit={onSubmit} sx={{ mt: 1 }}>
         <TextField
           type="text" name="id" label="User ID"
           required autoFocus
