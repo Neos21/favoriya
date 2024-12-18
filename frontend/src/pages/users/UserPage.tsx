@@ -17,6 +17,8 @@ import type { Post, PostApi } from '../../common/types/post';
 import type { Result } from '../../common/types/result';
 import type { User, UserApi } from '../../common/types/user';
 import type { RootState } from '../../shared/stores/store';
+import type { FollowRelationship, FollowRelationshipApi } from '../../common/types/follow-relationship';
+
 /** User Page */
 export const UserPage: FC = () => {
   /** 1回につき読み込む件数 */
@@ -65,15 +67,9 @@ export const UserPage: FC = () => {
       if(paramUserId !== userState.id) {
         try {
           const response = await apiGet(`/users/${paramUserId}/followers/${userState.id}`);  // Throws
-          if(response.status === httpStatus.ok) {
-            setIsFollowing(true);  // フォロー情報が返ってきたらフォロー中
-          }
-          else if(response.status === httpStatus.notFound) {
-            setIsFollowing(false);  // 404 ならフォローしていない
-          }
-          else {
-            return setStatus('failed');  // それ以外のステータスコードの場合はエラー
-          }
+          const result: Result<FollowRelationshipApi> = await response.json();  // Throws
+          const followRelationship: FollowRelationship = snakeToCamelCaseObject(result.result) as FollowRelationship;
+          setIsFollowing(followRelationship.followingToFollower != null);  // フォロー情報があれば `true` (フォロー中)
         }
         catch(error) {
           setStatus('failed');
@@ -185,6 +181,12 @@ export const UserPage: FC = () => {
         <Typography component="p" sx={{ mt: 3, textAlign: 'right' }}>
           {!isFollowing && <Button variant="contained" onClick={onFollow  }>フォローする</Button>}
           { isFollowing && <Button variant="contained" onClick={onUnfollow}>フォロー解除する</Button>}
+        </Typography>
+      }
+      
+      {user.id === userState.id &&
+        <Typography component="p" sx={{ mt: 3, textAlign: 'right' }}>
+          <Button component={Link} to="/settings" variant="contained">プロフィールを編集する</Button>
         </Typography>
       }
       

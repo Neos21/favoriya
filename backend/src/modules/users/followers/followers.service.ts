@@ -9,6 +9,7 @@ import { UserEntity } from '../../../shared/entities/user.entity';
 import { NotificationsService } from '../../notifications/notifications.service';
 
 import type { Result } from '../../../common/types/result';
+import type { FollowRelationship } from '../../../common/types/follow-relationship';
 
 /** Followers Service */
 @Injectable()
@@ -43,13 +44,28 @@ export class FollowersService {
     }
   }
   
-  /** `followingUserId` が `followerUserId` のことをフォローしているかどうかの情報を取得する */
-  public async findOne(followerUserId: string, followingUserId: string): Promise<Result<FollowEntity>> {
+  /** `followingUserId` と `followerUserId` のフォロー関係の情報を取得する */
+  public async getRelationship(followerUserId: string, followingUserId: string): Promise<Result<FollowRelationship>> {
     if(followerUserId === followingUserId) return { error: '同じユーザが指定されています', code: HttpStatus.BAD_REQUEST };
     try {
-      const follower = await this.followsRepository.findOneBy({ followerUserId, followingUserId });
-      if(follower == null) return { error: '対象ユーザ間はフォロー関係にありません', code: HttpStatus.NOT_FOUND };
-      return { result: follower };
+      // followingUser が followerUser をフォローしているか否か
+      const followingToFollower = await this.followsRepository.findOneBy({ followerUserId, followingUserId });
+      // followerUser が followingUser をフォローしているか否か
+      const followerToFollowing = await this.followsRepository.findOneBy({ followerUserId: followingUserId, followingUserId: followerUserId });
+      
+      const relationship = followingToFollower != null && followerToFollowing != null ? '相互フォロー'
+        : followingToFollower != null ? `Following User [${followingUserId}] は Follower User [${followerUserId}] をフォローしています`
+        : followerToFollowing != null ? `Following User [${followingUserId}] は Follower User [${followerUserId}] にフォローされています`
+        : 'お互いにフォローしていません';
+      return {
+        result: {
+          relationship,
+          followingUserId,
+          followerUserId,
+          followingToFollower,
+          followerToFollowing
+        }
+      }
     }
     catch(error) {
       this.logger.error('対象ユーザ間のフォロー状況の取得に失敗', error);

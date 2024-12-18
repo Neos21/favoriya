@@ -6,6 +6,7 @@ Thumbs.db
 MEMO.md
 
 # Common
+package-lock.json
 node_modules/
 dist/
 coverage/
@@ -18,7 +19,7 @@ nohup.out
 *storybook.log
 storybook-static/
 
-# MinIO
+# OSS
 oss/minio.bash
 oss/minio
 oss/mc

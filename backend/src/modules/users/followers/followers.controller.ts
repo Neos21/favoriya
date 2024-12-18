@@ -7,8 +7,8 @@ import { FollowersService } from './followers.service';
 
 import type { Request, Response } from 'express';
 import type { Result } from '../../../common/types/result';
-import type { FollowApi } from '../../../common/types/follow';
 import type { UserApi } from '../../../common/types/user';
+import type { FollowRelationshipApi } from '../../../common/types/follow-relationship';
 
 /** Followers Controller */
 @Controller('api/users')
@@ -26,15 +26,15 @@ export class FollowersController {
     return response.status(HttpStatus.OK).json({ result: followerUsersApi });
   }
   
-  /** `:followerUserId` のフォロワーに `followingUserId` がいるかどうかを取得する */
+  /** `:followerUserId` と `followingUserId` のフォロー関係を取得する */
   @UseGuards(JwtAuthGuard)
   @Get(':userId/followers/:followingUserId')
-  public async findOne(@Param('userId') followerUserId: string, @Param('followingUserId') followingUserId: string, @Res() response: Response): Promise<Response<Result<FollowApi>>> {
-    const result = await this.followersService.findOne(followerUserId, followingUserId);
-    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);  // フォロー関係になかった場合は 404
+  public async getRelationship(@Param('userId') followerUserId: string, @Param('followingUserId') followingUserId: string, @Res() response: Response): Promise<Response<Result<FollowRelationshipApi>>> {
+    const result = await this.followersService.getRelationship(followerUserId, followingUserId);
+    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
-    const followApi: FollowApi = camelToSnakeCaseObject(result.result) as unknown as FollowApi;
-    return response.status(HttpStatus.OK).json({ result: followApi });
+    const followRelationshipApi: FollowRelationshipApi = camelToSnakeCaseObject(result.result) as unknown as FollowRelationshipApi;
+    return response.status(HttpStatus.OK).json({ result: followRelationshipApi });
   }
   
   /** `:userId` = `followerUserId` の人のことをフォローする (ログインしている人は `followingUserId`) */

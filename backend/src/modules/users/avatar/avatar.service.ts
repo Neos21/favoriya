@@ -24,7 +24,7 @@ export class AvatarService {
   
   /** アバター画像をアップロードする */
   public async save(userId: string, file: Express.Multer.File): Promise<Result<string>> {
-    if(file.size > commonUserConstants.avatarMaxFileSizeKb) return { error: 'ファイルサイズが 500KB を超えています', code: HttpStatus.BAD_REQUEST };
+    if(file.size > (commonUserConstants.avatarMaxFileSizeKb * 1024)) return { error: `ファイルサイズが ${commonUserConstants.avatarMaxFileSizeKb} KB を超えています`, code: HttpStatus.BAD_REQUEST };
     if(!file.mimetype.startsWith('image/')) return { error: '画像ファイルではありません', code: HttpStatus.BAD_REQUEST };
     
     // リサイズする
