@@ -22,7 +22,7 @@ export class AccessLogMiddleware implements NestMiddleware {
       const parsedParam = param != null ? JSON.stringify(param) : '';
       return ['', '{}'].includes(parsedParam) ? '' : ` ${name}:${parsedParam}`;
     }
-    catch(_error) {
+    catch(_error) {  // eslint-disable-line @typescript-eslint/no-unused-vars
       return '';
     }
   }

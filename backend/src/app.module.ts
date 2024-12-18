@@ -28,6 +28,8 @@ import { FollowersController } from './modules/users/followers/followers.control
 import { FollowersService } from './modules/users/followers/followers.service';
 import { FollowingsController } from './modules/users/followings/followings.controller';
 import { FollowingsService } from './modules/users/followings/followings.service';
+import { IntroductionsController } from './modules/users/introductions/introductions.controller';
+import { IntroductionsService } from './modules/users/introductions/introductions.service';
 import { LoginHistoriesController } from './modules/users/login-histories/login-histories.controller';
 import { LoginHistoriesService } from './modules/users/login-histories/login-histories.service';
 import { FavouritesController } from './modules/users/posts/favourites/favourites.controller';
@@ -39,6 +41,7 @@ import { UsersController } from './modules/users/users.controller';
 import { UsersService } from './modules/users/users.service';
 import { FavouriteEntity } from './shared/entities/favourite.entity';
 import { FollowEntity } from './shared/entities/follow.entity';
+import { IntroductionEntity } from './shared/entities/introduction.entity';
 import { LoginHistoryEntity } from './shared/entities/login-history.entity';
 import { NotificationEntity } from './shared/entities/notification.entity';
 import { PostEntity } from './shared/entities/post.entity';
@@ -87,6 +90,7 @@ import { UserEntity } from './shared/entities/user.entity';
     TypeOrmModule.forFeature([
       FavouriteEntity,
       FollowEntity,
+      IntroductionEntity,
       LoginHistoryEntity,
       NotificationEntity,
       PostEntity,
@@ -115,6 +119,7 @@ import { UserEntity } from './shared/entities/user.entity';
     FavouritesController,
     FollowersController,
     FollowingsController,
+    IntroductionsController,
     LoginHistoriesController,
     NotificationsController,
     PostsController,
@@ -131,6 +136,7 @@ import { UserEntity } from './shared/entities/user.entity';
     FavouritesService,
     FollowersService,
     FollowingsService,
+    IntroductionsService,
     LoginHistoriesService,
     NotificationsService,
     PostsService,

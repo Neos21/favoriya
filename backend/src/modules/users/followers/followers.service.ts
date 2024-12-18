@@ -9,6 +9,7 @@ import { UserEntity } from '../../../shared/entities/user.entity';
 import { NotificationsService } from '../../notifications/notifications.service';
 
 import type { Result } from '../../../common/types/result';
+import type { Follow } from '../../../common/types/follow';
 import type { FollowRelationship } from '../../../common/types/follow-relationship';
 
 /** Followers Service */
@@ -62,10 +63,10 @@ export class FollowersService {
           relationship,
           followingUserId,
           followerUserId,
-          followingToFollower,
-          followerToFollowing
+          followingToFollower: followingToFollower as unknown as Follow,
+          followerToFollowing: followerToFollowing as unknown as Follow
         }
-      }
+      };
     }
     catch(error) {
       this.logger.error('対象ユーザ間のフォロー状況の取得に失敗', error);

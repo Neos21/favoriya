@@ -40,7 +40,7 @@ export class FollowersController {
   /** `:userId` = `followerUserId` の人のことをフォローする (ログインしている人は `followingUserId`) */
   @UseGuards(JwtAuthGuard)
   @Post(':userId/followers')
-  public async follow(@Param('userId') followerUserId: string, @Body('following_user_id') followingUserId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<void>>> {
+  public async follow(@Param('userId') followerUserId: string, @Body('following_user_id') followingUserId: string, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
     if(!isValidJwtUserId(request, response, followingUserId)) return;  // フォローする人の本人確認
     console.log(followerUserId, followingUserId);
     const result = await this.followersService.follow(followerUserId, followingUserId);
@@ -52,7 +52,7 @@ export class FollowersController {
   /** `:userId` = `followerUserId` の人をアンフォローする (ログインしている人は `followingUserId`) */
   @UseGuards(JwtAuthGuard)
   @Delete(':userId/followers')
-  public async unfollow(@Param('userId') followerUserId: string, @Query('following_user_id') followingUserId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<void>>> {
+  public async unfollow(@Param('userId') followerUserId: string, @Query('following_user_id') followingUserId: string, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
     if(!isValidJwtUserId(request, response, followingUserId)) return;  // フォローを外す人の本人確認
     
     const result = await this.followersService.unfollow(followerUserId, followingUserId);

@@ -173,8 +173,9 @@ export const UserPage: FC = () => {
       </List>
       
       <Grid2 container spacing={1} sx={{ mt: 3 }}>
-        <Grid2 size={6}                            ><Link to={`/@${user.id}/followings`} className="normal-link">フォロー中</Link></Grid2>
-        <Grid2 size={6} sx={{ textAlign: 'right' }}><Link to={`/@${user.id}/followers` } className="normal-link">フォロワー</Link></Grid2>
+        <Grid2 size={4}                             ><Link to={`/@${user.id}/followings`   } className="normal-link">フォロー中</Link></Grid2>
+        <Grid2 size={4} sx={{ textAlign: 'center' }}><Link to={`/@${user.id}/introductions`} className="normal-link">相互フォロー</Link></Grid2>
+        <Grid2 size={4} sx={{ textAlign: 'right'  }}><Link to={`/@${user.id}/followers`    } className="normal-link">フォロワー</Link></Grid2>
       </Grid2>
       
       {user.id !== userState.id &&

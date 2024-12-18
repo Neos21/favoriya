@@ -5,7 +5,7 @@ export const topicsConstants = {
   normal: {
     id: 1,
     name: '通常モード',
-    validateFunction: (_text: string): Result<boolean> => {
+    validateFunction: (_text: string): Result<boolean> => {  // eslint-disable-line @typescript-eslint/no-unused-vars
       return { result: true };
     }
   },
@@ -41,7 +41,7 @@ export const topicsConstants = {
   anonymous: {
     id: 5,
     name: '匿名投稿モード',
-    validateFunction: (_text: string): Result<boolean> => {
+    validateFunction: (_text: string): Result<boolean> => {  // eslint-disable-line @typescript-eslint/no-unused-vars
       return { result: true };
     }
   }

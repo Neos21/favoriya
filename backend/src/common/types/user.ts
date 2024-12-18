@@ -1,6 +1,7 @@
 import { CamelToSnakeCaseObject } from './cases';
 
 import type { Follow } from './follow';
+import type { Introduction } from './introduction';
 import type { Post } from './post';
 
 /** ユーザ情報 */
@@ -22,6 +23,8 @@ export type User = {
   followings?: Array<Follow>;
   recipientNotifications?: Array<Notification>;
   actorNotifications?: Array<Notification>;
+  recipientIntroductions?: Array<Introduction>;
+  actorIntroductions?:Array<Introduction>;
   
   // 追加分
   password?: string;

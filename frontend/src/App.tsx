@@ -17,6 +17,7 @@ import { SettingsPage } from './pages/settings/SettingsPage';
 import { SignupPage } from './pages/signup/SignupPage';
 import { FollowersPage } from './pages/users/followers/FollowersPage';
 import { FollowingsPage } from './pages/users/followings/FollowingsPage';
+import { IntroductionsPage } from './pages/users/introductions/IntroductionsPage';
 import { PostPage } from './pages/users/posts/PostPage';
 import { UserPage } from './pages/users/UserPage';
 import { UsersPage } from './pages/users/UsersPage';
@@ -46,11 +47,12 @@ export const App = () => (
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/users"         element={<UsersPage         />} />
                 
-                <Route path="/:userId/followers"     element={<FollowersPage  />} />
-                <Route path="/:userId/followings"    element={<FollowingsPage />} />
-                <Route path="/:userId/posts/:postId" element={<PostPage       />} />
-                <Route path="/:userId/posts"         element={<UserPage       />} />
-                <Route path="/:userId"               element={<UserPage       />} />
+                <Route path="/:userId/followers"     element={<FollowersPage     />} />
+                <Route path="/:userId/followings"    element={<FollowingsPage    />} />
+                <Route path="/:userId/introductions" element={<IntroductionsPage />} />
+                <Route path="/:userId/posts/:postId" element={<PostPage          />} />
+                <Route path="/:userId/posts"         element={<UserPage          />} />
+                <Route path="/:userId"               element={<UserPage          />} />
                 
                 <Route path="/admin/*" element={<AdminGuardRoute />} />
                 

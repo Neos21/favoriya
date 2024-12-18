@@ -73,7 +73,7 @@ export class UsersController {
   /** ユーザ情報を削除する */
   @UseGuards(JwtAuthGuard)
   @Delete(':userId')
-  public async remove(@Param('userId') id: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<void>>> {
+  public async remove(@Param('userId') id: string, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
     if(!isValidJwtUserId(request, response, id)) return;
     
     const result = await this.usersService.remove(id);
