@@ -1,0 +1,12 @@
+# $ cat /etc/systemd/system/minio.service
+
+[Unit]
+Description=MinIO
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/PATH/TO/favoriya/oss/minio.bash
+
+[Install]
+WantedBy=multi-user.target
