@@ -1,7 +1,6 @@
 import { Controller, Delete, HttpStatus, Param, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { isValidJwtUserId } from '../../../shared/helpers/is-valid-jwt-user-id';
 import { AvatarService } from './avatar.service';
@@ -30,7 +29,7 @@ export class AvatarController {
   /** アバター画像を削除する */
   @UseGuards(JwtAuthGuard)
   @Delete(':userId/avatar')
-  public async remove(@Param('userId') userId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<void>>> {
+  public async remove(@Param('userId') userId: string, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
     if(!isValidJwtUserId(request, response, userId)) return;
     
     const result = await this.avatarService.remove(userId);

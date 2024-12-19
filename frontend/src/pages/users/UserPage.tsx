@@ -9,7 +9,7 @@ import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { FontParserComponent } from '../../shared/components/FontParserComponent/FontParserComponent';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { PostsListComponent } from '../../shared/components/PostsListComponent/PostsListComponent';
-import { httpStatus } from '../../shared/constants/http-status';
+import { httpStatusConstants } from '../../shared/constants/http-status-constants';
 import { useApiDelete, useApiGet, useApiPost } from '../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../shared/services/convert-date-to-jst';
 
@@ -17,6 +17,8 @@ import type { Post, PostApi } from '../../common/types/post';
 import type { Result } from '../../common/types/result';
 import type { User, UserApi } from '../../common/types/user';
 import type { RootState } from '../../shared/stores/store';
+import type { FollowRelationship, FollowRelationshipApi } from '../../common/types/follow-relationship';
+
 /** User Page */
 export const UserPage: FC = () => {
   /** 1回につき読み込む件数 */
@@ -52,7 +54,7 @@ export const UserPage: FC = () => {
       try {
         const response = await apiGet(`/users/${paramUserId}`);  // Throws
         const userApiResult: Result<UserApi> = await response.json();  // Throws
-        if(userApiResult.error != null) return setStatus(response.status === httpStatus.notFound ? 'not-found' : 'failed');
+        if(userApiResult.error != null) return setStatus(response.status === httpStatusConstants.notFound ? 'not-found' : 'failed');
         
         setUser(snakeToCamelCaseObject(userApiResult.result) as User);
       }
@@ -65,15 +67,9 @@ export const UserPage: FC = () => {
       if(paramUserId !== userState.id) {
         try {
           const response = await apiGet(`/users/${paramUserId}/followers/${userState.id}`);  // Throws
-          if(response.status === httpStatus.ok) {
-            setIsFollowing(true);  // フォロー情報が返ってきたらフォロー中
-          }
-          else if(response.status === httpStatus.notFound) {
-            setIsFollowing(false);  // 404 ならフォローしていない
-          }
-          else {
-            return setStatus('failed');  // それ以外のステータスコードの場合はエラー
-          }
+          const result: Result<FollowRelationshipApi> = await response.json();  // Throws
+          const followRelationship: FollowRelationship = snakeToCamelCaseObject(result.result) as FollowRelationship;
+          setIsFollowing(followRelationship.followingToFollower != null);  // フォロー情報があれば `true` (フォロー中)
         }
         catch(error) {
           setStatus('failed');
@@ -128,7 +124,7 @@ export const UserPage: FC = () => {
   const onFollow = async () => {
     try {
       const response = await apiPost(`/users/${paramUserId}/followers`, { following_user_id: userState.id });
-      if(response.status !== httpStatus.created) throw new Error(String(response.status));
+      if(response.status !== httpStatusConstants.created) throw new Error(String(response.status));
       setIsFollowing(true);
     }
     catch(error) {
@@ -140,7 +136,7 @@ export const UserPage: FC = () => {
   const onUnfollow = async () => {
     try {
       const response = await apiDelete(`/users/${paramUserId}/followers`, `?following_user_id=${userState.id}`);
-      if(response.status !== httpStatus.noContent) throw new Error(String(response.status));
+      if(response.status !== httpStatusConstants.noContent) throw new Error(String(response.status));
       setIsFollowing(false);
     }
     catch(error) {
@@ -177,14 +173,21 @@ export const UserPage: FC = () => {
       </List>
       
       <Grid2 container spacing={1} sx={{ mt: 3 }}>
-        <Grid2 size={6}                            ><Link to={`/@${user.id}/followings`} className="normal-link">フォロー中</Link></Grid2>
-        <Grid2 size={6} sx={{ textAlign: 'right' }}><Link to={`/@${user.id}/followers` } className="normal-link">フォロワー</Link></Grid2>
+        <Grid2 size={4}                             ><Link to={`/@${user.id}/followings`   } className="normal-link">フォロー中</Link></Grid2>
+        <Grid2 size={4} sx={{ textAlign: 'center' }}><Link to={`/@${user.id}/introductions`} className="normal-link">相互フォロー</Link></Grid2>
+        <Grid2 size={4} sx={{ textAlign: 'right'  }}><Link to={`/@${user.id}/followers`    } className="normal-link">フォロワー</Link></Grid2>
       </Grid2>
       
       {user.id !== userState.id &&
         <Typography component="p" sx={{ mt: 3, textAlign: 'right' }}>
           {!isFollowing && <Button variant="contained" onClick={onFollow  }>フォローする</Button>}
           { isFollowing && <Button variant="contained" onClick={onUnfollow}>フォロー解除する</Button>}
+        </Typography>
+      }
+      
+      {user.id === userState.id &&
+        <Typography component="p" sx={{ mt: 3, textAlign: 'right' }}>
+          <Button component={Link} to="/settings" variant="contained">プロフィールを編集する</Button>
         </Typography>
       }
       

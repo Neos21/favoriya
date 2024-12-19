@@ -23,7 +23,7 @@ import { initialUserState, setUser } from '../../../shared/stores/user-slice';
 import type { RootState } from '../../../shared/stores/store';
 
 type Props = {
-  onClickItem: () => void;
+  onClickItem: () => void
 };
 
 /** Menu Component */
@@ -70,7 +70,7 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
     <ListItem disablePadding>
       <ListItemButton component={Link} to="/notifications" onClick={onClickItem} selected={location.pathname === '/notifications'}>
         <ListItemIcon>
-          <Badge badgeContent={notificationsState.unreadNotifications} color="error">
+          <Badge badgeContent={notificationsState.unreadNotifications} color="error" sx={{ whiteSpace: 'nowrap' }}>
             <NotificationsIcon />
           </Badge>
         </ListItemIcon>

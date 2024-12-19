@@ -189,17 +189,22 @@ export class UsersService {
     // ユーザの存在チェック・兼・現在のデータ取得
     const userResult = await this.findOneById(id);
     if(userResult.error != null) return userResult as Result<boolean>;
+    
     // アバター画像ファイルがあれば削除する
     const removeAvadarResult = await this.avatarService.remove(id);
     if(removeAvadarResult.error != null) return removeAvadarResult;
-    // ユーザに紐付く投稿を全て削除する
+    // ユーザに紐付く投稿を全て削除する : 投稿に紐付くふぁぼは onDelete により連動して削除される
     const removeAllPostsResult = await this.postsService.removeAllByUserId(id);
     if(removeAllPostsResult.error != null) return removeAllPostsResult;
     
     // TODO : ユーザがフォローした情報を全て削除する
     // TODO : ユーザがフォローされた情報を全て削除する
+    // TODO : ユーザが発信者である通知を全て削除する
+    // TODO : ユーザが受信者である通知を全て削除する
+    // TODO : ユーザが紹介した紹介文を全て削除する
+    // TODO : ユーザが紹介された紹介文を全て削除する
     
-    // ユーザ情報を削除する
+    // ユーザ情報を削除する : 基本は親であるユーザの削除によって子エンティティは連動して削除されるようにしているが、念のため前述のとおり子エンティティを先に消している
     try {
       const deleteResult = await this.usersRepository.delete({ id });
       if(deleteResult.affected !== 1) {

@@ -17,7 +17,7 @@ export class TopicsService {
   public async onModuleInit(): Promise<void> {
     const topics = Object.values(topicsConstants);
     for(const topic of topics) {
-      await this.topicsRepository.save(new TopicEntity({ id: topic.id, name: topic.name })).catch(_error => {});
+      await this.topicsRepository.save(new TopicEntity({ id: topic.id, name: topic.name })).catch(() => {});
     }
     this.logger.debug('トピック定義の初期投入完了');
   }

@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { PostEntity } from './post.entity';
 import { UserEntity } from './user.entity';
@@ -25,7 +25,7 @@ export class FavouriteEntity {
   public readonly createdAt: Date;
   
   /** ふぁぼったユーザ : ユーザが対象の投稿に対してふぁぼを行ったことを示す・ユーザ削除時に本ふぁぼ情報も同時に削除される */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.id, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, userEntity => userEntity.id, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })  // onDelete は ManyToOne (子) 側に指定すると DB 制約になる。OneToMany (親) 側に設定しても特に意味はないが対称性を表現するために付けておくと分かりやすい
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })  // 本 `favourites.user_id` が `users.id` の Foreign Key であることを示す
   public favouritedByUser: UserEntity;
   

@@ -45,7 +45,7 @@ export const ChangeAvatarPage: FC = () => {
     setSucceededMessage(null);
     const file = event.target.files?.[0];
     if(file == null) return console.warn('ファイルを選択せずにダイアログを閉じた', event);
-    if(file.size > commonUserConstants.avatarMaxFileSizeKb) return setErrorMessage('ファイルサイズが 500KB を超えています');
+    if(file.size > (commonUserConstants.avatarMaxFileSizeKb * 1024)) return setErrorMessage(`ファイルサイズが ${commonUserConstants.avatarMaxFileSizeKb} KB を超えています`);
     
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));  // プレビュー用の URL を作成する

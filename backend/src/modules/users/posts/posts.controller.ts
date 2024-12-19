@@ -61,7 +61,7 @@ export class PostsController {
   /** 投稿1件を削除する */
   @UseGuards(JwtAuthGuard)
   @Delete(':userId/posts/:postId')
-  public async removeOneById(@Param('userId') userId: string, @Param('postId') postId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<void>>> {
+  public async removeOneById(@Param('userId') userId: string, @Param('postId') postId: string, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
     if(!isValidJwtUserId(request, response, userId)) return;
     
     const result = await this.postsService.removeOneById(userId, postId);

@@ -15,6 +15,7 @@ import { epochTimeMsToJstString } from '../../services/convert-date-to-jst';
 
 import type { RootState } from '../../stores/store';
 import type { Post } from '../../../common/types/post';
+
 type Props = {
   propPosts: Array<Post>
 }

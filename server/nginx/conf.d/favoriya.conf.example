@@ -1,0 +1,42 @@
+# $ cat /etc/nginx/conf.d/favoriya.conf
+
+server {
+  listen       80;
+  listen       443 ssl;
+  server_name  EXAMPLE.com;
+  ssl_certificate      /etc/letsencrypt/live/EXAMPLE.com/fullchain.pem;
+  ssl_certificate_key  /etc/letsencrypt/live/EXAMPLE.com/privkey.pem;
+  
+  # File Upload Max Size
+  client_max_body_size  10M;
+  
+  # Well Known
+  location /.well-known {
+    root  /var/www/favoriya;
+  }
+  
+  # Status JSON
+  location /status.json {
+    root  /var/www/favoriya;
+  }
+  
+  # App
+  location / {
+    proxy_set_header  Host                $host;
+    proxy_set_header  Origin              https://$host;
+    proxy_set_header  IP                  $remote_addr;
+    proxy_set_header  X-Real-IP           $remote_addr;
+    proxy_set_header  X-Forwarded-Host    $host;
+    proxy_set_header  X-Forwarded-Server  $host;
+    proxy_set_header  X-Forwarded-For     $proxy_add_x_forwarded_for;
+    proxy_pass  http://127.0.0.1:6216;
+  }
+  
+  # OSS
+  location /oss-console/ {
+    proxy_set_header  Host             $host;
+    proxy_set_header  X-Real-IP        $remote_addr;
+    proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+    proxy_pass  http://127.0.0.1:9000/;
+  }
+}

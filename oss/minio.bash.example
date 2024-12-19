@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+export MINIO_ROOT_USER='CHANGE-THIS'
+export MINIO_ROOT_PASSWORD='CHANGE-THIS'
+export MINIO_SERVER_URL='https://oss.EXAMPLE.com'
+export MINIO_BROWSER_REDIRECT_URL='https://oss.EXAMPLE.com/minio-ui'
+#export MINIO_SERVER_URL='http://localhost:9000'
+#export MINIO_BROWSER_REDIRECT_URL='http://localhost:9001'
+
+/PATH/TO/favoriya/oss/minio server /PATH/TO/favoriya/oss/minio-data --console-address ':9001'

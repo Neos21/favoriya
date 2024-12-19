@@ -30,12 +30,12 @@ export class PostEntity {
   public readonly updatedAt: Date;
   
   /** ユーザ (親) との親子関係を示す (カラムは作られない) */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.posts, { createForeignKeyConstraints: false })
+  @ManyToOne(() => UserEntity, userEntity => userEntity.posts, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })  // 本 `posts.user_id` が `users.id` (親) の Foreign Key であることを示す
   public user: UserEntity;
   
   /** この投稿がふぁぼられた情報との関係を示す */
-  @OneToMany(() => FavouriteEntity, favouriteEntity => favouriteEntity.post, { createForeignKeyConstraints: false })
+  @OneToMany(() => FavouriteEntity, favouriteEntity => favouriteEntity.post, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })  // この onDelete は、親である Post が消された時に子である Favourite を消したいという意思を表現しているだけ、DB 制約としては Favourite 側の ManyToOne に書かないと効果がない
   public favourites: Array<FavouriteEntity>;
   
   /** この投稿のトピック */

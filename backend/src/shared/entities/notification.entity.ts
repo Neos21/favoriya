@@ -8,7 +8,7 @@ export class NotificationEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   public id: number;
   
-  /** 'favourite' | 'follow' など通知の種類 */
+  /** 'favourite' | 'follow' | 'introduction' など通知の種類 */
   @Column({ name: 'notification_type' })
   public notificationType: string;
   
@@ -36,12 +36,12 @@ export class NotificationEntity {
   public readonly createdAt: Date;
   
   /** 通知の受信者 */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.recipientNotifications, { createForeignKeyConstraints: false })
+  @ManyToOne(() => UserEntity, userEntity => userEntity.recipientNotifications, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'recipient_user_id', referencedColumnName: 'id' })
   public recipientUser: UserEntity;
   
   /** 通知の送信者 */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.actorNotifications, { createForeignKeyConstraints: false })
+  @ManyToOne(() => UserEntity, userEntity => userEntity.actorNotifications, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'actor_user_id', referencedColumnName: 'id' })
   public actorUser: UserEntity;
   

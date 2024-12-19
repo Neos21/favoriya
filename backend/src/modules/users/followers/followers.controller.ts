@@ -7,8 +7,8 @@ import { FollowersService } from './followers.service';
 
 import type { Request, Response } from 'express';
 import type { Result } from '../../../common/types/result';
-import type { FollowApi } from '../../../common/types/follow';
 import type { UserApi } from '../../../common/types/user';
+import type { FollowRelationshipApi } from '../../../common/types/follow-relationship';
 
 /** Followers Controller */
 @Controller('api/users')
@@ -26,21 +26,21 @@ export class FollowersController {
     return response.status(HttpStatus.OK).json({ result: followerUsersApi });
   }
   
-  /** `:followerUserId` のフォロワーに `followingUserId` がいるかどうかを取得する */
+  /** `:followerUserId` と `followingUserId` のフォロー関係を取得する */
   @UseGuards(JwtAuthGuard)
   @Get(':userId/followers/:followingUserId')
-  public async findOne(@Param('userId') followerUserId: string, @Param('followingUserId') followingUserId: string, @Res() response: Response): Promise<Response<Result<FollowApi>>> {
-    const result = await this.followersService.findOne(followerUserId, followingUserId);
-    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);  // フォロー関係になかった場合は 404
+  public async getRelationship(@Param('userId') followerUserId: string, @Param('followingUserId') followingUserId: string, @Res() response: Response): Promise<Response<Result<FollowRelationshipApi>>> {
+    const result = await this.followersService.getRelationship(followerUserId, followingUserId);
+    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
-    const followApi: FollowApi = camelToSnakeCaseObject(result.result) as unknown as FollowApi;
-    return response.status(HttpStatus.OK).json({ result: followApi });
+    const followRelationshipApi: FollowRelationshipApi = camelToSnakeCaseObject(result.result) as unknown as FollowRelationshipApi;
+    return response.status(HttpStatus.OK).json({ result: followRelationshipApi });
   }
   
   /** `:userId` = `followerUserId` の人のことをフォローする (ログインしている人は `followingUserId`) */
   @UseGuards(JwtAuthGuard)
   @Post(':userId/followers')
-  public async follow(@Param('userId') followerUserId: string, @Body('following_user_id') followingUserId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<void>>> {
+  public async follow(@Param('userId') followerUserId: string, @Body('following_user_id') followingUserId: string, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
     if(!isValidJwtUserId(request, response, followingUserId)) return;  // フォローする人の本人確認
     console.log(followerUserId, followingUserId);
     const result = await this.followersService.follow(followerUserId, followingUserId);
@@ -52,7 +52,7 @@ export class FollowersController {
   /** `:userId` = `followerUserId` の人をアンフォローする (ログインしている人は `followingUserId`) */
   @UseGuards(JwtAuthGuard)
   @Delete(':userId/followers')
-  public async unfollow(@Param('userId') followerUserId: string, @Query('following_user_id') followingUserId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<void>>> {
+  public async unfollow(@Param('userId') followerUserId: string, @Query('following_user_id') followingUserId: string, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
     if(!isValidJwtUserId(request, response, followingUserId)) return;  // フォローを外す人の本人確認
     
     const result = await this.followersService.unfollow(followerUserId, followingUserId);

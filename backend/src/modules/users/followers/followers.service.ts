@@ -7,8 +7,11 @@ import { FollowEntity } from '../../../shared/entities/follow.entity';
 import { NotificationEntity } from '../../../shared/entities/notification.entity';
 import { UserEntity } from '../../../shared/entities/user.entity';
 import { NotificationsService } from '../../notifications/notifications.service';
+import { IntroductionsService } from '../introductions/introductions.service';
 
 import type { Result } from '../../../common/types/result';
+import type { Follow } from '../../../common/types/follow';
+import type { FollowRelationship } from '../../../common/types/follow-relationship';
 
 /** Followers Service */
 @Injectable()
@@ -18,7 +21,8 @@ export class FollowersService {
   constructor(
     @InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>,
     @InjectRepository(FollowEntity) private readonly followsRepository: Repository<FollowEntity>,
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
+    private readonly introductionsService: IntroductionsService
   ) { }
   
   /** `userId` のフォロワー (`userId` のことをフォローしているユーザ) 一覧を取得する */
@@ -43,13 +47,28 @@ export class FollowersService {
     }
   }
   
-  /** `followingUserId` が `followerUserId` のことをフォローしているかどうかの情報を取得する */
-  public async findOne(followerUserId: string, followingUserId: string): Promise<Result<FollowEntity>> {
+  /** `followingUserId` と `followerUserId` のフォロー関係の情報を取得する */
+  public async getRelationship(followerUserId: string, followingUserId: string): Promise<Result<FollowRelationship>> {
     if(followerUserId === followingUserId) return { error: '同じユーザが指定されています', code: HttpStatus.BAD_REQUEST };
     try {
-      const follower = await this.followsRepository.findOneBy({ followerUserId, followingUserId });
-      if(follower == null) return { error: '対象ユーザ間はフォロー関係にありません', code: HttpStatus.NOT_FOUND };
-      return { result: follower };
+      // followingUser が followerUser をフォローしているか否か
+      const followingToFollower = await this.followsRepository.findOneBy({ followerUserId, followingUserId });
+      // followerUser が followingUser をフォローしているか否か
+      const followerToFollowing = await this.followsRepository.findOneBy({ followerUserId: followingUserId, followingUserId: followerUserId });
+      
+      const relationship = followingToFollower != null && followerToFollowing != null ? '相互フォロー'
+        : followingToFollower != null ? `Following User [${followingUserId}] は Follower User [${followerUserId}] をフォローしています`
+        : followerToFollowing != null ? `Following User [${followingUserId}] は Follower User [${followerUserId}] にフォローされています`
+        : 'お互いにフォローしていません';
+      return {
+        result: {
+          relationship,
+          followingUserId,
+          followerUserId,
+          followingToFollower: followingToFollower as unknown as Follow,
+          followerToFollowing: followerToFollowing as unknown as Follow
+        }
+      };
     }
     catch(error) {
       this.logger.error('対象ユーザ間のフォロー状況の取得に失敗', error);
@@ -126,11 +145,16 @@ export class FollowersService {
         this.logger.error('アンフォロー処理で2件以上の削除が発生', deleteResult);
         return { error: 'アンフォロー処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
-      return { result: true };
     }
     catch(error) {
       this.logger.error('フォロー情報の削除 (アンフォロー) に失敗', error);
       return { error: 'フォロー情報の削除 (アンフォロー) に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
+    
+    // 相互フォロー時の紹介文があれば削除する (両方) : エラーは無視する
+    await this.introductionsService.remove(followerUserId, followingUserId);
+    await this.introductionsService.remove(followingUserId, followerUserId);
+    
+    return { result: true };
   }
 }

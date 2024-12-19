@@ -51,7 +51,7 @@ export const AppBarComponent: FC<Props> = ({ drawerWidth, isNarrowWindow, onTogg
         
         <Grid2 display="flex" justifyContent="center" alignItems="center" size="grow">
           <IconButton size="large" color="inherit" component={Link} to="/notifications" className={ location.pathname === '/notifications' ? 'app-bar-component-icon-active' : 'app-bar-component-icon' }>
-            <Badge badgeContent={notificationsState.unreadNotifications} color="error">
+            <Badge badgeContent={notificationsState.unreadNotifications} color="error" sx={{ whiteSpace: 'nowrap' }}>
               <NotificationsIcon />
             </Badge>
           </IconButton>

@@ -5,7 +5,7 @@ export const topicsConstants = {
   normal: {
     id: 1,
     name: '通常モード',
-    validateFunction: (_text: string): Result<boolean> => {
+    validateFunction: (_text: string): Result<boolean> => {  // eslint-disable-line @typescript-eslint/no-unused-vars
       return { result: true };
     }
   },
@@ -13,7 +13,7 @@ export const topicsConstants = {
     id: 2,
     name: '英語のみモード',
     validateFunction: (text: string): Result<boolean> => {
-      if(!(/^[a-zA-Z\s.,!?<>]+$/).test(text)) return { error: '英語のみモードでは英語以外の文字は投稿できません' };
+      if(!(/^[a-zA-Z0-9\s.,!?<>]+$/).test(text)) return { error: '英語のみモードでは英語以外の文字は投稿できません' };
       return { result: true };
     }
   },
@@ -21,7 +21,9 @@ export const topicsConstants = {
     id: 3,
     name: '漢字のみモード',
     validateFunction: (text: string): Result<boolean> => {
-      if(!(/^[\u4E00-\u9FFF\s<>]+$/).test(text)) return { error: '漢字のみモードでは漢字以外の文字は投稿できません' };
+      // Script_Extensions=Han に合致する : 、。・々〆〇
+      // 合致しないので追加が必要         : ！？ [全角スペース] [改行]
+      if(!(/^(\p{Script_Extensions=Han}|！|？|　|\n)+$/u).test(text)) return { error: '漢字のみモードでは漢字以外の文字は投稿できません' };
       return { result: true };
     }
   },
@@ -39,7 +41,7 @@ export const topicsConstants = {
   anonymous: {
     id: 5,
     name: '匿名投稿モード',
-    validateFunction: (_text: string): Result<boolean> => {
+    validateFunction: (_text: string): Result<boolean> => {  // eslint-disable-line @typescript-eslint/no-unused-vars
       return { result: true };
     }
   }

@@ -6,6 +6,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { FollowEntity } from '../../../shared/entities/follow.entity';
 import { UserEntity } from '../../../shared/entities/user.entity';
 import { NotificationsService } from '../../notifications/notifications.service';
+import { IntroductionsService } from '../introductions/introductions.service';
 import { FollowersService } from './followers.service';
 
 describe('FollowersService', () => {
@@ -13,6 +14,7 @@ describe('FollowersService', () => {
   let fakeUsersRepository: Partial<Repository<UserEntity>>;
   let fakeFollowsRepository: Partial<Repository<FollowEntity>>;
   let fakeNotificationsService: Partial<NotificationsService>;
+  let fakeIntroductionsService: Partial<IntroductionsService>;
   
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,7 +22,8 @@ describe('FollowersService', () => {
         FollowersService,
         { provide: getRepositoryToken(UserEntity), useValue: fakeUsersRepository },
         { provide: getRepositoryToken(FollowEntity), useValue: fakeFollowsRepository },
-        { provide: NotificationsService, useValue: fakeNotificationsService }
+        { provide: NotificationsService, useValue: fakeNotificationsService },
+        { provide: IntroductionsService, useValue: fakeIntroductionsService }
       ]
     }).compile();
     
