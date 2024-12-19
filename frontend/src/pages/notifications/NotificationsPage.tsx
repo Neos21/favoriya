@@ -48,7 +48,7 @@ export const NotificationsPage: FC = () => {
         return console.error('通知一覧の取得に失敗', error);
       }
       
-      // 通知を全部既読にする
+      // 通知を全部既読にする (既に既読のみの場合も実行されるがいいだろう)
       setTimeout(async () => {
         try {
           await apiPost('/notifications/read', {

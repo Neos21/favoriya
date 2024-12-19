@@ -5,6 +5,7 @@ import { Alert, Box, Button, Checkbox, FormControlLabel, TextField, Typography }
 
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../../common/helpers/convert-case';
 import { isValidName, isValidProfileText } from '../../../../common/helpers/validators/validator-user';
+import { FontParserComponent } from '../../../../shared/components/FontParserComponent/FontParserComponent';
 import { userConstants } from '../../../../shared/constants/user-constants';
 import { useApiPatch } from '../../../../shared/hooks/use-api-fetch';
 import { setUser } from '../../../../shared/stores/user-slice';
@@ -122,6 +123,13 @@ export const UserInfoFormComponent: FC = () => {
         error={formErrors.profileText != null}
         helperText={formErrors.profileText}
       />
+      
+      {formData.profileText !== '' &&  // プレビュー
+        <Box component="div" sx={{ mt: 2, p: 1, border: '1px solid', borderColor: 'grey.600', borderRadius: 1, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+          <FontParserComponent input={formData.profileText} />
+        </Box>
+      }
+      
       <Typography component="div"><FormControlLabel control={<Checkbox name="showOwnFavouritesCount"    checked={formData.showOwnFavouritesCount   } onChange={onChangeChecked} />} label="自分の投稿のふぁぼられ数を表示する" /></Typography>
       <Typography component="div"><FormControlLabel control={<Checkbox name="showOthersFavouritesCount" checked={formData.showOthersFavouritesCount} onChange={onChangeChecked} />} label="他人の投稿のふぁぼられ数を表示する" /></Typography>
       <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>

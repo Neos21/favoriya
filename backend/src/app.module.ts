@@ -34,6 +34,7 @@ import { LoginHistoriesController } from './modules/users/login-histories/login-
 import { LoginHistoriesService } from './modules/users/login-histories/login-histories.service';
 import { FavouritesController } from './modules/users/posts/favourites/favourites.controller';
 import { FavouritesService } from './modules/users/posts/favourites/favourites.service';
+import { PostDecorationService } from './modules/users/posts/post-decoration.service';
 import { PostValidationService } from './modules/users/posts/post-validation.service';
 import { PostsController } from './modules/users/posts/posts.controller';
 import { PostsService } from './modules/users/posts/posts.service';
@@ -140,6 +141,7 @@ import { UserEntity } from './shared/entities/user.entity';
     LoginHistoriesService,
     NotificationsService,
     PostsService,
+    PostDecorationService,
     PostValidationService,
     PublicService,
     TimelineService,

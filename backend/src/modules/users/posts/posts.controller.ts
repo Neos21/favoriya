@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 
+import { topicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { isValidJwtUserId } from '../../../shared/helpers/is-valid-jwt-user-id';
+import { PostDecorationService } from './post-decoration.service';
 import { PostValidationService } from './post-validation.service';
 import { PostsService } from './posts.service';
 
@@ -15,6 +17,7 @@ import type { Post as TypePost, PostApi } from '../../../common/types/post';
 export class PostsController {
   constructor(
     private readonly postValidationService: PostValidationService,
+    private readonly postDecorationService: PostDecorationService,
     private readonly postsService: PostsService
   ) { }
   
@@ -29,6 +32,11 @@ export class PostsController {
     // トピックごとに入力チェックする
     const validationResult = this.postValidationService.validateText(post.text, post.topicId);
     if(validationResult.error != null) return response.status(validationResult.code ?? HttpStatus.BAD_REQUEST).json(validationResult);
+    
+    // ランダム装飾モードの場合に行ごとにタグを入れたり入れなかったりする
+    if(post.topicId === topicsConstants.randomDecorations.id) {
+      post.text = this.postDecorationService.decorateText(post.text);
+    }
     
     const result = await this.postsService.create(post);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);

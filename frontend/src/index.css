@@ -3,6 +3,7 @@ html {
   overflow-y: scroll !important;  /* Drawer を開いた時に消させない */
   word-break: break-all;
   cursor: default;
+  transition: background-color .25s;
 }
 
 html.dark,
@@ -24,6 +25,7 @@ html.light body {
 body {
   height: 100%;
   padding-right: 0 !important;  /* Drawer を開いた時に勝手に付くので切る */
+  transition: background-color .25s;
 }
 
 #root {

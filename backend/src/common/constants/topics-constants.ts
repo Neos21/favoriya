@@ -44,5 +44,12 @@ export const topicsConstants = {
     validateFunction: (_text: string): Result<boolean> => {  // eslint-disable-line @typescript-eslint/no-unused-vars
       return { result: true };
     }
+  },
+  randomDecorations: {
+    id: 6,
+    name: 'ランダム装飾モード',
+    validateFunction: (_text: string): Result<boolean> => {  // eslint-disable-line @typescript-eslint/no-unused-vars
+      return { result: true };
+    }
   }
 };

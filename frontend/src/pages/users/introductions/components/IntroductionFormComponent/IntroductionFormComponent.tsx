@@ -4,6 +4,7 @@ import { Alert, Box, Button, TextField, Typography } from '@mui/material';
 
 import { snakeToCamelCaseObject } from '../../../../../common/helpers/convert-case';
 import { isValidIntroductionText } from '../../../../../common/helpers/validators/validator-introduction';
+import { FontParserComponent } from '../../../../../shared/components/FontParserComponent/FontParserComponent';
 import { httpStatusConstants } from '../../../../../shared/constants/http-status-constants';
 import { useApiGet, useApiPut } from '../../../../../shared/hooks/use-api-fetch';
 
@@ -80,7 +81,7 @@ export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUse
       if(introductionApiResult.error != null) return setErrorMessage(introductionApiResult.error);
       
       setIsApproved(false);  // 未承認状態に戻す
-      setSucceededMessage('紹介文を投稿しました。紹介文は被紹介者本人の承認後、一般公開されるようになります');  // 成功時のメッセージを表示する
+      setSucceededMessage('紹介文を投稿しました。紹介文は本人の承認後、一般公開されるようになります');  // 成功時のメッセージを表示する
       onAfterPost();  // 承認済み一覧を再読込させる
     }
     catch(error) {
@@ -115,6 +116,11 @@ export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUse
         error={formErrors.text != null}
         helperText={formErrors.text}
       />
+      {formData.text !== '' &&  // プレビュー
+        <Box component="div" sx={{ mt: 2, p: 1, border: '1px solid', borderColor: 'grey.600', borderRadius: 1, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+          <FontParserComponent input={formData.text} />
+        </Box>
+      }
       <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
         <Button type="submit" variant="contained">投稿</Button>
       </Box>

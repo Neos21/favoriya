@@ -112,11 +112,17 @@ export const FontParserComponent: React.FC<Props> = ({ input }) => {
   });
   const tagTransformedHtml = convertTags(tagSanitizedHtml);
   
+  // ブロック要素の開始タグ直前・終了タグ直後にある改行を削る (空行ができないようにする)
+  const removeLineBreaks = (html: string) => html
+    .replace((/\n(<(marquee|h1|h2|h3|h4|h5|h6|p|div)>)/g ), '★$1')
+    .replace((/(<\/(marquee|h1|h2|h3|h4|h5|h6|p|div)>)\n/g), '$1');
+  const lineBreaksRemovedHtml = removeLineBreaks(tagTransformedHtml);
+  
   // URL 文字列を a 要素を埋め込む
   const convertUrlsToLinks = (html: string) => html
     .replace((/(\b(https?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/igu), url => `<a href="${url}"  target="_blank" rel="noopener noreferrer" class="normal-link">${url}</a>`)
     .replace( (/(\b(ttps?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/igu), url => `<a href="h${url}" target="_blank" rel="noopener noreferrer" class="hidden-link">${url}</a>`);
-  const transformedHtml = convertUrlsToLinks(tagTransformedHtml);
+  const transformedHtml = convertUrlsToLinks(lineBreaksRemovedHtml);
   
   return <div className="font-parser-component" dangerouslySetInnerHTML={{ __html: transformedHtml }} />;
 };
