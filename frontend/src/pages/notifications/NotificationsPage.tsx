@@ -3,18 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import CheckIcon from '@mui/icons-material/Check';
 import ModeIcon from '@mui/icons-material/Mode';
 import StarIcon from '@mui/icons-material/Star';
-import { Alert, Avatar, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import { Alert, Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { userConstants } from '../../shared/constants/user-constants';
-import { useApiGet, useApiPatch } from '../../shared/hooks/use-api-fetch';
+import { useApiGet, useApiPost } from '../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../shared/services/convert-date-to-jst';
-import { setUnreadNotifications, setUnreadNotificationsDecrement } from '../../shared/stores/notifications-slice';
+import { setUnreadNotifications } from '../../shared/stores/notifications-slice';
 
 import type { Result } from '../../common/types/result';
 import type { RootState } from '../../shared/stores/store';
@@ -26,7 +25,7 @@ export const NotificationsPage: FC = () => {
   
   const dispatch = useDispatch();
   const apiGet = useApiGet();
-  const apiPatch = useApiPatch();
+  const apiPost = useApiPost();
   
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
   const [notifications, setNotifications] = useState<Array<Notification>>([]);
@@ -48,28 +47,27 @@ export const NotificationsPage: FC = () => {
         setStatus('failed');
         return console.error('通知一覧の取得に失敗', error);
       }
+      
+      // 通知を全部既読にする
+      setTimeout(async () => {
+        try {
+          await apiPost('/notifications/read', {
+            recipient_user_id: userState.id  // 本人確認用
+          });
+        }
+        catch(error) {
+          console.error('通知の既読処理に失敗', error);
+        }
+        finally {
+          setNotifications(previousNotifications => previousNotifications.map(notification => {
+            notification.isRead = true;
+            return notification;
+          }));
+          dispatch(setUnreadNotifications({ unreadNotifications: 0 }));
+        }
+      }, 2500);
     })();
-  }, [apiGet, dispatch, userState.id]);
-  
-  /** 通知を既読にする */
-  const onReadItem = async (id: number) => {
-    try {
-      await apiPatch(`/notifications/${id}`, {
-        recipient_user_id: userState.id,  // 本人確認用
-        is_read          : true
-      });
-    }
-    catch(error) {
-      console.error('通知の既読処理に失敗', error);
-    }
-    finally {
-      setNotifications(notifications.map(notification => {
-        if(notification.id === id) notification.isRead = true;
-        return notification;
-      }));
-      dispatch(setUnreadNotificationsDecrement());
-    }
-  };
+  }, [apiGet, apiPost, dispatch, userState.id]);
   
   return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>通知一覧</Typography>
@@ -85,16 +83,9 @@ export const NotificationsPage: FC = () => {
         未読 {notifications.filter(notification => !notification.isRead).length} 件 / 全 {notifications.length} 件
       </Typography>
       <List sx={{ mt: 3 }}>
-        <Divider component="li" />
+        <Divider component="li" sx={{ borderColor: notifications.filter(notification => !notification.isRead).length > 0 && 'secondary.dark' }} />
         {notifications.map(notification => <Fragment key={notification.id}>
-          <ListItem
-            alignItems="center" sx={{ px: 0, opacity: notification.isRead ? .5 : 1 }}
-            secondaryAction={
-              <IconButton edge="end" disabled={notification.isRead} onClick={() => onReadItem(notification.id)}>
-                <CheckIcon color={notification.isRead ? 'disabled' : 'success'} />
-              </IconButton>
-            }
-          >
+          <ListItem alignItems="center" sx={{ px: 0 }}>
             <ListItemAvatar sx={{ position: 'relative' }}>
               <Link to={`/@${notification.actorUserId}`}>
                 <Avatar src={isEmptyString(notification.actorUser.avatarUrl) ? '' : `${userConstants.ossUrl}${notification.actorUser.avatarUrl}`} />
@@ -108,12 +99,12 @@ export const NotificationsPage: FC = () => {
               primary={<>
                 <Typography component="div" sx={{ color: 'grey.600', fontSize: '.86rem' }}>{epochTimeMsToJstString(notification.createdAt as string, 'YYYY-MM-DD HH:mm:SS')}</Typography>
                 {notification.notificationType === 'favourite'    && <Link to={`/@${userState.id}/posts/${notification.postId}`} className="hover-underline">{notification.message}</Link>}
-                {notification.notificationType === 'follow'       && <Link to={`/@${notification.actorUserId}`} className="hover-underline">{notification.message}</Link>}
-                {notification.notificationType === 'introduction' && <Link to={`/@${userState.id}/introductions`} className="hover-underline">{notification.message}</Link>}
+                {notification.notificationType === 'follow'       && <Link to={`/@${notification.actorUserId}`}                  className="hover-underline">{notification.message}</Link>}
+                {notification.notificationType === 'introduction' && <Link to={`/@${userState.id}/introductions`}                className="hover-underline">{notification.message}</Link>}
               </>}
             />
           </ListItem>
-          <Divider component="li" />
+          <Divider component="li" sx={{ borderColor: !notification.isRead && 'secondary.dark' }} />
         </Fragment>)}
       </List>
     </>}

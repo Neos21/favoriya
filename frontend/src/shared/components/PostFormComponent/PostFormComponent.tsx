@@ -3,7 +3,7 @@ import { ChangeEvent, FC, FormEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
-import { Alert, Box, Button, FormControl, Grid2, IconButton, InputLabel, MenuItem, Modal, Select, TextField, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, FormControl, Grid2, IconButton, InputLabel, MenuItem, Modal, Select, Stack, TextField, Tooltip, Typography } from '@mui/material';
 
 import { topicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
@@ -42,6 +42,24 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData(previousFormData => ({ ...previousFormData, [name]: value }));
+  };
+  
+  /** On Insert */
+  const onInsert = (tagBase: string, replacements?: Array<string>) => {
+    if(replacements == null) {
+      setFormData(previousFormData => ({
+        ...previousFormData,
+        text: previousFormData.text + tagBase
+      }));
+    }
+    else {
+      const choiced = replacements[Math.floor(Math.random() * replacements.length)];
+      console.log(choiced);
+      setFormData(previousFormData => ({
+        ...previousFormData,
+        text: previousFormData.text + tagBase.replace((/★/g), choiced)
+      }));
+    }
   };
   
   /** On Submit */
@@ -126,6 +144,17 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
         required
         fullWidth rows={4} margin="normal"
       />
+      <Stack direction="row" spacing={1.5} useFlexGap sx={{ mt: 1, flexWrap: 'wrap', ['& button']: { minWidth: 'auto', whiteSpace: 'nowrap' } }}>
+        <Button variant="outlined" sx={{ fontFamily: 'serif' }} size="small" color="info" onClick={() => onInsert('<font size="★" face="serif"></font>', ['4', '5', '6', '7'])}>明朝体</Button>
+        <Button variant="outlined" size="small" color="success"   onClick={() => onInsert('<em></em>')}>緑</Button>
+        <Button variant="outlined" size="small" color="error"     onClick={() => onInsert('<strong></strong>')}>赤</Button>
+        <Button variant="outlined" size="small" color="warning"   onClick={() => onInsert('<mark></mark>')}>黄</Button>
+        <Button variant="outlined" size="small" color="secondary" onClick={() => onInsert('<code></code>')}>紫</Button>
+        <Button variant="outlined" size="small" color="inherit"   onClick={() => onInsert('<marquee></marquee>')}>流</Button>
+        <Button variant="outlined" size="small" color="inherit"   onClick={() => onInsert('<blink></blink>')}>光</Button>
+        <Button variant="outlined" size="small" color="inherit"   onClick={() => onInsert('<★ align="center"></★>', ['h1', 'h2', 'h3', 'h4', 'div'])}>中央</Button>
+        <Button variant="outlined" size="small" color="inherit"   onClick={() => onInsert('<★ align="right"></★>' , ['h1', 'h2', 'h3', 'h4', 'div'])}>右</Button>
+      </Stack>
     </Box>
     
     <Modal open={isModalOpen}>
@@ -143,6 +172,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
             </li>
             <li>marquee : direction・scrollamout</li>
             <li>blink … <span style={{ animation: 'blink-animation 1.5s step-start infinite' }}>Example</span></li>
+            <li>h1～h6・p・div : align</li>
             <li><b>b</b>・<i>i</i>・<u>u</u>・<s>s</s>・<del>del</del>・<ins>ins</ins></li>
             <li><em>em</em>・<strong>strong</strong>・<mark>mark</mark></li>
             <li><code>code</code>・<var>var</var>・<samp>samp</samp>・<kbd>kbd</kbd></li>

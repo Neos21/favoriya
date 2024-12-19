@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseBoolPipe, ParseIntPipe, Patch, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 
 import { camelToSnakeCaseObject } from '../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
@@ -39,14 +39,13 @@ export class NotificationsController {
     return response.status(HttpStatus.OK).json(result);
   }
   
-  /** 通知を既読にする */
+  /** 通知を全て既読にする */
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-  public async read(@Param('id', ParseIntPipe) id: number, @Body('recipient_user_id') userId: string, @Body('is_read', ParseBoolPipe) isRead: boolean, @Req() request: Request, @Res() response: Response): Promise<Response<Result<boolean>>> {
+  @Post('read')
+  public async read(@Body('recipient_user_id') userId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<boolean>>> {
     if(!isValidJwtUserId(request, response, userId)) return;
-    if(isRead == null) return response.status(HttpStatus.BAD_REQUEST).json({ error: '既読処理に必要なパラメータが含まれていません' });
     
-    const notificationResult = await this.notificationsService.read(id);
+    const notificationResult = await this.notificationsService.readAll(userId);
     if(notificationResult.error != null) return response.status(notificationResult.code ?? HttpStatus.BAD_REQUEST).json(notificationResult);
     
     return response.status(HttpStatus.OK).json({ result: true });

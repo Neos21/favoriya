@@ -1,22 +1,22 @@
 import DOMPurify from 'dompurify';
 
 const fontSizeMap: Record<string, string> = {
-  '1' : '0.75rem',
-  '2' : '0.85rem',
-  '3' : '1rem',
-  '4' : '1.25rem',
-  '5' : '1.5rem',
-  '6' : '1.75rem',
-  '7' : '2rem',
-  '-4': '0.5rem',
-  '-3': '0.65rem',
-  '-2': '0.75rem',
-  '-1': '0.85rem',
-  '0' : '1rem',
-  '+1': '1.25rem',
-  '+2': '1.5rem',
-  '+3': '1.75rem',
-  '+4': '2rem'
+  '1' : '0.75em',
+  '2' : '0.85em',
+  '3' : '1em',
+  '4' : '1.25em',
+  '5' : '1.5em',
+  '6' : '1.75em',
+  '7' : '2em',
+  '-4': '0.5em',
+  '-3': '0.65em',
+  '-2': '0.75em',
+  '-1': '0.85em',
+  '0' : '1em',
+  '+1': '1.25em',
+  '+2': '1.5em',
+  '+3': '1.75em',
+  '+4': '2em'
 };
 
 type Props = {
@@ -107,18 +107,15 @@ export const FontParserComponent: React.FC<Props> = ({ input }) => {
   
   // DOMPurify でサニタイズした HTML を取得し、変換処理を適用する
   const tagSanitizedHtml = DOMPurify.sanitize(input, {
-    ALLOWED_TAGS: ['font', 'marquee', 'blink', 'b', 'i', 'u', 's', 'del', 'ins', 'em', 'strong', 'mark', 'code', 'var', 'samp', 'kbd'],  // 許可する要素名
-    ALLOWED_ATTR: ['color', 'size', 'face', 'direction', 'scrollamount']  // 許可する属性
+    ALLOWED_TAGS: ['font', 'marquee', 'blink', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'b', 'i', 'u', 's', 'del', 'ins', 'em', 'strong', 'mark', 'code', 'var', 'samp', 'kbd'],  // 許可する要素名
+    ALLOWED_ATTR: ['color', 'size', 'face', 'direction', 'scrollamount', 'align']  // 許可する属性
   });
   const tagTransformedHtml = convertTags(tagSanitizedHtml);
   
   // URL 文字列を a 要素を埋め込む
-  const convertUrlsToLinks = (html: string) => {
-    const sanitizedHtml = DOMPurify.sanitize(html);
-    return sanitizedHtml
-      .replace((/(\b(https?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/igu), url => `<a href="${url}"  target="_blank" rel="noopener noreferrer" class="normal-link">${url}</a>`)
-      .replace((/(\b(ttps?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/igu) , url => `<a href="h${url}" target="_blank" rel="noopener noreferrer" class="hidden-link">${url}</a>`);
-  };
+  const convertUrlsToLinks = (html: string) => html
+    .replace((/(\b(https?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/igu), url => `<a href="${url}"  target="_blank" rel="noopener noreferrer" class="normal-link">${url}</a>`)
+    .replace( (/(\b(ttps?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/igu), url => `<a href="h${url}" target="_blank" rel="noopener noreferrer" class="hidden-link">${url}</a>`);
   const transformedHtml = convertUrlsToLinks(tagTransformedHtml);
   
   return <div className="font-parser-component" dangerouslySetInnerHTML={{ __html: transformedHtml }} />;

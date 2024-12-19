@@ -42,7 +42,7 @@ export class FollowersController {
   @Post(':userId/followers')
   public async follow(@Param('userId') followerUserId: string, @Body('following_user_id') followingUserId: string, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
     if(!isValidJwtUserId(request, response, followingUserId)) return;  // フォローする人の本人確認
-    console.log(followerUserId, followingUserId);
+    
     const result = await this.followersService.follow(followerUserId, followingUserId);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     

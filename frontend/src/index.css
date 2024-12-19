@@ -5,23 +5,25 @@ html {
   cursor: default;
 }
 
-html.dark {
+html.dark,
+html.dark body {
   background-color: #001020 !important;
 }
 @media (prefers-color-scheme: dark) {
-  html {
+  html,
+  html body {
     background-color: #001020 !important;
   }
 }
 
-html.light {
+html.light,
+html.light body {
   background-color: var(--mui-palette-background-default) !important;
 }
 
 body {
   height: 100%;
   padding-right: 0 !important;  /* Drawer を開いた時に勝手に付くので切る */
-  background-color: var(--mui-palette-background-default) !important;
 }
 
 #root {
@@ -115,6 +117,19 @@ html.light .menu-component-list .Mui-selected {
 
 /* Font Parser Component
  * ================================================================================ */
+
+/* 明朝体 serif を指定した場合は太字にしちゃう */
+.font-parser-component [style*="font-family: serif"] {
+  font-weight: bold;
+}
+
+.font-parser-component h1 { margin: 0; font-size: 2em   ; font-weight: bold; }
+.font-parser-component h2 { margin: 0; font-size: 1.75em; font-weight: bold; }
+.font-parser-component h3 { margin: 0; font-size: 1.5em ; font-weight: bold; }
+.font-parser-component h4 { margin: 0; font-size: 1.25em; font-weight: bold; }
+.font-parser-component h5 { margin: 0; font-size: 1em   ; font-weight: bold; }
+.font-parser-component h6 { margin: 0; font-size: .85em ; font-weight: bold; }
+.font-parser-component p  { margin: 0; }
 
 .font-parser-component strong {
   color: #f00;

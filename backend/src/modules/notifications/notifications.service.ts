@@ -83,14 +83,10 @@ export class NotificationsService {
     return { result: true };
   }
   
-  /** 通知を既読にする */
-  public async read(id: number): Promise<Result<boolean>> {
+  /** 通知を全て既読にする */
+  public async readAll(userId: string): Promise<Result<boolean>> {
     try {
-      const updateResult = await this.notificationsRepository.update({ id }, { isRead: true });
-      if(updateResult.affected !== 1) {  // 1件だけ更新が成功していない場合
-        this.logger.error('通知の既読処理で0件 or 2件以上の更新が発生', updateResult);
-        return { error: '通知の既読処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
-      }
+      await this.notificationsRepository.update({ recipientUserId: userId }, { isRead: true });
       return { result: true };
     }
     catch(error) {
@@ -108,7 +104,6 @@ export class NotificationsService {
         .orderBy('created_at', 'DESC')
         .skip(this.maxNotificationsPerUser) // 最新の指定件数は除外する
         .getMany();
-      console.log(oldRecords);
       if(oldRecords.length > 0) {
         for await (const oldRecord of oldRecords) {
           await this.notificationsRepository.delete({ id: oldRecord.id });
