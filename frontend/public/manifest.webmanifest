@@ -5,7 +5,7 @@
   "theme_color": "#001020",
   "background_color": "#001020",
   "display": "standalone",
-  "start_url": "https://pseudo.neos21.net",
+  "start_url": "https://favoriya.neos21.net",
   "icons": [
     { "src": "favicon-192.png", "type": "image/png", "sizes": "192x192" },
     { "src": "favicon-512.png", "type": "image/png", "sizes": "512x512" }

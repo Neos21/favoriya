@@ -104,7 +104,7 @@ export const LoginPage: FC = () => {
       <Divider sx={{ mt: 4 }} />
       <Box component="div" sx={{ mt: 4, textAlign: 'center', color: 'grey.500' }}>
         <Tooltip title="Help (GitHub Wiki)">
-          <Button variant="outlined" color="inherit" endIcon={<HelpOutlineOutlinedIcon />} onClick={() => window.open('https://github.com/Neos21/pseudo/wiki')}>About</Button>
+          <Button variant="outlined" color="inherit" endIcon={<HelpOutlineOutlinedIcon />} onClick={() => window.open('https://github.com/Neos21/favoriya/wiki')}>About</Button>
         </Tooltip>
       </Box>
     </Container>
