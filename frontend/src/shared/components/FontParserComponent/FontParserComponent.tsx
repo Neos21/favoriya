@@ -19,7 +19,9 @@ const fontSizeMap: Record<string, string> = {
   '+4': '2rem'
 };
 
-type Props = { input: string; };
+type Props = {
+  input: string
+};
 
 /** Font Parser Component */
 export const FontParserComponent: React.FC<Props> = ({ input }) => {

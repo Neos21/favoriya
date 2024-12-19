@@ -5,7 +5,7 @@ import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
-import { httpStatus } from '../../shared/constants/http-status';
+import { httpStatusConstants } from '../../shared/constants/http-status-constants';
 import { userConstants } from '../../shared/constants/user-constants';
 import { setUser } from '../../shared/stores/user-slice';
 
@@ -60,7 +60,7 @@ export const AuthGuardRoute: FC = () => {
           },
           body: JSON.stringify({ id: user.id })
         });
-        if(response.status !== httpStatus.ok) throw new Error(String(response.status));
+        if(response.status !== httpStatusConstants.ok) throw new Error(String(response.status));
         const refreshResult: Result<UserApi> = await response.json();  // Throws
         if(refreshResult.error != null) throw new Error(refreshResult.error);
         

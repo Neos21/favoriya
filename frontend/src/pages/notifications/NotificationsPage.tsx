@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CheckIcon from '@mui/icons-material/Check';
+import ModeIcon from '@mui/icons-material/Mode';
 import StarIcon from '@mui/icons-material/Star';
 import { Alert, Avatar, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
@@ -97,16 +98,18 @@ export const NotificationsPage: FC = () => {
             <ListItemAvatar sx={{ position: 'relative' }}>
               <Link to={`/@${notification.actorUserId}`}>
                 <Avatar src={isEmptyString(notification.actorUser.avatarUrl) ? '' : `${userConstants.ossUrl}${notification.actorUser.avatarUrl}`} />
-                {notification.notificationType === 'favourite' && <StarIcon             color="warning" sx={{ position: 'absolute', right: '.75rem', bottom: '-.25rem' }} />}
-                {notification.notificationType === 'follow'    && <AddCircleOutlineIcon color="success" sx={{ position: 'absolute', right: '.75rem', bottom: '-.25rem' }} />}
+                {notification.notificationType === 'favourite'    && <StarIcon             color="warning" sx={{ position: 'absolute', right: '.75rem', bottom: '-.25rem' }} />}
+                {notification.notificationType === 'follow'       && <AddCircleOutlineIcon color="success" sx={{ position: 'absolute', right: '.75rem', bottom: '-.25rem' }} />}
+                {notification.notificationType === 'introduction' && <ModeIcon             color="info"    sx={{ position: 'absolute', right: '.75rem', bottom: '-.25rem' }} />}
               </Link>
             </ListItemAvatar>
             <ListItemText
               sx={{ mr: 6 }}
               primary={<>
                 <Typography component="div" sx={{ color: 'grey.600', fontSize: '.86rem' }}>{epochTimeMsToJstString(notification.createdAt as string, 'YYYY-MM-DD HH:mm:SS')}</Typography>
-                {notification.notificationType === 'favourite' && <Link to={`/@${userState.id}/posts/${notification.postId}`} className="hover-underline">{notification.message}</Link>}
-                {notification.notificationType === 'follow'    && <Link to={`/@${notification.actorUserId}`} className="hover-underline">{notification.message}</Link>}
+                {notification.notificationType === 'favourite'    && <Link to={`/@${userState.id}/posts/${notification.postId}`} className="hover-underline">{notification.message}</Link>}
+                {notification.notificationType === 'follow'       && <Link to={`/@${notification.actorUserId}`} className="hover-underline">{notification.message}</Link>}
+                {notification.notificationType === 'introduction' && <Link to={`/@${userState.id}/introductions`} className="hover-underline">{notification.message}</Link>}
               </>}
             />
           </ListItem>

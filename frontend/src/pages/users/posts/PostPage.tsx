@@ -7,8 +7,8 @@ import { Alert, Box, Button, Grid2, Modal, Typography } from '@mui/material';
 import { snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { LoadingSpinnerComponent } from '../../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { PostsListComponent } from '../../../shared/components/PostsListComponent/PostsListComponent';
-import { httpStatus } from '../../../shared/constants/http-status';
-import { modalStyle } from '../../../shared/constants/modal-style';
+import { httpStatusConstants } from '../../../shared/constants/http-status-constants';
+import { modalStyleConstants } from '../../../shared/constants/modal-style-constants';
 import { useApiDelete, useApiGet } from '../../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../../shared/services/convert-date-to-jst';
 
@@ -57,7 +57,7 @@ export const PostPage: FC = () => {
       try {
         const response = await apiGet(`/users/${paramUserId}/posts/${paramPostId}`);  // Throws
         const postApiResult: Result<PostApi> = await response.json();  // Throws
-        if(postApiResult.error != null) return setStatus(response.status === httpStatus.notFound ? 'not-found' : 'failed');
+        if(postApiResult.error != null) return setStatus(response.status === httpStatusConstants.notFound ? 'not-found' : 'failed');
         
         setPost(snakeToCamelCaseObject(postApiResult.result) as Post);
       }
@@ -98,7 +98,7 @@ export const PostPage: FC = () => {
       }
       
       <Modal open={isModalOpen}>
-        <Box component="div" sx={modalStyle}>
+        <Box component="div" sx={modalStyleConstants}>
           <Typography component="h2" variant="h5">本当に削除しますか？</Typography>
           <Grid2 container spacing={3} sx={{ mt: 3 }}>
             <Grid2 size={6}><Button variant="contained" onClick={onCancelConfirm}>キャンセル</Button></Grid2>

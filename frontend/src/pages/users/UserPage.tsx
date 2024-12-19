@@ -9,7 +9,7 @@ import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { FontParserComponent } from '../../shared/components/FontParserComponent/FontParserComponent';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { PostsListComponent } from '../../shared/components/PostsListComponent/PostsListComponent';
-import { httpStatus } from '../../shared/constants/http-status';
+import { httpStatusConstants } from '../../shared/constants/http-status-constants';
 import { useApiDelete, useApiGet, useApiPost } from '../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../shared/services/convert-date-to-jst';
 
@@ -54,7 +54,7 @@ export const UserPage: FC = () => {
       try {
         const response = await apiGet(`/users/${paramUserId}`);  // Throws
         const userApiResult: Result<UserApi> = await response.json();  // Throws
-        if(userApiResult.error != null) return setStatus(response.status === httpStatus.notFound ? 'not-found' : 'failed');
+        if(userApiResult.error != null) return setStatus(response.status === httpStatusConstants.notFound ? 'not-found' : 'failed');
         
         setUser(snakeToCamelCaseObject(userApiResult.result) as User);
       }
@@ -124,7 +124,7 @@ export const UserPage: FC = () => {
   const onFollow = async () => {
     try {
       const response = await apiPost(`/users/${paramUserId}/followers`, { following_user_id: userState.id });
-      if(response.status !== httpStatus.created) throw new Error(String(response.status));
+      if(response.status !== httpStatusConstants.created) throw new Error(String(response.status));
       setIsFollowing(true);
     }
     catch(error) {
@@ -136,7 +136,7 @@ export const UserPage: FC = () => {
   const onUnfollow = async () => {
     try {
       const response = await apiDelete(`/users/${paramUserId}/followers`, `?following_user_id=${userState.id}`);
-      if(response.status !== httpStatus.noContent) throw new Error(String(response.status));
+      if(response.status !== httpStatusConstants.noContent) throw new Error(String(response.status));
       setIsFollowing(false);
     }
     catch(error) {

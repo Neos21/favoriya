@@ -8,7 +8,7 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import { Alert, Box, Button, Container, Divider, Fade, Modal, TextField, Tooltip, Typography } from '@mui/material';
 
 import { isValidId, isValidPassword } from '../../common/helpers/validators/validator-user';
-import { modalStyle } from '../../shared/constants/modal-style';
+import { modalStyleConstants } from '../../shared/constants/modal-style-constants';
 import { userConstants } from '../../shared/constants/user-constants';
 import { apiGetWithoutToken } from '../../shared/services/api/api-fetch';
 import { initialUserState, setUser } from '../../shared/stores/user-slice';
@@ -133,7 +133,7 @@ export const SignupPage: FC = () => {
       </Box>
       
       <Modal open={isModalOpen}>
-        <Box component="div" sx={modalStyle}>
+        <Box component="div" sx={modalStyleConstants}>
           <Typography component="h2" variant="h5">ユーザ登録が完了しました</Typography>
           <Typography component="p" sx={{ mt: 3 }}>ログイン画面でログインしてください</Typography>
           <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>

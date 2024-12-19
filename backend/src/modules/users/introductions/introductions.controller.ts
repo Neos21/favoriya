@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { IntroductionApi } from '../../../common/types/introduction';
@@ -38,15 +38,27 @@ export class IntroductionsController {
     return response.status(HttpStatus.OK).json({ result });
   }
   
+  /** 紹介者が書いた紹介1件を取得する */
+  @UseGuards(JwtAuthGuard)
+  @Get(':userId/introductions/:actorUserId')
+  public async findOne(@Param('userId') recipientUserId: string, @Param('actorUserId') actorUserId: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<IntroductionApi>>> {
+    if(!isValidJwtUserId(request, response, actorUserId)) return;  // 紹介を書く側の本人確認
+    
+    const introductionEntity = await this.introductionsService.findOne(recipientUserId, actorUserId);
+    if(introductionEntity.error != null) return response.status(introductionEntity.code ?? HttpStatus.BAD_REQUEST).json(introductionEntity);
+    
+    const result = camelToSnakeCaseObject(introductionEntity.result);
+    return response.status(HttpStatus.OK).json({ result });
+  }
+  
   /** 紹介文を書く (新規投稿・未承認時点での修正・承認後の編集 = 未承認に戻る) */
   @UseGuards(JwtAuthGuard)
-  @Post(':userId/introductions/:actorUserId')
+  @Put(':userId/introductions/:actorUserId')
   public async createOrUpdate(@Param('userId') recipientUserId: string, @Param('actorUserId') actorUserId: string, @Body('text') text: string, @Req() request: Request, @Res() response: Response): Promise<Response<Result<IntroductionApi>>> {
     if(!isValidJwtUserId(request, response, actorUserId)) return;  // 紹介文を書く人の本人確認
     
     const entityResult = await this.introductionsService.createOrUpdate(recipientUserId, actorUserId, text);
     if(entityResult.error != null) return response.status(entityResult.code ?? HttpStatus.BAD_REQUEST).json(entityResult);
-    // TODO : 通知を飛ばす
     
     const result = camelToSnakeCaseObject(entityResult.result);
     return response.status(HttpStatus.OK).json({ result });

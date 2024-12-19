@@ -1,5 +1,5 @@
 /** モーダルのスタイル */
-export const modalStyle = {
+export const modalStyleConstants = {
   position: 'absolute',
   top: '50%',
   left: '50%',

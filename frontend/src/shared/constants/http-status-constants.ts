@@ -1,5 +1,5 @@
 /** HTTP ステータス */
-export const httpStatus = {
+export const httpStatusConstants = {
   ok       : 200,
   created  : 201,
   noContent: 204,

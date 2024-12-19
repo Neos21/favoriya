@@ -31,12 +31,12 @@ export class IntroductionEntity {
   public readonly updatedAt: Date;
   
   /** 紹介されたユーザの情報 */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.recipientIntroductions, { createForeignKeyConstraints: false })
+  @ManyToOne(() => UserEntity, userEntity => userEntity.recipientIntroductions, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'recipient_user_id', referencedColumnName: 'id' })
   public recipientUser: UserEntity;
   
   /** 紹介したユーザの情報 */
-  @ManyToOne(() => UserEntity, userEntity => userEntity.actorIntroductions, { createForeignKeyConstraints: false })
+  @ManyToOne(() => UserEntity, userEntity => userEntity.actorIntroductions, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'actor_user_id', referencedColumnName: 'id' })
   public actorUser: UserEntity;
   

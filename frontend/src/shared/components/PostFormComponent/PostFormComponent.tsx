@@ -8,21 +8,22 @@ import { Alert, Box, Button, FormControl, Grid2, IconButton, InputLabel, MenuIte
 import { topicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { isValidText } from '../../../common/helpers/validators/validator-post';
-import { modalStyle } from '../../constants/modal-style';
+import { modalStyleConstants } from '../../constants/modal-style-constants';
 import { useApiPost } from '../../hooks/use-api-fetch';
 
 import type { RootState } from '../../stores/store';
 
 import type { PostApi } from '../../../common/types/post';
 import type { Result } from '../../../common/types/result';
+
 type Props = {
   /** 投稿が完了した後に呼ばれる関数 */
-  onAfterSubmit?: () => void;
+  onAfterSubmit?: () => void
 }
 
 type FormData = {
   topicId: number,
-  text   : string,
+  text   : string
 };
 
 /** Post Form Component */
@@ -128,7 +129,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
     </Box>
     
     <Modal open={isModalOpen}>
-      <Box component="div" sx={modalStyle}>
+      <Box component="div" sx={modalStyleConstants}>
         <Typography component="h2" variant="h5">投稿で使える機能</Typography>
         <Box component="div" sx={{ mt: 2, maxHeight: '47vh', overflowY: 'auto' }}>
           <Typography component="p">以下の HTML タグが利用できます :</Typography>

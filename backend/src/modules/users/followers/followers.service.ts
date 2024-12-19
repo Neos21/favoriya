@@ -143,11 +143,14 @@ export class FollowersService {
         this.logger.error('アンフォロー処理で2件以上の削除が発生', deleteResult);
         return { error: 'アンフォロー処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
-      return { result: true };
     }
     catch(error) {
       this.logger.error('フォロー情報の削除 (アンフォロー) に失敗', error);
       return { error: 'フォロー情報の削除 (アンフォロー) に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
+    
+    // TODO : 相互フォロー時の紹介文があれば削除する (両方)
+    
+    return { result: true };
   }
 }
