@@ -8,21 +8,24 @@ import { isEmptyString } from '../../../../../common/helpers/is-empty-string';
 import { FontParserComponent } from '../../../../../shared/components/FontParserComponent/FontParserComponent';
 import { LoadingSpinnerComponent } from '../../../../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { userConstants } from '../../../../../shared/constants/user-constants';
-import { useApiGet } from '../../../../../shared/hooks/use-api-fetch';
+import { useApiDelete, useApiGet, useApiPatch } from '../../../../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../../../../shared/services/convert-date-to-jst';
 
 import type { Result } from '../../../../../common/types/result';
 import type { Introduction, IntroductionApi } from '../../../../../common/types/introduction';
 
 type Props = {
+  /** 紹介される側 (ログインユーザ) */
   recipientUserId: string,
   /** 承認後に親コンポーネントで行う処理 (承認済一覧の再読込) */
   onAfterApproved: () => void
 };
 
 /** Unapproved Introductions Component */
-export const UnapprovedIntroductionsComponent: FC<Props> = ({ recipientUserId }) => {
+export const UnapprovedIntroductionsComponent: FC<Props> = ({ recipientUserId, onAfterApproved }) => {
   const apiGet = useApiGet();
+  const apiPatch = useApiPatch();
+  const apiDelete = useApiDelete();
   
   // ログインユーザ自身のページを開いている時、未承認の一覧を表示する
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
@@ -48,12 +51,30 @@ export const UnapprovedIntroductionsComponent: FC<Props> = ({ recipientUserId })
     })();
   }, [apiGet, recipientUserId]);
   
-  const onApprove = async () => {
-    // TODO
+  /** 承認する */
+  const onApprove = async (actorUserId: string) => {
+    try{
+      await apiPatch(`/users/${recipientUserId}/introductions/${actorUserId}/approve`, {});  // Throws
+      // 承認したモノを一覧から削除する
+      setUnapprovedIntroductions(unapprovedIntroductions.filter(introduction => introduction.actorUserId !== actorUserId));
+      // 承認済み一覧を再読込させる
+      onAfterApproved();
+    }
+    catch(error) {
+      console.error('承認処理に失敗', error);
+    }
   };
   
-  const onUnapprove = async () => {
-    // TODO
+  /** 却下する */
+  const onUnapprove = async (actorUserId: string) => {
+    try {
+      await apiDelete(`/users/${recipientUserId}/introductions/${actorUserId}`, `?operator_user_id=${recipientUserId}`);
+      // 却下したモノを一覧から削除する
+      setUnapprovedIntroductions(unapprovedIntroductions.filter(introduction => introduction.actorUserId !== actorUserId));
+    }
+    catch(error) {
+      console.error('却下処理に失敗', error);
+    }
   };
   
   return <>
@@ -89,12 +110,12 @@ export const UnapprovedIntroductionsComponent: FC<Props> = ({ recipientUserId })
                   <Grid2 size="grow" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
                     <FontParserComponent input={introduction.text} />
                   </Grid2>
-                  <Grid2 sx={{ color: 'grey.600', fontSize: '.8rem' }}>
+                  <Grid2>
                     <Typography component="div">
-                      <Button variant="contained" onClick={onApprove}>承認</Button>
+                      <Button variant="contained" onClick={() => onApprove(introduction.actorUserId)}>承認</Button>
                     </Typography>
                     <Typography component="div" sx={{ mt: 1 }}>
-                      <Button variant="contained" color="error" onClick={onUnapprove}>却下</Button>
+                      <Button variant="contained" color="error" onClick={() => onUnapprove(introduction.actorUserId)}>却下</Button>
                     </Typography>
                   </Grid2>
                 </Grid2>

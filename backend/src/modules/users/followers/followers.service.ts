@@ -7,6 +7,7 @@ import { FollowEntity } from '../../../shared/entities/follow.entity';
 import { NotificationEntity } from '../../../shared/entities/notification.entity';
 import { UserEntity } from '../../../shared/entities/user.entity';
 import { NotificationsService } from '../../notifications/notifications.service';
+import { IntroductionsService } from '../introductions/introductions.service';
 
 import type { Result } from '../../../common/types/result';
 import type { Follow } from '../../../common/types/follow';
@@ -20,7 +21,8 @@ export class FollowersService {
   constructor(
     @InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>,
     @InjectRepository(FollowEntity) private readonly followsRepository: Repository<FollowEntity>,
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
+    private readonly introductionsService: IntroductionsService
   ) { }
   
   /** `userId` のフォロワー (`userId` のことをフォローしているユーザ) 一覧を取得する */
@@ -149,7 +151,9 @@ export class FollowersService {
       return { error: 'フォロー情報の削除 (アンフォロー) に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
     
-    // TODO : 相互フォロー時の紹介文があれば削除する (両方)
+    // 相互フォロー時の紹介文があれば削除する (両方) : エラーは無視する
+    await this.introductionsService.remove(followerUserId, followingUserId);
+    await this.introductionsService.remove(followingUserId, followerUserId);
     
     return { result: true };
   }

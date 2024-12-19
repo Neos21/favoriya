@@ -12,7 +12,8 @@ import type { Introduction, IntroductionApi } from '../../../../../common/types/
 
 type Props = {
   recipientUserId: string,
-  actorUserId: string
+  actorUserId: string,
+  onAfterPost: () => void
 };
 
 type FormData = {
@@ -20,7 +21,7 @@ type FormData = {
 };
 
 /** Introduction Form Component */
-export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUserId }) => {
+export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUserId, onAfterPost }) => {
   const apiGet = useApiGet();
   const apiPut = useApiPut();
   
@@ -28,7 +29,7 @@ export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUse
   const [formErrors, setFormErrors] = useState<{ text?: string, }>({});
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [succeededMessage, setSucceededMessage] = useState<string>(null);
-  const [isApproved, setIsApproved] = useState<boolean>(false);
+  const [isApproved, setIsApproved] = useState<boolean>(null);
   
   // 初回読み込み
   useEffect(() => {
@@ -41,7 +42,7 @@ export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUse
         const introductionResult: Result<IntroductionApi> = await introductionResponse.json();  // Throws
         const introduction: Introduction = snakeToCamelCaseObject(introductionResult.result) as Introduction;
         setFormData({ text: introduction.text ?? '' });
-        setIsApproved(introduction.isApproved ?? false);
+        if(introduction.isApproved != null) setIsApproved(introduction.isApproved);
       }
       catch(error) {
         return console.error('紹介文の取得に失敗', error);
@@ -80,6 +81,7 @@ export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUse
       
       setIsApproved(false);  // 未承認状態に戻す
       setSucceededMessage('紹介文を投稿しました。紹介文は被紹介者本人の承認後、一般公開されるようになります');  // 成功時のメッセージを表示する
+      onAfterPost();  // 承認済み一覧を再読込させる
     }
     catch(error) {
       setErrorMessage('紹介文の投稿処理に失敗しました。もう一度やり直してください');
@@ -96,7 +98,13 @@ export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUse
     
     {isApproved &&
       <Alert severity="info" sx={{ mt: 3 }}>
-        現在この投稿は承認済みです。編集を行うと一旦未承認の状態に戻ります。
+        この紹介文はすでに承認されています。編集を行うと、未承認の状態に戻ります。
+      </Alert>
+    }
+    
+    {isApproved != null && !isApproved &&
+      <Alert severity="info" sx={{ mt: 3 }}>
+        現在この紹介文は承認待ちです。承認までに紹介文の編集ができます。
       </Alert>
     }
     

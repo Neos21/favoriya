@@ -189,6 +189,7 @@ export class UsersService {
     // ユーザの存在チェック・兼・現在のデータ取得
     const userResult = await this.findOneById(id);
     if(userResult.error != null) return userResult as Result<boolean>;
+    
     // アバター画像ファイルがあれば削除する
     const removeAvadarResult = await this.avatarService.remove(id);
     if(removeAvadarResult.error != null) return removeAvadarResult;

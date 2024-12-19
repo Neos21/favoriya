@@ -7,9 +7,11 @@ import { Alert, Avatar, Button, Divider, Grid2, List, ListItem, ListItemAvatar, 
 import { snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { FollowRelationship, FollowRelationshipApi } from '../../../common/types/follow-relationship';
+import { FontParserComponent } from '../../../shared/components/FontParserComponent/FontParserComponent';
 import { LoadingSpinnerComponent } from '../../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { userConstants } from '../../../shared/constants/user-constants';
-import { useApiGet } from '../../../shared/hooks/use-api-fetch';
+import { useApiDelete, useApiGet } from '../../../shared/hooks/use-api-fetch';
+import { epochTimeMsToJstString } from '../../../shared/services/convert-date-to-jst';
 import { IntroductionFormComponent } from './components/IntroductionFormComponent/IntroductionFormComponent';
 import { UnapprovedIntroductionsComponent } from './components/UnapprovedIntroductionsComponent/UnapprovedIntroductionsComponent';
 
@@ -24,6 +26,7 @@ export const IntroductionsPage: FC = () => {
   const userState = useSelector((state: RootState) => state.user);
   
   const apiGet = useApiGet();
+  const apiDelete = useApiDelete();
   
   // 承認済みの紹介一覧を表示する
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
@@ -34,6 +37,7 @@ export const IntroductionsPage: FC = () => {
   // 念のため `@` を除去するテイで作っておく
   const paramUserId = rawParamUserId.startsWith('@') ? rawParamUserId.slice(1) : rawParamUserId;
   
+  /** 承認済み紹介一覧を読み込む */
   const onLoadIntroductions = useCallback(async () => {
     try {
       const response = await apiGet(`/users/${paramUserId}/introductions`);  // Throws
@@ -77,6 +81,28 @@ export const IntroductionsPage: FC = () => {
   // 先頭に `@` が付いていなかった場合は `@` 付きでリダイレクトさせる
   if(!rawParamUserId.startsWith('@')) return <Navigate to={`/@${rawParamUserId}/introductions`} />;
   
+  /** 被紹介者本人 : 紹介文を削除する */
+  const onDelete = async (actorUserId: string) => {
+    try {
+      await apiDelete(`/users/${userState.id}/introductions/${actorUserId}`, `?operator_user_id=${paramUserId}`);
+      onLoadIntroductions();
+    }
+    catch(error) {
+      console.error('紹介文の削除処理に失敗', error);
+    }
+  };
+  
+  /** 承認済みの紹介者本人 : 紹介文を削除する */
+  const onCancel = async () => {
+    try {
+      await apiDelete(`/users/${paramUserId}/introductions/${userState.id}`, `?operator_user_id=${userState.id}`);
+      onLoadIntroductions();
+    }
+    catch(error) {
+      console.error('紹介文の取下処理に失敗', error);
+    }
+  };
+  
   return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>@{paramUserId} : 相互フォロワーからの紹介</Typography>
     
@@ -96,19 +122,37 @@ export const IntroductionsPage: FC = () => {
         {approvedIntroductions.map(introduction => <Fragment key={introduction.id}>
           <ListItem alignItems="center" sx={{ px: 0 }}>
             <ListItemAvatar>
-              <Avatar src={isEmptyString(introduction?.avatarUrl) ? '' : `${userConstants.ossUrl}${introduction?.avatarUrl}`} />
+              <Avatar src={isEmptyString(introduction.actorUser.avatarUrl) ? '' : `${userConstants.ossUrl}${introduction.actorUser.avatarUrl}`} />
             </ListItemAvatar>
             <ListItemText
-              primary={
+              primary={<>
                 <Grid2 container spacing={1}>
-                  <Grid2 size={6} sx={{ fontWeight: 'bold', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                    <Link to={`/@${introduction.id}`} className="hover-underline">{introduction?.name}</Link>
+                  <Grid2 size="grow" sx={{ color: 'grey.600', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                    <Typography component={Link} to={`/@${introduction.actorUser.id}`} className="hover-underline" sx={{ mr: 1, color: 'text.primary', fontWeight: 'bold' }}>{introduction.actorUser.name}</Typography>
+                    <Typography component="span">@{introduction.actorUser.id}</Typography>
                   </Grid2>
-                  <Grid2 size={6} sx={{ color: 'grey.600', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                    @{introduction.id}
+                  <Grid2 sx={{ color: 'grey.600', fontSize: '.8rem' }}>
+                    {epochTimeMsToJstString(introduction.updatedAt as string, 'YYYY-MM-DD HH:mm:SS')}
                   </Grid2>
                 </Grid2>
-              }
+                <Grid2 container spacing={1} sx={{ mt: 1 }}>
+                  <Grid2 size="grow" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
+                    <FontParserComponent input={introduction.text} />
+                  </Grid2>
+                  {userState.id === paramUserId &&
+                    // 被紹介者が自分のページを見ている時 : 承認した紹介文を削除できる
+                    <Grid2>
+                      <Button variant="contained" color="error" onClick={() => onDelete(introduction.actorUserId)}>削除</Button>
+                    </Grid2>
+                  }
+                  {userState.id === introduction.actorUserId &&
+                    // 紹介者自身が自分の承認された紹介文を見ている時 : 紹介文の更新ではなく取り下げが可能
+                    <Grid2>
+                      <Button variant="contained" color="error" onClick={onCancel}>取下</Button>
+                    </Grid2>
+                  }
+                </Grid2>
+              </>}
             />
           </ListItem>
           <Divider component="li" />
@@ -118,12 +162,12 @@ export const IntroductionsPage: FC = () => {
     
     {userState.id === paramUserId && <>
       <Divider sx={{ mt: 4 }} />
-      <UnapprovedIntroductionsComponent recipientUserId={paramUserId} onAfterApproved={onLoadIntroductions}/>
+      <UnapprovedIntroductionsComponent recipientUserId={paramUserId} onAfterApproved={onLoadIntroductions} />
     </>}
     
     {isActor && <>
       <Divider sx={{ mt: 4 }} />
-      <IntroductionFormComponent recipientUserId={paramUserId} actorUserId={userState.id} />
+      <IntroductionFormComponent recipientUserId={paramUserId} actorUserId={userState.id} onAfterPost={onLoadIntroductions} />
     </>}
   </>;
 };

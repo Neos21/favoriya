@@ -12,6 +12,7 @@ type Story = StoryObj<typeof meta>;
 
 export const UnapprovedIntroductions: Story = {
   args: {
-    recipientUserId: ''
+    recipientUserId: '',
+    onAfterApproved: () => {}
   }
 };

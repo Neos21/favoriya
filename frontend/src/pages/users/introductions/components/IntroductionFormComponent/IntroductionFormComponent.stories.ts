@@ -10,4 +10,10 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const IntroductionForm: Story = {};
+export const IntroductionForm: Story = {
+  args: {
+    recipientUserId: '',
+    actorUserId: '',
+    onAfterPost: () => {}
+  }
+};

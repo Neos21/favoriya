@@ -5,8 +5,8 @@ import type { User } from './user';
 /** 相互フォロワーの紹介 */
 export type Introduction = {
   id?: number;
-  userId?: string;
-  introducerUserId?: string;
+  recipientUserId?: string;
+  actorUserId?: string;
   text?: string;
   isApproved?: boolean;
   createdAt?: Date | string;
