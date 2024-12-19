@@ -1,6 +1,13 @@
+:root {
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, YuGothic, "Yu Gothic", "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: "Noto Sans Mono CJK JP", Osaka-mono, "MS Gothic", Menlo, Consolas, Courier, "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-serif: Georgia, YuMincho, "Yu Mincho", "Noto Serif JP", "Noto Serif CJK JP", "Hiragino Mincho ProN", "HGS明朝E", serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
 html {
   height: 100%;
   overflow-y: scroll !important;  /* Drawer を開いた時に消させない */
+  font-family: var(--font-family-sans-serif);
   word-break: break-all;
   cursor: default;
   transition: background-color .25s;
@@ -52,6 +59,20 @@ a.normal-link {
   &:hover, &:focus {
     text-decoration: none;
   }
+}
+
+.serif {
+  font-family: var(--font-family-serif);
+}
+
+.monospace,
+input,
+textarea,
+code,
+var,
+samp,
+kbd {
+  font-family: var(--font-family-monospace);
 }
 
 
@@ -122,6 +143,7 @@ html.light .menu-component-list .Mui-selected {
 
 /* 明朝体 serif を指定した場合は太字にしちゃう */
 .font-parser-component [style*="font-family: serif"] {
+  font-family: var(--font-family-sans-serif);
   font-weight: bold;
 }
 
