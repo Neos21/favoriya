@@ -98,10 +98,11 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                 </Typography>
               </Grid2>
             </Grid2>
-            {post.topicId === topicsConstants.englishOnly.id && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>英語のみモード</Alert>}
-            {post.topicId === topicsConstants.kanjiOnly.id   && <Alert severity="error"   icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>漢字のみモード</Alert>}
-            {post.topicId === topicsConstants.senryu.id      && <Alert severity="success" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>川柳モード</Alert>}
-            {post.topicId === topicsConstants.anonymous.id   && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25, borderColor: 'grey.500', color: 'grey.500' }}>匿名投稿モード</Alert>}
+            {post.topicId === topicsConstants.englishOnly.id       && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>英語のみモード</Alert>}
+            {post.topicId === topicsConstants.kanjiOnly.id         && <Alert severity="error"   icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>漢字のみモード</Alert>}
+            {post.topicId === topicsConstants.senryu.id            && <Alert severity="success" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>川柳モード</Alert>}
+            {post.topicId === topicsConstants.anonymous.id         && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25, borderColor: 'grey.500', color: 'grey.500' }}>匿名投稿モード</Alert>}
+            {post.topicId === topicsConstants.randomDecorations.id && <Alert severity="warning" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>ランダム装飾モード</Alert>}
             <Typography component="div" sx={{ mt: .5, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
               <FontParserComponent input={post.text} />
             </Typography>

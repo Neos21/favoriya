@@ -114,7 +114,7 @@ export const FontParserComponent: React.FC<Props> = ({ input }) => {
   
   // ブロック要素の開始タグ直前・終了タグ直後にある改行を削る (空行ができないようにする)
   const removeLineBreaks = (html: string) => html
-    .replace((/\n(<(marquee|h1|h2|h3|h4|h5|h6|p|div)>)/g ), '★$1')
+    .replace((/\n(<(marquee|h1|h2|h3|h4|h5|h6|p|div)>)/g  ), '$1')
     .replace((/(<\/(marquee|h1|h2|h3|h4|h5|h6|p|div)>)\n/g), '$1');
   const lineBreaksRemovedHtml = removeLineBreaks(tagTransformedHtml);
   
