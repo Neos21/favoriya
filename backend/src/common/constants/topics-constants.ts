@@ -22,8 +22,8 @@ export const topicsConstants = {
     name: '漢字のみモード',
     validateFunction: (text: string): Result<boolean> => {
       // Script_Extensions=Han に合致する : 、。・々〆〇
-      // 合致しないので追加が必要         : ！？ [全角スペース] [改行]
-      if(!(/^(\p{Script_Extensions=Han}|！|？|　|\n)+$/u).test(text)) return { error: '漢字のみモードでは漢字以外の文字は投稿できません' };
+      // 合致しないので追加が必要         : ！？… [全角スペース] [改行]
+      if(!(/^(\p{Script_Extensions=Han}|！|？|…|　|\n)+$/u).test(text)) return { error: '漢字のみモードでは漢字以外の文字は投稿できません' };
       return { result: true };
     }
   },
