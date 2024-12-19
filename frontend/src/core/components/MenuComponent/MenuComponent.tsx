@@ -131,7 +131,7 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
       </ListItemButton>
     </ListItem>
     <ListItem disablePadding>
-      <ListItemButton onClick={() => window.open('https://github.com/Neos21/pseudo')}>
+      <ListItemButton onClick={() => window.open('https://github.com/Neos21/favoriya')}>
         <ListItemIcon><GitHubIcon /></ListItemIcon>
         <ListItemText primary="GitHub" />
       </ListItemButton>
