@@ -73,9 +73,10 @@ const convertUrlsToLinks = (html: string) => html
   .replace((/(\b(https?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/igu), url => `<a href="${url}"  target="_blank" rel="noopener noreferrer" class="normal-link">${url}</a>`)
   .replace( (/(\b(ttps?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/igu), url => `<a href="h${url}" target="_blank" rel="noopener noreferrer" class="hidden-link">${url}</a>`);
 
-/** ハッシュタグ文字列を Link 要素にする : `#` からスペースや空行が続くまでをひとまとまりとする・本当は <Link to=""> で実装したかったが `dangerouslySetInnerHTML` に埋め込めないため a 要素にした */
+/** ハッシュタグ文字列を Link 要素にする : 手前に `=` や `"` がない、"`#` からスペースや空行が続くまでをひとまとまりとする・本当は <Link to=""> で実装したかったが `dangerouslySetInnerHTML` に埋め込めないため a 要素にした */
 const convertHashTagsToLinks = (html: string) => html
-  .replace((/#([^\s#]+)/g), match => `<a href="/search?query=${encodeURIComponent(match)}" class="normal-link">${match}</a>`);
+  .replace((/(?<![="])#([^\s#]+)/g), match => `<a href="/search?query=${encodeURIComponent(match)}" class="normal-link">${match}</a>`);
+  
 
 type Props = {
   input: string
