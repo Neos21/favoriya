@@ -10,6 +10,7 @@ import { HomeTimelinePage } from './pages/home-timeline/HomeTimelinePage';
 import { HomePage } from './pages/home/HomePage';
 import { LoginPage } from './pages/login/LoginPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
+import { SearchPage } from './pages/search/SearchPage';
 import { ChangeAvatarPage } from './pages/settings/change-avatar/ChangeAvatarPage';
 import { DeleteAccountPage } from './pages/settings/delete-account/DeleteAccountPage';
 import { LoginHistoriesPage } from './pages/settings/login-histories/LoginHistoriesPage';
@@ -38,6 +39,7 @@ export const App = () => (
               <Route element={<AuthGuardRoute />}>
                 <Route path="/home-timeline"   element={<HomeTimelinePage   />} />
                 <Route path="/global-timeline" element={<GlobalTimelinePage />} />
+                <Route path="/search"          element={<SearchPage         />} />
                 
                 <Route path="/settings/login-histories" element={<LoginHistoriesPage />} />
                 <Route path="/settings/delete-account"  element={<DeleteAccountPage  />} />

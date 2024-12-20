@@ -19,6 +19,8 @@ import { NotificationsController } from './modules/notifications/notifications.c
 import { NotificationsService } from './modules/notifications/notifications.service';
 import { PublicController } from './modules/public/public.controller';
 import { PublicService } from './modules/public/public.service';
+import { SearchController } from './modules/search/search.controller';
+import { SearchService } from './modules/search/search.service';
 import { TimelineController } from './modules/timeline/timeline.controller';
 import { TimelineService } from './modules/timeline/timeline.service';
 import { TopicsService } from './modules/topics/topics.service';
@@ -125,6 +127,7 @@ import { UserEntity } from './shared/entities/user.entity';
     NotificationsController,
     PostsController,
     PublicController,
+    SearchController,
     TimelineController,
     UsersController
   ],
@@ -144,6 +147,7 @@ import { UserEntity } from './shared/entities/user.entity';
     PostDecorationService,
     PostValidationService,
     PublicService,
+    SearchService,
     TimelineService,
     TopicsService,
     UsersService

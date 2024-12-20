@@ -10,7 +10,7 @@ html {
   font-family: var(--font-family-sans-serif);
   word-break: break-all;
   cursor: default;
-  transition: background-color .25s;
+  transition: background-color .2s;
 }
 
 html.dark,
@@ -26,13 +26,13 @@ html.dark body {
 
 html.light,
 html.light body {
-  background-color: var(--mui-palette-background-default) !important;
+  background-color: #fffdfe !important;  /* `thtmes.tsx` と揃える */
 }
 
 body {
   height: 100%;
   padding-right: 0 !important;  /* Drawer を開いた時に勝手に付くので切る */
-  transition: background-color .25s;
+  transition: background-color .2s;
 }
 
 #root {
@@ -157,11 +157,13 @@ html.light .menu-component-list .Mui-selected {
 
 .font-parser-component strong {
   color: #f00;
+  font-size: 1.5em;
   font-weight: bold;
 }
 
 .font-parser-component em {
   color: #0b5;
+  font-size: 1.25em;
   font-weight: bold;
   font-style: normal;
 }

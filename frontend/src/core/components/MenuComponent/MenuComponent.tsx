@@ -11,6 +11,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
 import PublicIcon from '@mui/icons-material/Public';
+import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Avatar, Badge, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
@@ -75,6 +76,13 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
           </Badge>
         </ListItemIcon>
         <ListItemText primary="通知" />
+      </ListItemButton>
+    </ListItem>
+    
+    <ListItem disablePadding>
+      <ListItemButton component={Link} to="/search" onClick={onClickItem} selected={location.pathname.startsWith('/search')}>
+        <ListItemIcon><SearchIcon /></ListItemIcon>
+        <ListItemText primary="検索" />
       </ListItemButton>
     </ListItem>
     
