@@ -75,8 +75,7 @@ const convertUrlsToLinks = (html: string) => html
 
 /** ハッシュタグ文字列を Link 要素にする : 手前に `=` や `"` がない、"`#` からスペースや空行が続くまでをひとまとまりとする・本当は <Link to=""> で実装したかったが `dangerouslySetInnerHTML` に埋め込めないため a 要素にした */
 const convertHashTagsToLinks = (html: string) => html
-  .replace((/(?<![="])#([^\s#]+)/g), match => `<a href="/search?query=${encodeURIComponent(match)}" class="normal-link">${match}</a>`);
-  
+  .replace((/(?<![="]|color: )#([^\s#]+)/g), match => `<a href="/search?query=${encodeURIComponent(match)}" class="normal-link">${match}</a>`);
 
 type Props = {
   input: string
