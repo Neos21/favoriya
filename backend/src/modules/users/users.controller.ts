@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { isValidJwtUserId } from '../../shared/helpers/is-valid-jwt-user-id';
+import { UserDeletionService } from './user-deletion.service';
 import { UsersService } from './users.service';
 
 import type { Request, Response } from 'express';
@@ -12,7 +13,10 @@ import type { User, UserApi } from '../../common/types/user';
 /** Users Controller */
 @Controller('api/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly userDeletionService: UserDeletionService
+  ) { }
   
   /** ユーザ登録する */
   @Post('')
@@ -76,7 +80,7 @@ export class UsersController {
   public async remove(@Param('userId') id: string, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
     if(!isValidJwtUserId(request, response, id)) return;
     
-    const result = await this.usersService.remove(id);
+    const result = await this.userDeletionService.remove(id);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
     
     return response.status(HttpStatus.NO_CONTENT).end();

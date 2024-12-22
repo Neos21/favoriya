@@ -20,6 +20,12 @@ server {
     root  /var/www/favoriya;
   }
   
+  # Error Page
+  error_page 502 /502.html;
+  location /502.html {
+    root  /var/www/favoriya;
+  }
+  
   # App
   location / {
     proxy_set_header  Host                $host;

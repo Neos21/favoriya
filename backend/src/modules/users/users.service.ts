@@ -7,8 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { isValidId, isValidName, isValidPassword, isValidProfileText } from '../../common/helpers/validators/validator-user';
 import { authUserConstants } from '../../shared/constants/auth-user-constants';
 import { UserEntity } from '../../shared/entities/user.entity';
-import { AvatarService } from './avatar/avatar.service';
-import { PostsService } from './posts/posts.service';
 
 import type { Result } from '../../common/types/result';
 import type { User } from '../../common/types/user';
@@ -18,11 +16,7 @@ import type { User } from '../../common/types/user';
 export class UsersService {
   private readonly logger: Logger = new Logger(UsersService.name);
   
-  constructor(
-    @InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>,
-    private readonly avatarService: AvatarService,
-    private readonly postsService: PostsService
-  ) { }
+  constructor(@InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>) { }
   
   /** 匿名さんユーザを登録する */
   public async onModuleInit(): Promise<void> {
@@ -181,44 +175,6 @@ export class UsersService {
     catch(error) {
       this.logger.error('ユーザパスワードの更新処理に失敗', error);
       return { error: 'ユーザパスワードの更新処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
-    }
-  }
-  
-  /** ユーザアカウント (紐付く情報全て) を削除する */
-  public async remove(id: string): Promise<Result<boolean>> {
-    // ユーザの存在チェック・兼・現在のデータ取得
-    const userResult = await this.findOneById(id);
-    if(userResult.error != null) return userResult as Result<boolean>;
-    
-    // アバター画像ファイルがあれば削除する
-    const removeAvadarResult = await this.avatarService.remove(id);
-    if(removeAvadarResult.error != null) return removeAvadarResult;
-    
-    // TODO : ふぁぼを削除し、投稿のデクリメントを行う
-    
-    // ユーザに紐付く投稿を全て削除する
-    const removeAllPostsResult = await this.postsService.removeAllByUserId(id);
-    if(removeAllPostsResult.error != null) return removeAllPostsResult;
-    
-    // TODO : ユーザがフォローした情報を全て削除する
-    // TODO : ユーザがフォローされた情報を全て削除する
-    // TODO : ユーザが発信者である通知を全て削除する
-    // TODO : ユーザが受信者である通知を全て削除する
-    // TODO : ユーザが紹介した紹介文を全て削除する
-    // TODO : ユーザが紹介された紹介文を全て削除する
-    
-    // ユーザ情報を削除する : 基本は親であるユーザの削除によって子エンティティは連動して削除されるようにしているが、念のため前述のとおり子エンティティを先に消している
-    try {
-      const deleteResult = await this.usersRepository.delete({ id });
-      if(deleteResult.affected !== 1) {
-        this.logger.error('ユーザ情報の削除処理で0件 or 2件以上の削除が発生', deleteResult);
-        return { error: 'ユーザ情報の削除処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
-      }
-      return { result: true };
-    }
-    catch(error) {
-      this.logger.error('ユーザ情報の削除処理に失敗', error);
-      return { error: 'ユーザ情報の削除処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
 }

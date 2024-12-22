@@ -8,6 +8,7 @@ import { PostEntity } from '../../../shared/entities/post.entity';
 
 import type { Post } from '../../../common/types/post';
 import type { Result } from '../../../common/types/result';
+
 /** Posts Service */
 @Injectable()
 export class PostsService {
@@ -96,18 +97,6 @@ export class PostsService {
     catch(error) {
       this.logger.error('投稿の削除に失敗', error);
       return { error: '投稿の削除に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
-    }
-  }
-  
-  /** ユーザに紐付く投稿を全削除する */
-  public async removeAllByUserId(userId: string): Promise<Result<boolean>> {
-    try {
-      await this.postsRepository.delete({ userId });
-      return { result: true };
-    }
-    catch(error) {
-      this.logger.error('当該ユーザの全投稿の削除に失敗', error);
-      return { error: '当該ユーザの全投稿の削除に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
 }
