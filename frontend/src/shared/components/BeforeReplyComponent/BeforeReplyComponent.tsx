@@ -54,9 +54,9 @@ export const BeforeReplyComponent: FC<Props> = ({ inReplyToPostId, inReplyToUser
     
     {status === 'failed' && <Alert severity="error" sx={{ mt: 1 }}>リプライ元の取得に失敗</Alert>}
     
-    {status === 'succeeded' && <List sx={{ mt: 1 }}>
-      <ListItem alignItems="flex-start" sx={{ border: '1px solid', borderColor: 'grey.500', borderRadius: 1 }}>
-        <ListItemAvatar>
+    {status === 'succeeded' && <List sx={{ pt: 0 }}>
+      <ListItem alignItems="flex-start" sx={{ px: .5 }}>
+        <ListItemAvatar sx={{ minWidth: '50px' }}>
           <Tooltip title={post.userId} placement="top">
             <Link to={`/@${post.userId}`}>
               <Avatar src={isEmptyString(post.user.avatarUrl) ? '' : `${userConstants.ossUrl}${post.user.avatarUrl}`} />

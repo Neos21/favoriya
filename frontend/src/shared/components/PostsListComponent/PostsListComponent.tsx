@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import ReplyIcon from '@mui/icons-material/Reply';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { Alert, Avatar, Divider, Grid2, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Divider, Grid2, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
 
 import { topicsConstants } from '../../../common/constants/topics-constants';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
@@ -80,7 +80,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
   return <List sx={{ mt: 3 }}>
     {posts.map(post => <Fragment key={post.id}>
       <ListItem alignItems="flex-start" sx={{ px: 0 }}>
-        <ListItemAvatar>
+        <ListItemAvatar sx={{ minWidth: '50px' }}>
           <Tooltip title={post.userId} placement="top">
             <Link to={`/@${post.userId}`}>
               <Avatar src={isEmptyString(post.user.avatarUrl) ? '' : `${userConstants.ossUrl}${post.user.avatarUrl}`} />
@@ -106,7 +106,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
             {post.topicId === topicsConstants.anonymous.id         && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25, borderColor: 'grey.500', color: 'grey.500' }}>匿名投稿モード</Alert>}
             {post.topicId === topicsConstants.randomDecorations.id && <Alert severity="warning" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>ランダム装飾モード</Alert>}
             {post.topicId === topicsConstants.randomLimit.id       && <Alert severity="error"   icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>ランダムリミットモード</Alert>}
-            <Typography component="div" sx={{ mt: .5, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+            <Typography component="div" sx={{ mt: .75, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
               <FontParserComponent input={post.text} />
             </Typography>
             <Typography component="div" sx={{ mt: .25 }}>
@@ -147,7 +147,11 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                 </>
               }
             </Typography>
-            {!isEmptyString(post.inReplyToPostId) && !isEmptyString(post.inReplyToUserId) && <BeforeReplyComponent inReplyToPostId={post.inReplyToPostId} inReplyToUserId={post.inReplyToUserId} />}
+            {// リプライ元表示
+              !isEmptyString(post.inReplyToPostId) && !isEmptyString(post.inReplyToUserId) && <Box component="div" sx={{ mt: 1, maxHeight: '8em', overflowY: 'hidden', border: '1px solid', borderColor: 'grey.500', borderRadius: 1, opacity: .8 }}>
+                <BeforeReplyComponent inReplyToPostId={post.inReplyToPostId} inReplyToUserId={post.inReplyToUserId} />
+              </Box>
+            }
           </>}
         />
       </ListItem>

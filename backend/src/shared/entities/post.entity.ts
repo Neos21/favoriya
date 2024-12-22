@@ -19,6 +19,10 @@ export class PostEntity {
   @Column({ name: 'topic_id', nullable: true })
   public topicId: number;
   
+  /** 公開範囲 : 未指定ならグローバルタイムラインに載る・'home' ならホームタイムラインには載る */
+  @Column({ name: 'visibility', nullable: true })
+  public visibility: string;
+  
   /** この投稿がふぁぼられた数 (キャッシュ用) */
   @Column({ name: 'favourites_count', default: 0 })
   public favouritesCount: number;

@@ -23,6 +23,7 @@ export class PostsService {
         userId         : post.topicId === topicsConstants.anonymous.id ? 'anonymous' : post.userId,
         text           : post.text,
         topicId        : post.topicId,
+        visibility     : post.visibility,
         inReplyToPostId: post.inReplyToPostId,
         inReplyToUserId: post.inReplyToUserId
       });
@@ -35,7 +36,7 @@ export class PostsService {
     }
   }
   
-  /** 投稿一覧を取得する */
+  /** 指定ユーザの投稿一覧を取得する */
   public async findById(userId: string, offset: number = 0, limit: number = 50): Promise<Result<Array<PostEntity>>> {
     try {
       const posts = await this.postsRepository
@@ -60,7 +61,7 @@ export class PostsService {
     }
   }
   
-  /** 投稿1件を取得する */
+  /** 指定ユーザの投稿1件を取得する */
   public async findOneById(userId: string, postId: string): Promise<Result<PostEntity>> {
     try {
       const post = await this.postsRepository

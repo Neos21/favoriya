@@ -3,7 +3,7 @@ import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
-import { Alert, Box, Button, FormControl, Grid2, IconButton, InputLabel, MenuItem, Modal, Select, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, Grid2, IconButton, InputLabel, MenuItem, Modal, Select, Stack, TextField, Tooltip, Typography } from '@mui/material';
 
 import { topicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
@@ -20,12 +20,13 @@ type Props = {
   /** リプライ時に使用 */
   inReplyToPostId?: string,
   /** リプライ時に使用 */
-  inReplyToUserId?: string,
+  inReplyToUserId?: string
 }
 
 type FormData = {
-  topicId: number,
-  text   : string
+  topicId   : number,
+  text      : string,
+  visibility: string | null
 };
 
 type RandomLimit = {
@@ -45,8 +46,9 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   };
   
   const [formData, setFormData] = useState<FormData>({
-    topicId: choiceTopicId(),
-    text   : ''
+    topicId   : choiceTopicId(),
+    text      : '',
+    visibility: null
   });
   
   const [randomLimit, setRandomLimit] = useState<RandomLimit>(topicsConstants.randomLimit.generateLimit());
@@ -66,6 +68,10 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData(previousFormData => ({ ...previousFormData, [name]: value }));
+  };
+  const onChangeChecked = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setFormData(previousFormData => ({ ...previousFormData, [name]: checked ? 'home': null }));
   };
   
   /** カーソル位置を保持する */
@@ -109,9 +115,10 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     event.preventDefault();
     setErrorMessage(null);
     
-    const userId  = userState.id;
-    const text    = formData.text.trim();
-    const topicId = formData.topicId;
+    const userId     = userState.id;
+    const text       = formData.text.trim();
+    const topicId    = formData.topicId;
+    const visibility = formData.visibility;
     
     // 基本的な入力チェック
     const validationText = isValidText(text);
@@ -133,14 +140,15 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     }
     
     try {
-      const newPostApi: PostApi = camelToSnakeCaseObject({ userId, text, topicId, inReplyToPostId, inReplyToUserId });
+      const newPostApi: PostApi = camelToSnakeCaseObject({ userId, text, topicId, visibility, inReplyToPostId, inReplyToUserId });
       await onSubmit(newPostApi);  // Throws
       
       // 投稿成功
-      setFormData({
-        topicId: choiceTopicId(),
-        text   : ''
-      });
+      setFormData(previousFormData => ({
+        topicId   : choiceTopicId(),
+        text      : '',
+        visibility: previousFormData.visibility
+      }));
       setRandomLimit(topicsConstants.randomLimit.generateLimit());
       setCursorPosition(0);
     }
@@ -208,6 +216,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
         </Grid2>
         <Grid2 sx={{ minWidth: '3em', textAlign: 'right' }}>{formData.text.length}</Grid2>
       </Grid2>
+      <FormControlLabel control={<Checkbox name="visibility" checked={formData.visibility === 'home'} onChange={onChangeChecked} />} label="グローバルタイムラインに公開しない" />
     </Box>
     
     {formData.text !== '' &&  // プレビュー

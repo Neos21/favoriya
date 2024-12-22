@@ -10,6 +10,7 @@ export type Post = {
   userId?: string;
   text?: string;
   topicId?: number;
+  visibility?: string;
   favouritesCount?: number;
   inReplyToPostId?: string;
   inReplyToUserId?: string;

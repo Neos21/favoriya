@@ -49,8 +49,6 @@ export class RepliesService {
   
   /** リプライする */
   public async create(inReplyToUserId: string, inReplyToPostId: string, post: Post): Promise<Result<boolean>> {
-    post.userId          = post.topicId === topicsConstants.anonymous.id ? 'anonymous' : post.userId;
-    post.topicId         = post.topicId;
     post.inReplyToPostId = inReplyToPostId;
     post.inReplyToUserId = inReplyToUserId;
     const postResult = await this.postsService.create(post);

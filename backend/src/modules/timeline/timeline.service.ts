@@ -26,6 +26,7 @@ export class TimelineService {
         .addSelect(['favourites.id'])
         .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
         .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
+        .where('posts.visibility IS NULL')  // visibility に何か入っている場合は表示しない
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
         .skip(offset)
         .take(limit)
