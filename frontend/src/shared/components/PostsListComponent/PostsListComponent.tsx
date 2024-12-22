@@ -2,6 +2,7 @@ import { FC, Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+import ReplyIcon from '@mui/icons-material/Reply';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { Alert, Avatar, Divider, Grid2, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
@@ -12,13 +13,14 @@ import { FontParserComponent } from '../../components/FontParserComponent/FontPa
 import { userConstants } from '../../constants/user-constants';
 import { useApiDelete, useApiPost } from '../../hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../services/convert-date-to-jst';
+import { BeforeReplyComponent } from '../BeforeReplyComponent/BeforeReplyComponent';
 
 import type { RootState } from '../../stores/store';
 import type { Post } from '../../../common/types/post';
 
 type Props = {
   propPosts: Array<Post>
-}
+};
 
 /** Posts List Component */
 export const PostsListComponent: FC<Props> = ({ propPosts }) => {
@@ -77,7 +79,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
   
   return <List sx={{ mt: 3 }}>
     {posts.map(post => <Fragment key={post.id}>
-      <ListItem alignItems="flex-start" sx={{ wordBreak: 'break-all', px: 0 }}>
+      <ListItem alignItems="flex-start" sx={{ px: 0 }}>
         <ListItemAvatar>
           <Tooltip title={post.userId} placement="top">
             <Link to={`/@${post.userId}`}>
@@ -107,6 +109,9 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               <FontParserComponent input={post.text} />
             </Typography>
             <Typography component="div" sx={{ mt: .25 }}>
+              <Tooltip title="リプする" placement="top">
+                <IconButton component={Link} to={`/@${post.userId}/posts/${post.id}`} sx={{ mr: .25, color: 'grey.600' }} size="small"><ReplyIcon fontSize="inherit" /></IconButton>
+              </Tooltip>
               {// 自分自身の投稿の場合
                 post.userId === userState.id && <>
                   <IconButton sx={{ mr: .25 }} disabled size="small"><StarIcon fontSize="inherit" /></IconButton>
@@ -124,23 +129,24 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               }
               {// 他人の投稿の場合
                 post.userId !== userState.id && <>
-                {post.favourites.find(favourite => favourite.favouritedByUser.id === userState.id) == null
-                  ? <IconButton sx={{ mr: .25, color: 'grey.600' }} size="small" onClick={() => onAddFavourite(post)}><StarBorderIcon fontSize="inherit" /></IconButton>
-                  : <IconButton sx={{ mr: .25 }} color="warning" size="small" onClick={() => onRemoveFavourite(post)}><StarIcon fontSize="inherit" /></IconButton>
-                }
-                {userState.showOthersFavouritesCount && <>
-                  <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
-                  {post.favourites.map(favourite =>
-                    <Tooltip title={favourite.favouritedByUser.id} placement="top" key={favourite.favouritedByUser.id}>
-                      <Link to={`/@${favourite.favouritedByUser.id}`}>
-                        <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
-                      </Link>
-                    </Tooltip>
-                  )}
-                </>}
-              </>
-            }
+                  {post.favourites.find(favourite => favourite.favouritedByUser.id === userState.id) == null
+                    ? <IconButton sx={{ mr: .25, color: 'grey.600' }} size="small" onClick={() => onAddFavourite(post)}><StarBorderIcon fontSize="inherit" /></IconButton>
+                    : <IconButton sx={{ mr: .25 }} color="warning" size="small" onClick={() => onRemoveFavourite(post)}><StarIcon fontSize="inherit" /></IconButton>
+                  }
+                  {userState.showOthersFavouritesCount && <>
+                    <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
+                    {post.favourites.map(favourite =>
+                      <Tooltip title={favourite.favouritedByUser.id} placement="top" key={favourite.favouritedByUser.id}>
+                        <Link to={`/@${favourite.favouritedByUser.id}`}>
+                          <Avatar src={isEmptyString(favourite.favouritedByUser.avatarUrl) ? '' : `${userConstants.ossUrl}${favourite.favouritedByUser.avatarUrl}`} sx={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
+                        </Link>
+                      </Tooltip>
+                    )}
+                  </>}
+                </>
+              }
             </Typography>
+            {!isEmptyString(post.inReplyToPostId) && !isEmptyString(post.inReplyToUserId) && <BeforeReplyComponent inReplyToPostId={post.inReplyToPostId} inReplyToUserId={post.inReplyToUserId} />}
           </>}
         />
       </ListItem>

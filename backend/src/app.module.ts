@@ -40,6 +40,8 @@ import { PostDecorationService } from './modules/users/posts/post-decoration.ser
 import { PostValidationService } from './modules/users/posts/post-validation.service';
 import { PostsController } from './modules/users/posts/posts.controller';
 import { PostsService } from './modules/users/posts/posts.service';
+import { RepliesController } from './modules/users/posts/replies/replies.controller';
+import { RepliesService } from './modules/users/posts/replies/replies.service';
 import { UsersController } from './modules/users/users.controller';
 import { UsersService } from './modules/users/users.service';
 import { FavouriteEntity } from './shared/entities/favourite.entity';
@@ -127,6 +129,7 @@ import { UserEntity } from './shared/entities/user.entity';
     NotificationsController,
     PostsController,
     PublicController,
+    RepliesController,
     SearchController,
     TimelineController,
     UsersController
@@ -147,6 +150,7 @@ import { UserEntity } from './shared/entities/user.entity';
     PostDecorationService,
     PostValidationService,
     PublicService,
+    RepliesService,
     SearchService,
     TimelineService,
     TopicsService,

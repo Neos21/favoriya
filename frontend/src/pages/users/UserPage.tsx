@@ -167,7 +167,7 @@ export const UserPage: FC = () => {
           </Grid2>
         } /></ListItem>
         <Divider component="li" />
-        <ListItem><ListItemText sx={{ mt: 1.25, pb: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }} primary={
+        <ListItem><ListItemText sx={{ mt: 1.25, pb: 0, whiteSpace: 'pre-wrap' }} primary={
           <FontParserComponent input={isEmptyString(user.profileText) ? '<font color="var(--mui-palette-grey-600)">プロフィールテキストはまだありません</font>' : user.profileText} />
         } /></ListItem>
       </List>

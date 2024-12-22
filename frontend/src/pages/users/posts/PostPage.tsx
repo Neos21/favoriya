@@ -11,6 +11,8 @@ import { httpStatusConstants } from '../../../shared/constants/http-status-const
 import { modalStyleConstants } from '../../../shared/constants/modal-style-constants';
 import { useApiDelete, useApiGet } from '../../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../../shared/services/convert-date-to-jst';
+import { AfterRepliesComponent } from './components/AfterRepliesComponent';
+import { ReplyFormComponent } from './components/ReplyFormComponent';
 
 import type { RootState } from '../../../shared/stores/store';
 import type { Post, PostApi } from '../../../common/types/post';
@@ -28,6 +30,7 @@ export const PostPage: FC = () => {
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'not-found' | 'failed'>('loading');
   const [post, setPost] = useState<Post>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [reloadTrigger, SetReloadTrigger] = useState<boolean>(false);
   
   // 念のため `@` を除去するテイで作っておく
   const paramUserId = rawParamUserId.startsWith('@') ? rawParamUserId.slice(1) : rawParamUserId;
@@ -47,6 +50,11 @@ export const PostPage: FC = () => {
     finally {
       navigate(`/@${paramUserId}`);  // ユーザページに遷移する
     }
+  };
+  
+  /** リプライ投稿後に行う処理 */
+  const onAfterReply = () => {
+    SetReloadTrigger(previoursReloadTrigger => !previoursReloadTrigger);  // フラグ変数を入れ替えることで子コンポーネントの読み込み処理を実行させる
   };
   
   // 初回読み込み
@@ -96,6 +104,10 @@ export const PostPage: FC = () => {
           <Button variant="contained" color="error" onClick={onConfirmDelete}>削除</Button>
         </Box>
       }
+      
+      <AfterRepliesComponent inReplyToPostId={paramPostId} inReplyToUserId={paramUserId} reloadTrigger={reloadTrigger} />
+      
+      <ReplyFormComponent inReplyToPostId={paramPostId} inReplyToUserId={paramUserId} onAfterReply={onAfterReply} />
       
       <Modal open={isModalOpen}>
         <Box component="div" sx={modalStyleConstants}>

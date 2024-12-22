@@ -8,7 +8,7 @@ export class NotificationEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   public id: number;
   
-  /** 'favourite' | 'follow' | 'introduction' など通知の種類 */
+  /** 'favourite' | 'follow' | 'introduction' | 'reply' など通知の種類 */
   @Column({ name: 'notification_type' })
   public notificationType: string;
   
@@ -24,7 +24,7 @@ export class NotificationEntity {
   @Column({ name: 'actor_user_id' })
   public actorUserId: string;
   
-  /** 関連する投稿 ID (お気に入りの場合) */
+  /** 関連する投稿 ID (お気に入り・リプライの場合) */
   @Column({ name: 'post_id', nullable: true })
   public postId: string;
   

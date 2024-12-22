@@ -174,8 +174,8 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
         <Button variant="outlined" size="small" color="success" onClick={() => onInsert('<em>', '</em>')}>緑</Button>
         <Button variant="outlined" size="small" color="error"   onClick={() => onInsert('<strong>', '</strong>')}>赤</Button>
         <Button variant="outlined" size="small" color="warning" onClick={() => onInsert('<mark>', '</mark>')}>黄</Button>
-        <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<marquee>', '</marquee>')}>流</Button>
-        <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<blink>', '</blink>')}>光</Button>
+        <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<marquee>', '</marquee>')} sx={{ overflow: 'hidden' }}><span style={{ animation: 'scroll-left 1.5s linear infinite' }}>流</span></Button>
+        <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<blink>', '</blink>')}><span style={{ animation: 'blink-animation 1.5s step-start infinite' }}>光</span></Button>
         <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<★ align="center">', '</★>', ['h1', 'h2', 'h3', 'h4', 'div'])}>中</Button>
         <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<★ align="right">', '</★>' , ['h1', 'h2', 'h3', 'h4', 'div'])}>右</Button>
       </Stack>

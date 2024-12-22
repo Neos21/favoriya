@@ -11,6 +11,8 @@ export type Post = {
   text?: string;
   topicId?: number;
   favouritesCount?: number;
+  inReplyToPostId?: string;
+  inReplyToUserId?: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   

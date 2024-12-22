@@ -219,6 +219,11 @@ html.light .font-parser-component kbd {
   display: block;
 }
 
+.font-parser-component marquee[direction="up"],
+.font-parser-component marquee[direction="down"] {
+  height: 4em;
+}
+
 @keyframes scroll-left {
   from { transform: translateX( 100%); }
   to   { transform: translateX(-100%); }

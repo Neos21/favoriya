@@ -13,7 +13,7 @@ export const topicsConstants = {
     id: 2,
     name: '英語のみモード',
     validateFunction: (text: string): Result<boolean> => {
-      if(!(/^[a-zA-Z0-9\s.,!?<>]+$/).test(text)) return { error: '英語のみモードでは英語以外の文字は投稿できません' };
+      if(!(/^[a-zA-Z0-9\s.,!?<>]+$/).test(text)) return { error: '英語のみモードでは英語以外の文字は投稿できません' };  // TODO : もっと緩くする
       return { result: true };
     }
   },
@@ -31,7 +31,7 @@ export const topicsConstants = {
     id: 4,
     name: '川柳モード',
     validateFunction: (text: string): Result<boolean> => {
-      const syllablePattern = [5, 7, 5];
+      const syllablePattern = [5, 7, 5];  // TODO : もっと緩くする・明朝体にする
       const lines = text.split((/[　\n]/)).map(line => line.trim());
       if(lines.length !== syllablePattern.length) return { error: '川柳モードでは五七五を改行または全角スペースで区切ってください' };
       if(!lines.every((line, i) => line.length === syllablePattern[i])) return { error: '川柳モードでは五七五の形式を守る必要があります' };

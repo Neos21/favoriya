@@ -23,6 +23,14 @@ export class PostEntity {
   @Column({ name: 'favourites_count', default: 0 })
   public favouritesCount: number;
   
+  /** 返信元の ID */
+  @Column({ name: 'in_reply_to_post_id', type: 'bigint', nullable: true })
+  public inReplyToPostId: string;
+  
+  /** 返信元のユーザ ID */
+  @Column({ name: 'in_reply_to_user_id', nullable: true })
+  public inReplyToUserId: string;
+  
   @CreateDateColumn({ name: 'created_at' })
   public readonly createdAt: Date;
   

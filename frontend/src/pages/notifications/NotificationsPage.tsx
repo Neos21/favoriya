@@ -101,6 +101,7 @@ export const NotificationsPage: FC = () => {
                 {notification.notificationType === 'favourite'    && <Link to={`/@${userState.id}/posts/${notification.postId}`} className="hover-underline">{notification.message}</Link>}
                 {notification.notificationType === 'follow'       && <Link to={`/@${notification.actorUserId}`}                  className="hover-underline">{notification.message}</Link>}
                 {notification.notificationType === 'introduction' && <Link to={`/@${userState.id}/introductions`}                className="hover-underline">{notification.message}</Link>}
+                {notification.notificationType === 'reply'        && <Link to={`/@${userState.id}/posts/${notification.postId}`} className="hover-underline">{notification.message}</Link>}
               </>}
             />
           </ListItem>
