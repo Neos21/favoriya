@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import { ChangeEvent, FC, FormEvent, useRef, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
@@ -27,6 +27,12 @@ type FormData = {
   text   : string
 };
 
+type RandomLimit = {
+  mode: 'min' | 'max' | 'minmax',
+  min?: number,
+  max?: number
+};
+
 /** Post Form Component */
 export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
   const apiPost = useApiPost();
@@ -42,11 +48,19 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
     topicId: choiceTopicId(),
     text   : ''
   });
+  
+  const [randomLimit, setRandomLimit] = useState<RandomLimit>(topicsConstants.randomLimit.generateLimit());
+  
   const [cursorPosition, setCursorPosition] = useState(0);
   const textFieldRef = useRef<HTMLTextAreaElement>(null);
   
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  
+  // トピック ID を変更するたびにランダムリミットを更新する
+  useEffect(() => {
+    setRandomLimit(topicsConstants.randomLimit.generateLimit());
+  }, [formData.topicId]);
   
   /** On Change */
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -104,11 +118,19 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
     if(validationText.error != null) return setErrorMessage(validationText.error);
     
     // トピックごとの入力チェック
+    const textContent = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+    
     const topic = Object.values(topicsConstants).find(topic => topic.id === topicId);
     if(topic == null) return setErrorMessage('不正なトピックです');
-    const textContent = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-    const validationResult = (topic as any)?.validateFunction(textContent);  // eslint-disable-line @typescript-eslint/no-explicit-any
-    if(validationResult.error != null) return setErrorMessage(validationResult.error);
+    
+    if([topicsConstants.englishOnly.id, topicsConstants.kanjiOnly.id, topicsConstants.senryu.id].includes(topic.id)) {
+      const validationResult = (topic as any)?.validateFunction(textContent);  // eslint-disable-line @typescript-eslint/no-explicit-any
+      if(validationResult.error != null) return setErrorMessage(validationResult.error);
+    }
+    else if(topic.id === topicsConstants.randomLimit.id) {
+      const validationResult = (topic as any)?.validateFunction(textContent, randomLimit.mode, randomLimit.min, randomLimit.max);  // eslint-disable-line @typescript-eslint/no-explicit-any
+      if(validationResult.error != null) return setErrorMessage(validationResult.error);
+    }
     
     const newPostApi: PostApi = camelToSnakeCaseObject({ userId, text, topicId });
     try {
@@ -124,6 +146,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
         topicId: choiceTopicId(),
         text   : ''
       });
+      setRandomLimit(topicsConstants.randomLimit.generateLimit());
       setCursorPosition(0);
       onAfterSubmit();
     }
@@ -141,6 +164,13 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
     {formData.topicId === topicsConstants.senryu.id            && <Alert severity="info" sx={{ mt: 3 }}>「川柳」モードでは改行または全角スペースで文章を区切り、五・七・五の形式にすると投稿できます。</Alert>}
     {formData.topicId === topicsConstants.anonymous.id         && <Alert severity="info" sx={{ mt: 3 }}>「匿名投稿」モードでは「匿名さん」による代理投稿ができます。その代わり投稿の削除ができませんのでご注意ください。</Alert>}
     {formData.topicId === topicsConstants.randomDecorations.id && <Alert severity="info" sx={{ mt: 3 }}>「ランダム装飾」モードでは行ごとに文字装飾を勝手に挿入したり、挿入しなかったりします。結果は投稿してみてのお楽しみ！</Alert>}
+    {formData.topicId === topicsConstants.randomLimit.id       && <Alert severity="info" sx={{ mt: 3 }}>
+      「ランダムリミット」モードではランダムに最低・最大文字数が決定されます。
+        {randomLimit.mode === 'min'    && `今回は最低 ${randomLimit.min} 文字`}
+        {randomLimit.mode === 'max'    && `今回は ${randomLimit.max} 文字以内`}
+        {randomLimit.mode === 'minmax' && `今回は最低 ${randomLimit.min} 文字・${randomLimit.max} 文字以内`}
+      で入力してください。
+    </Alert>}
     
     <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
       <Grid2 container>

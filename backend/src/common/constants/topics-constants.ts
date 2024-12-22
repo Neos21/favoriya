@@ -43,5 +43,55 @@ export const topicsConstants = {
   randomDecorations: {
     id: 6,
     name: 'ランダム装飾モード'
+  },
+  randomLimit: {
+    id: 7,
+    name: 'ランダムリミットモード',
+    generateLimit: (): { mode: 'min' | 'max' | 'minmax', min?: number, max?: number } => {
+      const getRandomIntInclusive = (min: number, max: number): number => {
+        const minCeiled  = Math.ceil(min);
+        const maxFloored = Math.floor(max);
+        return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);  // 上限を含み下限も含む
+      };
+      
+      const modes = ['min', 'max', 'minmax'];
+      const mode = modes[Math.floor(Math.random() * modes.length)];
+      
+      if(mode === 'min') {
+        const min = getRandomIntInclusive(1, 250);
+        return { mode, min };
+      }
+      else if(mode === 'max') {
+        const max = getRandomIntInclusive(10, 500);
+        return { mode, max };
+      }
+      else if(mode === 'minmax') {
+        const number1 = getRandomIntInclusive( 1, 250);
+        const number2 = getRandomIntInclusive(10, 500);
+        const min = number1 <= number2 ? number1 : number2;
+        const max = number1 <= number2 ? number2 : number1;
+        return { mode, min, max };
+      }
+      else {
+        throw new Error('Invalid Mode');
+      }
+    },
+    validateFunction: (text: string, mode: 'min' | 'max' | 'minmax', min?: number, max?: number): Result<boolean> => {
+      if(mode === 'min') {
+        if(text.length < min) return { error: `今回は最低 ${min} 文字以上書いてください。あと ${min - text.length} 文字必要です。` };
+        return { result: true };
+      }
+      else if(mode === 'max') {
+        if(text.length > max) return { error: `今回は ${max} 文字以内で書いてください。あと ${text.length - max} 文字削ってください。` };
+        return { result: true };
+      }
+      else if(mode === 'minmax') {
+        if(text.length < min || text.length > max) return { error: `今回は最低 ${min} 文字以上・${max} 文字以内で書いてください。現在 ${text.length} 文字です。` };
+        return { result: true };
+      }
+      else {
+        throw new Error('Invalid Mode');
+      }
+    }
   }
 };

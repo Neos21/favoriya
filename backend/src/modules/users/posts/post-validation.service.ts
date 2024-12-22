@@ -17,9 +17,13 @@ export class PostValidationService {
     // トピックを取得する
     const topic = Object.values(topicsConstants).find(topic => topic.id === topicId);
     if(topic == null) return { error: '不正なトピック ID です', code: HttpStatus.BAD_REQUEST };
+    
     // 入力チェックする
-    const validateResult = (topic as any)?.validateFunction(textContent);
-    if(validateResult.error != null) return { error: validateResult.error, code: HttpStatus.BAD_REQUEST };
+    if([topicsConstants.englishOnly.id, topicsConstants.kanjiOnly.id, topicsConstants.senryu.id].includes(topic.id)) {
+      const validateResult = (topic as any)?.validateFunction(textContent);
+      if(validateResult.error != null) return { error: validateResult.error, code: HttpStatus.BAD_REQUEST };
+    }
+    
     // 成功
     return { result: true };
   }
