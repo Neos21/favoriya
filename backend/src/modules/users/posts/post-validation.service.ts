@@ -18,7 +18,7 @@ export class PostValidationService {
     const topic = Object.values(topicsConstants).find(topic => topic.id === topicId);
     if(topic == null) return { error: '不正なトピック ID です', code: HttpStatus.BAD_REQUEST };
     // 入力チェックする
-    const validateResult = topic.validateFunction(textContent);
+    const validateResult = (topic as any)?.validateFunction(textContent);
     if(validateResult.error != null) return { error: validateResult.error, code: HttpStatus.BAD_REQUEST };
     // 成功
     return { result: true };

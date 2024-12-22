@@ -22,7 +22,7 @@ export const SignupPage: FC = () => {
   const navigate = useNavigate();
   
   const [isIn, setIsIn] = useState<boolean>(false);
-  const [numberOfUsersMessage, setNumberOfUsersMessage] = useState<string>('AI に作らせる SNS。');
+  const [randomMessage, setRandomMessage] = useState<string>('　');
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [formErrors, setFormErrors] = useState<{ id?: string; password?: string }>({});
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -32,18 +32,29 @@ export const SignupPage: FC = () => {
     dispatch(setUser(Object.assign({}, initialUserState)));
     localStorage.removeItem(userConstants.localStorageKey);
     
-    setTimeout(() => {
-      setIsIn(true);
-    }, 500);
-    
     (async () => {
+      const messageChoices = [
+        null,
+        'AI に作らせる SNS。',
+        'メルアド不要で登録できる SNS。',
+        '匿名投稿できる SNS。'
+      ];
       try {
-        const response = await apiGetWithoutToken('/public/number-of-users');
-        const result: Result<number> = await response.json();
-        if(result.result !== -1) setNumberOfUsersMessage(`ユーザ数 : ${result.result} 人`);
+        const choicedMessage = messageChoices[Math.floor(Math.random() * messageChoices.length)];
+        if(choicedMessage == null) {
+          const response = await apiGetWithoutToken('/public/number-of-users');
+          const result: Result<number> = await response.json();
+          if(result.result !== -1) setRandomMessage(`ユーザ数 : ${result.result} 人`);
+        }
+        else {
+          setRandomMessage(choicedMessage);
+        }
       }
       catch(error) {
-        console.warn('Failed To Get Number Of Users', error);
+        console.warn('Failed', error);
+      }
+      finally {
+        setIsIn(true);
       }
     })();
   }, [dispatch]);
@@ -97,7 +108,7 @@ export const SignupPage: FC = () => {
       <Typography component="h1" variant="h3" sx={{ textAlign: 'center' }}>Sign Up</Typography>
       
       <Fade in={isIn}>
-        <Typography component="p" sx={{ mt: 2, color: 'grey.500', textAlign: 'center'}}>{numberOfUsersMessage}</Typography>
+        <Typography component="p" sx={{ mt: 2, color: 'grey.500', textAlign: 'center'}}>{randomMessage}</Typography>
       </Fade>
       
       {errorMessage != null && <Alert severity="error" sx={{ mt: 2 }}>{errorMessage}</Alert>}

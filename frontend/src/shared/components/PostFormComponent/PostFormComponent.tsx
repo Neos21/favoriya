@@ -107,7 +107,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
     const topic = Object.values(topicsConstants).find(topic => topic.id === topicId);
     if(topic == null) return setErrorMessage('不正なトピックです');
     const textContent = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-    const validationResult = topic.validateFunction(textContent);
+    const validationResult = (topic as any)?.validateFunction(textContent);  // eslint-disable-line @typescript-eslint/no-explicit-any
     if(validationResult.error != null) return setErrorMessage(validationResult.error);
     
     const newPostApi: PostApi = camelToSnakeCaseObject({ userId, text, topicId });

@@ -33,10 +33,10 @@ export class PostsController {
     const validationResult = this.postValidationService.validateText(post.text, post.topicId);
     if(validationResult.error != null) return response.status(validationResult.code ?? HttpStatus.BAD_REQUEST).json(validationResult);
     
+    // 川柳モードの時にスタイリングできそうならする
+    if(post.topicId === topicsConstants.senryu.id) post.text = this.postDecorationService.senryuStyle(post.text);
     // ランダム装飾モードの場合に行ごとにタグを入れたり入れなかったりする
-    if(post.topicId === topicsConstants.randomDecorations.id) {
-      post.text = this.postDecorationService.decorateText(post.text);
-    }
+    if(post.topicId === topicsConstants.randomDecorations.id) post.text = this.postDecorationService.decorateRandomly(post.text);
     
     const result = await this.postsService.create(post);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);

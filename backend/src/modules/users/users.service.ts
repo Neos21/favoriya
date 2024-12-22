@@ -193,7 +193,10 @@ export class UsersService {
     // アバター画像ファイルがあれば削除する
     const removeAvadarResult = await this.avatarService.remove(id);
     if(removeAvadarResult.error != null) return removeAvadarResult;
-    // ユーザに紐付く投稿を全て削除する : 投稿に紐付くふぁぼは onDelete により連動して削除される
+    
+    // TODO : ふぁぼを削除し、投稿のデクリメントを行う
+    
+    // ユーザに紐付く投稿を全て削除する
     const removeAllPostsResult = await this.postsService.removeAllByUserId(id);
     if(removeAllPostsResult.error != null) return removeAllPostsResult;
     
