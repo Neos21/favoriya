@@ -53,7 +53,7 @@ export const IntroductionsPage: FC = () => {
     }
   }, [apiGet, paramUserId]);
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     setStatus('loading');
     if(!rawParamUserId.startsWith('@')) return;  // 先頭に `@` が付いていなかった場合は何もしない

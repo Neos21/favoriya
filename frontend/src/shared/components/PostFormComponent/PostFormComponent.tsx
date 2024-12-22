@@ -9,17 +9,18 @@ import { topicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { isValidText } from '../../../common/helpers/validators/validator-post';
 import { modalStyleConstants } from '../../constants/modal-style-constants';
-import { useApiPost } from '../../hooks/use-api-fetch';
 import { FontParserComponent } from '../FontParserComponent/FontParserComponent';
 
 import type { RootState } from '../../stores/store';
-
 import type { PostApi } from '../../../common/types/post';
-import type { Result } from '../../../common/types/result';
 
 type Props = {
-  /** 投稿が完了した後に呼ばれる関数 */
-  onAfterSubmit?: () => void
+  /** 投稿時に呼ばれる関数 */
+  onSubmit?: (newPostApi: PostApi) => Promise<void>,
+  /** リプライ時に使用 */
+  inReplyToPostId?: string,
+  /** リプライ時に使用 */
+  inReplyToUserId?: string,
 }
 
 type FormData = {
@@ -34,8 +35,7 @@ type RandomLimit = {
 };
 
 /** Post Form Component */
-export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
-  const apiPost = useApiPost();
+export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inReplyToUserId }) => {
   const userState = useSelector((state: RootState) => state.user);
   
   // トピックをランダムに選択する
@@ -101,11 +101,11 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
   
   /** Ctrl + Enter or Cmd + Enter で投稿できるようにする */
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if((event.ctrlKey || event.metaKey) && event.key === 'Enter') onSubmit(event as unknown as FormEvent<HTMLFormElement>);
+    if((event.ctrlKey || event.metaKey) && event.key === 'Enter') handleSubmit(event as unknown as FormEvent<HTMLFormElement>);
   };
   
-  /** On Submit */
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  /** Handle Submit */
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
     
@@ -132,14 +132,9 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
       if(validationResult.error != null) return setErrorMessage(validationResult.error);
     }
     
-    const newPostApi: PostApi = camelToSnakeCaseObject({ userId, text, topicId });
     try {
-      const response = await apiPost(`/users/${userId}/posts`, newPostApi);  // Throws
-      
-      if(!response.ok) {
-        const responseResult: Result<null> = await response.json();  // Throws
-        return setErrorMessage(responseResult.error);
-      }
+      const newPostApi: PostApi = camelToSnakeCaseObject({ userId, text, topicId, inReplyToPostId, inReplyToUserId });
+      await onSubmit(newPostApi);  // Throws
       
       // 投稿成功
       setFormData({
@@ -148,7 +143,6 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
       });
       setRandomLimit(topicsConstants.randomLimit.generateLimit());
       setCursorPosition(0);
-      onAfterSubmit();
     }
     catch(error) {
       setErrorMessage('投稿処理に失敗しました。もう一度やり直してください');
@@ -172,7 +166,7 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
       で入力してください。
     </Alert>}
     
-    <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
       <Grid2 container>
         <Grid2 size="grow">
           <FormControl fullWidth size="small">
@@ -200,14 +194,14 @@ export const PostFormComponent: FC<Props> = ({ onAfterSubmit }) => {
         onBlur={onSaveCursorPosition}  // フォーカスが外れた時にカーソル位置を保持する
       />
       <Stack direction="row" spacing={1.5} useFlexGap sx={{ mt: 1, flexWrap: 'wrap', ['& button']: { minWidth: 'auto', whiteSpace: 'nowrap' } }}>
-        <Button variant="outlined" sx={{ fontFamily: 'serif' }} size="small" color="info" onClick={() => onInsert('<font size="★" face="serif">', '</font>', ['4', '5', '6', '7'])}>明朝</Button>
+        <Button variant="outlined" size="small" color="info"    onClick={() => onInsert('<font size="★" face="serif">', '</font>', ['1', '2', '3', '4', '5', '6', '7'])} sx={{ fontFamily: 'serif' }}>明朝</Button>
         <Button variant="outlined" size="small" color="success" onClick={() => onInsert('<em>', '</em>')}>緑</Button>
         <Button variant="outlined" size="small" color="error"   onClick={() => onInsert('<strong>', '</strong>')}>赤</Button>
         <Button variant="outlined" size="small" color="warning" onClick={() => onInsert('<mark>', '</mark>')}>黄</Button>
         <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<marquee>', '</marquee>')} sx={{ overflow: 'hidden' }}><span style={{ animation: 'scroll-left 1.5s linear infinite' }}>流</span></Button>
         <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<blink>', '</blink>')}><span style={{ animation: 'blink-animation 1.5s step-start infinite' }}>光</span></Button>
-        <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<★ align="center">', '</★>', ['h1', 'h2', 'h3', 'h4', 'div'])}>中</Button>
-        <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<★ align="right">', '</★>' , ['h1', 'h2', 'h3', 'h4', 'div'])}>右</Button>
+        <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<★ align="center">', '</★>', ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div'])}>中</Button>
+        <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<★ align="right">', '</★>' , ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div'])}>右</Button>
       </Stack>
     </Box>
     

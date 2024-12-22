@@ -30,7 +30,7 @@ export const NotificationsPage: FC = () => {
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
   const [notifications, setNotifications] = useState<Array<Notification>>([]);
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     setStatus('loading');
     (async () => {

@@ -16,7 +16,7 @@ export const ThemeModeProvider: React.FC<{ children: ReactNode }> = ({ children 
     setMode(prevMode => prevMode === 'light' ? 'dark' : 'light');
   };
   
-  // 初回読み込み時 : index.html にて LocalStorage に格納してから読み込んでいる
+  // 初回読込時 : index.html にて LocalStorage に格納してから読み込んでいる
   useEffect(() => {
     setMode(localStorage.getItem(themeConstants.localStorageKey) as 'dark' | 'light');
   }, []);

@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import { Alert, Button, Typography } from '@mui/material';
 
@@ -6,17 +7,20 @@ import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { PostFormComponent } from '../../shared/components/PostFormComponent/PostFormComponent';
 import { PostsListComponent } from '../../shared/components/PostsListComponent/PostsListComponent';
-import { useApiGet } from '../../shared/hooks/use-api-fetch';
+import { useApiGet, useApiPost } from '../../shared/hooks/use-api-fetch';
 
 import type { Post, PostApi } from '../../common/types/post';
 import type { Result } from '../../common/types/result';
+import type { RootState } from '../../shared/stores/store';
 
 /** Global Timeline Page */
 export const GlobalTimelinePage: FC = () => {
   /** 1回につき読み込む件数 */
   const offsetAmount = 100;
   
+  const userState = useSelector((state: RootState) => state.user);
   const apiGet = useApiGet();
+  const apiPost = useApiPost();
   
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -45,12 +49,23 @@ export const GlobalTimelinePage: FC = () => {
     }
   }, [apiGet]);
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     fetchFirstPosts();
   }, [fetchFirstPosts]);
   
-  /** 再読み込み */
+  /** 投稿 */
+  const onSubmit = async (newPostApi: PostApi) => {
+    const response = await apiPost(`/users/${userState.id}/posts`, newPostApi);  // Throws
+    if(!response.ok) {
+      const responseResult: Result<null> = await response.json();  // Throws
+      throw new Error(responseResult.error ?? '投稿時にエラーが発生しました');
+    }
+    
+    await fetchFirstPosts();  // 再読込
+  };
+  
+  /** 再読込 */
   const onReload = () => fetchFirstPosts();
   
   /** 続きを読み込む */
@@ -59,7 +74,7 @@ export const GlobalTimelinePage: FC = () => {
     try {
       const response = await apiGet('/timeline/global', `?offset=${offset}&limit=${offsetAmount}`);  // Throws
       const postsApi: Result<Array<PostApi>> = await response.json();  // Throws
-      if(postsApi.error != null) return console.error('グローバルタイムラインの続きの読み込みに失敗', postsApi);
+      if(postsApi.error != null) return console.error('グローバルタイムラインの続きの読込に失敗', postsApi);
       
       const fetchedPosts: Array<Post> = postsApi.result.map(postApi => snakeToCamelCaseObject(postApi) as Post);
       setPosts(previousPosts => [...previousPosts, ...fetchedPosts]);
@@ -67,7 +82,7 @@ export const GlobalTimelinePage: FC = () => {
       setOffset(previousOffset => previousOffset + fetchedPosts.length);  // 取得した投稿数を足す
     }
     catch(error) {
-      console.error('グローバルタイムラインの続きの読み込み処理に失敗', error);
+      console.error('グローバルタイムラインの続きの読込処理に失敗', error);
     }
     finally {
       setIsNextLoading(false);
@@ -77,7 +92,7 @@ export const GlobalTimelinePage: FC = () => {
   return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>グローバルタイムライン</Typography>
     
-    <PostFormComponent onAfterSubmit={onReload} />
+    <PostFormComponent onSubmit={onSubmit} />
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     

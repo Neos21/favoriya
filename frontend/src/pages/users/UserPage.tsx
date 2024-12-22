@@ -44,7 +44,7 @@ export const UserPage: FC = () => {
   // 念のため `@` を除去するテイで作っておく
   const paramUserId = rawParamUserId.startsWith('@') ? rawParamUserId.slice(1) : rawParamUserId;
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     setStatus('loading');
     if(!rawParamUserId.startsWith('@')) return;  // 先頭に `@` が付いていなかった場合は何もしない
@@ -105,7 +105,7 @@ export const UserPage: FC = () => {
     try {
       const response = await apiGet(`/users/${paramUserId}/posts`, `?offset=${offset}&limit=${offsetAmount}`);  // Throws
       const postsApi: Result<Array<PostApi>> = await response.json();  // Throws
-      if(postsApi.error != null) return console.error('ユーザ投稿の続きの読み込みに失敗', postsApi);
+      if(postsApi.error != null) return console.error('ユーザ投稿の続きの読込に失敗', postsApi);
       
       const fetchedPosts: Array<Post> = postsApi.result.map(postApi => snakeToCamelCaseObject(postApi) as Post);
       setPosts(previousPosts => [...previousPosts, ...fetchedPosts]);
@@ -113,7 +113,7 @@ export const UserPage: FC = () => {
       setOffset(previousOffset => previousOffset + fetchedPosts.length);  // 取得した投稿数を足す
     }
     catch(error) {
-      console.error('ユーザ投稿の続きの読み込み処理に失敗', error);
+      console.error('ユーザ投稿の続きの読込処理に失敗', error);
     }
     finally {
       setIsNextLoading(false);

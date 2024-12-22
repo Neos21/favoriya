@@ -6,13 +6,13 @@ import { Alert, Box, Button, Grid2, Modal, Typography } from '@mui/material';
 
 import { snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { LoadingSpinnerComponent } from '../../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
+import { PostFormComponent } from '../../../shared/components/PostFormComponent/PostFormComponent';
 import { PostsListComponent } from '../../../shared/components/PostsListComponent/PostsListComponent';
 import { httpStatusConstants } from '../../../shared/constants/http-status-constants';
 import { modalStyleConstants } from '../../../shared/constants/modal-style-constants';
-import { useApiDelete, useApiGet } from '../../../shared/hooks/use-api-fetch';
+import { useApiDelete, useApiGet, useApiPost } from '../../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../../shared/services/convert-date-to-jst';
 import { AfterRepliesComponent } from './components/AfterRepliesComponent';
-import { ReplyFormComponent } from './components/ReplyFormComponent';
 
 import type { RootState } from '../../../shared/stores/store';
 import type { Post, PostApi } from '../../../common/types/post';
@@ -25,6 +25,7 @@ export const PostPage: FC = () => {
   const navigate = useNavigate();
   const userState = useSelector((state: RootState) => state.user);
   const apiGet = useApiGet();
+  const apiPost = useApiPost();
   const apiDelete = useApiDelete();
   
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'not-found' | 'failed'>('loading');
@@ -52,12 +53,18 @@ export const PostPage: FC = () => {
     }
   };
   
-  /** リプライ投稿後に行う処理 */
-  const onAfterReply = () => {
-    SetReloadTrigger(previoursReloadTrigger => !previoursReloadTrigger);  // フラグ変数を入れ替えることで子コンポーネントの読み込み処理を実行させる
+  /** リプライする */
+  const onSubmit = async (newPostApi: PostApi) => {
+    const response = await apiPost(`/users/${paramUserId}/posts/${paramPostId}/replies`, newPostApi);  // Throws
+    if(!response.ok) {
+      const responseResult: Result<null> = await response.json();  // Throws
+      throw new Error(responseResult.error ?? 'リプライ時にエラーが発生しました');
+    }
+    
+    SetReloadTrigger(previoursReloadTrigger => !previoursReloadTrigger);  // フラグ変数を入れ替えることで子コンポーネントの読込処理を実行させる
   };
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     setStatus('loading');
     if(!rawParamUserId.startsWith('@')) return;  // 先頭に `@` が付いていなかった場合は何もしない
@@ -68,13 +75,12 @@ export const PostPage: FC = () => {
         if(postApiResult.error != null) return setStatus(response.status === httpStatusConstants.notFound ? 'not-found' : 'failed');
         
         setPost(snakeToCamelCaseObject(postApiResult.result) as Post);
+        setStatus('succeeded');
       }
       catch(error) {
         setStatus('failed');
         return console.error('投稿の取得に失敗', error);
       }
-      
-      setStatus('succeeded');
     })();
   }, [apiGet, paramUserId, rawParamUserId, paramPostId]);
   
@@ -107,7 +113,7 @@ export const PostPage: FC = () => {
       
       <AfterRepliesComponent inReplyToPostId={paramPostId} inReplyToUserId={paramUserId} reloadTrigger={reloadTrigger} />
       
-      <ReplyFormComponent inReplyToPostId={paramPostId} inReplyToUserId={paramUserId} onAfterReply={onAfterReply} />
+      <PostFormComponent onSubmit={onSubmit} inReplyToPostId={paramPostId} inReplyToUserId={paramUserId} />
       
       <Modal open={isModalOpen}>
         <Box component="div" sx={modalStyleConstants}>

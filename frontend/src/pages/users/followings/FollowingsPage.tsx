@@ -24,7 +24,7 @@ export const FollowingsPage: FC = () => {
   // 念のため `@` を除去するテイで作っておく
   const paramUserId = rawParamUserId.startsWith('@') ? rawParamUserId.slice(1) : rawParamUserId;
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     setStatus('loading');
     if(!rawParamUserId.startsWith('@')) return;  // 先頭に `@` が付いていなかった場合は何もしない

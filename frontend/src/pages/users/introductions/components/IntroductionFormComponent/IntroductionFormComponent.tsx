@@ -32,7 +32,7 @@ export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUse
   const [succeededMessage, setSucceededMessage] = useState<string>(null);
   const [isApproved, setIsApproved] = useState<boolean>(null);
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     (async () => {
       try {

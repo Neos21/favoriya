@@ -62,7 +62,7 @@ export const SearchPage: FC = () => {
     }
   }, [apiGet, navigate]);
   
-  // 初回読み込み : クエリパラメータがあれば処理する
+  // 初回読込 : クエリパラメータがあれば処理する
   useEffect(() => {
     if(!isEmptyString(paramQuery)) {
       setInputQuery(paramQuery);  // フォームに設定する
@@ -91,7 +91,7 @@ export const SearchPage: FC = () => {
     try {
       const response = await apiGet('/search', `?query=${encodeURIComponent(currentQuery)}&offset=${offset}&limit=${offsetAmount}`);  // Throws
       const postsApi: Result<Array<PostApi>> = await response.json();  // Throws
-      if(postsApi.error != null) return console.error('検索結果の続きの読み込みに失敗', postsApi);
+      if(postsApi.error != null) return console.error('検索結果の続きの読込に失敗', postsApi);
       
       const fetchedPosts: Array<Post> = postsApi.result.map(postApi => snakeToCamelCaseObject(postApi) as Post);
       setPosts(previousPosts => [...previousPosts, ...fetchedPosts]);
@@ -99,7 +99,7 @@ export const SearchPage: FC = () => {
       setOffset(previousOffset => previousOffset + fetchedPosts.length);  // 取得した投稿数を足す
     }
     catch(error) {
-      console.error('検索結果の続きの読み込み処理に失敗', error);
+      console.error('検索結果の続きの読込処理に失敗', error);
     }
     finally {
       setIsNextLoading(false);

@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Alert, Avatar, Grid2, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
+import { Alert, Avatar, Grid2, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
 
 import { snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
@@ -27,7 +27,7 @@ export const BeforeReplyComponent: FC<Props> = ({ inReplyToPostId, inReplyToUser
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'not-found' | 'failed'>('loading');
   const [post, setPost] = useState<Post>(null);
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     setStatus('loading');
     (async () => {
@@ -54,7 +54,8 @@ export const BeforeReplyComponent: FC<Props> = ({ inReplyToPostId, inReplyToUser
     
     {status === 'failed' && <Alert severity="error" sx={{ mt: 1 }}>リプライ元の取得に失敗</Alert>}
     
-    {status === 'succeeded' && <ListItem alignItems="flex-start" sx={{ mt: 1, border: '1px solid', borderColor: 'grey.500', borderRadius: 1 }}>
+    {status === 'succeeded' && <List sx={{ mt: 1 }}>
+      <ListItem alignItems="flex-start" sx={{ border: '1px solid', borderColor: 'grey.500', borderRadius: 1 }}>
         <ListItemAvatar>
           <Tooltip title={post.userId} placement="top">
             <Link to={`/@${post.userId}`}>
@@ -81,6 +82,6 @@ export const BeforeReplyComponent: FC<Props> = ({ inReplyToPostId, inReplyToUser
           </>}
         />
       </ListItem>
-    }
+    </List>}
   </>;
 };

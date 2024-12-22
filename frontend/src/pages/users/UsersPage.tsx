@@ -20,7 +20,7 @@ export const UsersPage: FC = () => {
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
   const [users, setUsers] = useState<Array<User>>([]);
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     setStatus('loading');
     (async () => {

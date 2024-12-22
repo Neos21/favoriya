@@ -40,7 +40,7 @@ export const AfterRepliesComponent: FC<Props> = ({ inReplyToPostId, inReplyToUse
     }
   }, [apiGet, inReplyToPostId, inReplyToUserId]);
   
-  // 初回読み込み・リロード
+  // 初回読込・リロード
   useEffect(() => {
     onLoadPosts();
   }, [onLoadPosts, reloadTrigger]);

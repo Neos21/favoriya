@@ -31,7 +31,7 @@ export const UnapprovedIntroductionsComponent: FC<Props> = ({ recipientUserId, o
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
   const [unapprovedIntroductions, setUnapprovedIntroductions] = useState<Array<Introduction>>([]);
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     setStatus('loading');
     (async () => {

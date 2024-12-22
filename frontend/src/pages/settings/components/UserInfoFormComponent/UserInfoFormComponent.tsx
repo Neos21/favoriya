@@ -41,7 +41,7 @@ export const UserInfoFormComponent: FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [succeededMessage, setSucceededMessage] = useState<string>(null);
   
-  // 初回読み込み
+  // 初回読込
   useEffect(() => {
     setFormData({
       name                     : userState.name                      ?? '',
