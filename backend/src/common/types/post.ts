@@ -1,5 +1,6 @@
 import { CamelToSnakeCaseObject } from './cases';
 
+import type { EmojiReaction } from './emoji-reaction';
 import type { Favourite } from './favourite';
 import type { Topic } from './topic';
 import type { User } from './user';
@@ -19,6 +20,7 @@ export type Post = {
   
   user?: User;
   favourites?: Array<Favourite>;
+  emojiReactions?: Array<EmojiReaction>;
   topic?: Topic;
 };
 

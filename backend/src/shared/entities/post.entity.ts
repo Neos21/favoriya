@@ -1,5 +1,6 @@
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
+import { EmojiReactionEntity } from './emoji-reaction.entity';
 import { FavouriteEntity } from './favourite.entity';
 import { TopicEntity } from './topic.entity';
 import { UserEntity } from './user.entity';
@@ -49,6 +50,10 @@ export class PostEntity {
   /** この投稿がふぁぼられた情報との関係を示す */
   @OneToMany(() => FavouriteEntity, favouriteEntity => favouriteEntity.post, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })  // この onDelete は、親である Post が消された時に子である Favourite を消したいという意思を表現しているだけ、DB 制約としては Favourite 側の ManyToOne に書かないと効果がない
   public favourites: Array<FavouriteEntity>;
+  
+  /** この投稿に対する絵文字リアクションとの関係を示す */
+  @OneToMany(() => EmojiReactionEntity, emojiReactionEntity => emojiReactionEntity.post, { createForeignKeyConstraints: false, onDelete: 'CASCADE' })
+  public emojiReactions: Array<EmojiReactionEntity>;
   
   /** この投稿のトピック */
   @ManyToOne(() => TopicEntity, topicEntity => topicEntity.posts, { eager: true, createForeignKeyConstraints: false })  // eager によって紐付いて取得される

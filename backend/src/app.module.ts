@@ -13,8 +13,12 @@ import { configuration } from './core/configs/configuration';
 import { AccessLogMiddleware } from './core/middlewares/access-log.middleware';
 import { AdminController } from './modules/admin/admin.controller';
 import { AdminService } from './modules/admin/admin.service';
+import { AdminEmojisController } from './modules/admin/emojis/admin-emojis.controller';
+import { AdminEmojisService } from './modules/admin/emojis/admin-emojis.service';
 import { AuthController } from './modules/auth/auth.controller';
 import { AuthService } from './modules/auth/auth.service';
+import { EmojisController } from './modules/emojis/emojis.controller';
+import { EmojisService } from './modules/emojis/emojis.service';
 import { NotificationsController } from './modules/notifications/notifications.controller';
 import { NotificationsService } from './modules/notifications/notifications.service';
 import { PublicController } from './modules/public/public.controller';
@@ -34,6 +38,8 @@ import { IntroductionsController } from './modules/users/introductions/introduct
 import { IntroductionsService } from './modules/users/introductions/introductions.service';
 import { LoginHistoriesController } from './modules/users/login-histories/login-histories.controller';
 import { LoginHistoriesService } from './modules/users/login-histories/login-histories.service';
+import { PostEmojisController } from './modules/users/posts/emojis/post-emojis.controller';
+import { PostEmojisService } from './modules/users/posts/emojis/post-emojis.service';
 import { FavouritesController } from './modules/users/posts/favourites/favourites.controller';
 import { FavouritesService } from './modules/users/posts/favourites/favourites.service';
 import { PostDecorationService } from './modules/users/posts/post-decoration.service';
@@ -45,6 +51,8 @@ import { RepliesService } from './modules/users/posts/replies/replies.service';
 import { UserDeletionService } from './modules/users/user-deletion.service';
 import { UsersController } from './modules/users/users.controller';
 import { UsersService } from './modules/users/users.service';
+import { EmojiReactionEntity } from './shared/entities/emoji-reaction.entity';
+import { EmojiEntity } from './shared/entities/emoji.entity';
 import { FavouriteEntity } from './shared/entities/favourite.entity';
 import { FollowEntity } from './shared/entities/follow.entity';
 import { IntroductionEntity } from './shared/entities/introduction.entity';
@@ -94,6 +102,8 @@ import { UserEntity } from './shared/entities/user.entity';
       })
     }),
     TypeOrmModule.forFeature([
+      EmojiEntity,
+      EmojiReactionEntity,
       FavouriteEntity,
       FollowEntity,
       IntroductionEntity,
@@ -120,8 +130,10 @@ import { UserEntity } from './shared/entities/user.entity';
     AppController,
     
     AdminController,
+    AdminEmojisController,
     AuthController,
     AvatarController,
+    EmojisController,
     FavouritesController,
     FollowersController,
     FollowingsController,
@@ -129,6 +141,7 @@ import { UserEntity } from './shared/entities/user.entity';
     LoginHistoriesController,
     NotificationsController,
     PostsController,
+    PostEmojisController,
     PublicController,
     RepliesController,
     SearchController,
@@ -139,8 +152,10 @@ import { UserEntity } from './shared/entities/user.entity';
     AppService,
     
     AdminService,
+    AdminEmojisService,
     AuthService,
     AvatarService,
+    EmojisService,
     FavouritesService,
     FollowersService,
     FollowingsService,
@@ -149,6 +164,7 @@ import { UserEntity } from './shared/entities/user.entity';
     NotificationsService,
     PostsService,
     PostDecorationService,
+    PostEmojisService,
     PostValidationService,
     PublicService,
     RepliesService,

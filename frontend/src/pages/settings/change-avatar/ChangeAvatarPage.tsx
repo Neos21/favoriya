@@ -16,15 +16,15 @@ import type { RootState } from '../../../shared/stores/store';
 import type { Result } from '../../../common/types/result';
 
 const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
   position: 'absolute',
+  overflow: 'hidden',
   bottom: 0,
   left: 0,
-  whiteSpace: 'nowrap',
-  width: 1
+  width: 1,
+  height: 1,
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  whiteSpace: 'nowrap'
 });
 
 /** Change Avatar Page */
@@ -142,11 +142,7 @@ export const ChangeAvatarPage: FC = () => {
       </Button>
     </Typography>
     
-    {selectedFile != null && (
-      <Typography component="p" sx={{ mt: 3 }}>
-        選択されたファイル : {selectedFile.name}
-      </Typography>
-    )}
+    {selectedFile != null && <Typography component="p" sx={{ mt: 3 }}>選択されたファイル : {selectedFile.name}</Typography>}
     
     {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
     

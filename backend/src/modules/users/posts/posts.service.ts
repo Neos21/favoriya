@@ -48,6 +48,12 @@ export class PostsService {
         .addSelect(['favourites.id'])
         .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
         .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
+        .leftJoin('posts.emojiReactions', 'emoji_reactions')  // 投稿に対応する EmojiReactionEntity を結合する
+        .addSelect(['emoji_reactions.id', 'emoji_reactions.reactedPostsUserId', 'emoji_reactions.reactedPostId', 'emoji_reactions.userId', 'emoji_reactions.emojiId'])
+        .leftJoin('emoji_reactions.emoji', 'emojis')  // EmojiEntity を結合する
+        .addSelect(['emojis.id', 'emojis.name', 'emojis.imageUrl'])
+        .leftJoin('emoji_reactions.reactionByUser', 'reaction_by_users')  // リアクションしたユーザ情報
+        .addSelect(['reaction_by_users.id', 'reaction_by_users.avatarUrl'])
         .where('posts.userId = :userId', { userId })  // 指定のユーザ ID
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
         .skip(offset)
@@ -73,6 +79,12 @@ export class PostsService {
         .addSelect(['favourites.id'])
         .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
         .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
+        .leftJoin('posts.emojiReactions', 'emoji_reactions')  // 投稿に対応する EmojiReactionEntity を結合する
+        .addSelect(['emoji_reactions.id', 'emoji_reactions.reactedPostsUserId', 'emoji_reactions.reactedPostId', 'emoji_reactions.userId', 'emoji_reactions.emojiId'])
+        .leftJoin('emoji_reactions.emoji', 'emojis')  // EmojiEntity を結合する
+        .addSelect(['emojis.id', 'emojis.name', 'emojis.imageUrl'])
+        .leftJoin('emoji_reactions.reactionByUser', 'reaction_by_users')  // リアクションしたユーザ情報
+        .addSelect(['reaction_by_users.id', 'reaction_by_users.avatarUrl'])
         .where('posts.userId = :userId AND posts.id = :postId', { userId, postId })  // 指定のユーザ ID・投稿 ID
         .getOne();
       if(post == null) return { error: '指定の投稿は存在しません', code: HttpStatus.NOT_FOUND };

@@ -15,5 +15,6 @@ export const modalStyleConstants = {
   borderColor: 'grey.600',
   borderRadius: 2,
   boxShadow: 24,
-  p: 3
+  py: 3,
+  px: 2
 };

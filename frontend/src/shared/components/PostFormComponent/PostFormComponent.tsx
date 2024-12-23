@@ -92,7 +92,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     const startTag = replacements == null ? rawStartTag : rawStartTag.replace((/★/g), choiced);
     const endTag   = replacements == null ? rawEndTag   : rawEndTag  .replace((/★/g), choiced);
     const newCursorPosition = cursorPosition + startTag.length; // 開始タグの後ろにカーソル位置を設定する
-  
+    
     // 新しい値を設定する
     setFormData(previousFormData => ({
       ...previousFormData,

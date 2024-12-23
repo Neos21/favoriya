@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { topicsConstants } from '../../../../common/constants/topics-constants';
 import { NotificationEntity } from '../../../../shared/entities/notification.entity';
 import { PostEntity } from '../../../../shared/entities/post.entity';
 import { NotificationsService } from '../../../notifications/notifications.service';

@@ -26,6 +26,12 @@ export class TimelineService {
         .addSelect(['favourites.id'])
         .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
         .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
+        .leftJoin('posts.emojiReactions', 'emoji_reactions')  // 投稿に対応する EmojiReactionEntity を結合する
+        .addSelect(['emoji_reactions.id', 'emoji_reactions.reactedPostsUserId', 'emoji_reactions.reactedPostId', 'emoji_reactions.userId', 'emoji_reactions.emojiId'])
+        .leftJoin('emoji_reactions.emoji', 'emojis')  // EmojiEntity を結合する
+        .addSelect(['emojis.id', 'emojis.name', 'emojis.imageUrl'])
+        .leftJoin('emoji_reactions.reactionByUser', 'reaction_by_users')  // リアクションしたユーザ情報
+        .addSelect(['reaction_by_users.id', 'reaction_by_users.avatarUrl'])
         .where('posts.visibility IS NULL')  // visibility に何か入っている場合は表示しない
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
         .skip(offset)
@@ -51,6 +57,12 @@ export class TimelineService {
         .addSelect(['favourites.id'])
         .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
         .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
+        .leftJoin('posts.emojiReactions', 'emoji_reactions')  // 投稿に対応する EmojiReactionEntity を結合する
+        .addSelect(['emoji_reactions.id', 'emoji_reactions.reactedPostsUserId', 'emoji_reactions.reactedPostId', 'emoji_reactions.userId', 'emoji_reactions.emojiId'])
+        .leftJoin('emoji_reactions.emoji', 'emojis')  // EmojiEntity を結合する
+        .addSelect(['emojis.id', 'emojis.name', 'emojis.imageUrl'])
+        .leftJoin('emoji_reactions.reactionByUser', 'reaction_by_users')  // リアクションしたユーザ情報
+        .addSelect(['reaction_by_users.id', 'reaction_by_users.avatarUrl'])
         .leftJoin('follows', 'follows', 'follows.followerUserId = posts.userId AND follows.followingUserId = :userId', { userId })  // ログインユーザがフォローしている人を条件にする
         .where('follows.followerUserId IS NOT NULL OR posts.userId = :userId', { userId })  // ログインユーザ自身の投稿も含める
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順

@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AdminPage } from '../../pages/admin/AdminPage';
+import { EmojisPage } from '../../pages/admin/emojis/EmojisPage';
 
 import type { RootState } from '../../shared/stores/store';
 
@@ -15,6 +16,7 @@ export const AdminGuardRoute: FC = () => {
   
   // ログインできていたらルーティングを注入する
   return <Routes>
-    <Route path="/" element={<AdminPage />} />
+    <Route path="/emojis" element={<EmojisPage />} />
+    <Route path="/"       element={<AdminPage  />} />
   </Routes>;
 };

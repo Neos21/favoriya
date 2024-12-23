@@ -22,6 +22,24 @@ export class AvatarService {
     private readonly nestMinioService: NestMinioService,
   ) { }
   
+  /** バケットがなければ作成する */
+  public async onModuleInit(): Promise<void> {
+    try {
+      const existsBucket = await this.nestMinioService.getMinio().bucketExists(commonUserConstants.bucketName);
+      if(existsBucket) {
+        this.logger.debug('アバター用のバケット作成済');
+      }
+      else {
+        this.logger.debug('アバター用のバケット未作成・作成開始');
+        await this.nestMinioService.getMinio().makeBucket(commonUserConstants.bucketName);
+        this.logger.debug('アバター用のバケット作成完了');
+      }
+    }
+    catch(error) {
+      this.logger.error('アバター用のバケットの確認・作成に失敗', error);
+    }
+  }
+  
   /** アバター画像をアップロードする */
   public async save(userId: string, file: Express.Multer.File): Promise<Result<string>> {
     if(file.size > (commonUserConstants.avatarMaxFileSizeKb * 1024)) return { error: `ファイルサイズが ${commonUserConstants.avatarMaxFileSizeKb} KB を超えています`, code: HttpStatus.BAD_REQUEST };
@@ -29,9 +47,6 @@ export class AvatarService {
     
     // リサイズする
     const resizedBuffer = await this.resizeImage(file.buffer);
-    // バケットがなければ作成する
-    const makeBucketResult = await this.makeBucketIfNotExists();
-    if(makeBucketResult.error != null) return makeBucketResult as Result<string>;
     // ファイル名を作成する
     const fileNameResult = this.createFileName(userId, file.originalname);
     // MinIO にアップロードする
@@ -74,19 +89,6 @@ export class AvatarService {
       return sharp(buffer).resize(commonUserConstants.avatarMaxImageSizePx, commonUserConstants.avatarMaxImageSizePx, { fit: 'inside' }).toBuffer();
     }
     return buffer;  // リサイズ不要
-  }
-  
-  /** バケットが存在しなければ作成する */
-  private async makeBucketIfNotExists(): Promise<Result<boolean>> {
-    try {
-      const existsBucket = await this.nestMinioService.getMinio().bucketExists(commonUserConstants.bucketName);
-      if(!existsBucket) await this.nestMinioService.getMinio().makeBucket(commonUserConstants.bucketName);
-      return { result: true };
-    }
-    catch(error) {
-      this.logger.error('バケットの確認・作成に失敗', error);
-      return { error: 'バケットの確認・作成に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
-    }
   }
   
   /** ファイル名を組み立てる */
