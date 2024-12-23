@@ -19,7 +19,7 @@ export class TimelineService {
     try {
       const posts = await this.postsRepository
         .createQueryBuilder('posts')
-        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.favouritesCount', 'posts.createdAt', 'posts.inReplyToPostId', 'posts.inReplyToUserId'])  // 投稿内容
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.createdAt', 'posts.inReplyToPostId', 'posts.inReplyToUserId'])  // 投稿内容
         .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
         .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
         .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
@@ -50,7 +50,7 @@ export class TimelineService {
     try {
       const posts = await this.postsRepository
         .createQueryBuilder('posts')
-        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.favouritesCount', 'posts.createdAt', 'posts.inReplyToPostId', 'posts.inReplyToUserId'])  // 投稿内容
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.createdAt', 'posts.inReplyToPostId', 'posts.inReplyToUserId'])  // 投稿内容
         .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
         .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
         .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する

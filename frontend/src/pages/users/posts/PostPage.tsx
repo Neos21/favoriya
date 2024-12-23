@@ -105,7 +105,7 @@ export const PostPage: FC = () => {
     {status === 'succeeded' && <>
       <PostsListComponent propPosts={[post]} />
       
-      {userState.id === post.userId &&
+      {(userState.id === post.userId || userState.role === 'Admin') &&
         <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>
           <Button variant="contained" color="error" onClick={onConfirmDelete}>削除</Button>
         </Box>

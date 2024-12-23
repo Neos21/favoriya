@@ -134,7 +134,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
         }
       });
       setPosts(previousPosts => previousPosts.map(previousPost => previousPost.id === post.id
-        ? { ...previousPost, favouritesCount: post.favouritesCount + 1, favourites }
+        ? { ...previousPost, favourites }
         : previousPost
       ));
     }
@@ -152,7 +152,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
       const favouritesIndex = favourites.findIndex(favourite => favourite.userId === userState.id);
       favourites.splice(favouritesIndex, 1);
       setPosts(previousPosts => previousPosts.map(previousPost => previousPost.id === post.id
-        ? { ...previousPost, favouritesCount: post.favouritesCount - 1, favourites }
+        ? { ...previousPost, favourites }
         : previousPost
       ));
     }
@@ -294,7 +294,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                   post.userId === userState.id && <>
                     <IconButton sx={{ mr: .25 }} disabled size="small"><StarIcon fontSize="inherit" /></IconButton>
                     {userState.showOwnFavouritesCount && <>
-                      <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
+                      <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favourites.length}</Typography>
                       {post.favourites.map(favourite =>
                         <Tooltip title={favourite.favouritedByUser.id} placement="top" key={favourite.favouritedByUser.id}>
                           <Link to={`/@${favourite.favouritedByUser.id}`}>
@@ -312,7 +312,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                       : <IconButton sx={{ mr: .25 }} color="warning" size="small" onClick={() => onRemoveFavourite(post)}><StarIcon fontSize="inherit" /></IconButton>
                     }
                     {userState.showOthersFavouritesCount && <>
-                      <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favouritesCount}</Typography>
+                      <Typography component="span" sx={{ mr: 1, color: 'grey.600', fontSize: '.86rem', verticalAlign: 'middle' }}>{post.favourites.length}</Typography>
                       {post.favourites.map(favourite =>
                         <Tooltip title={favourite.favouritedByUser.id} placement="top" key={favourite.favouritedByUser.id}>
                           <Link to={`/@${favourite.favouritedByUser.id}`}>
@@ -344,7 +344,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               </Typography>
               
               {// リプライ元表示
-                !isEmptyString(post.inReplyToPostId) && !isEmptyString(post.inReplyToUserId) && <Box component="div" sx={{ mt: 1, maxHeight: '8em', overflowY: 'hidden', border: '1px solid', borderColor: 'grey.500', borderRadius: 1, opacity: .8 }}>
+                !isEmptyString(post.inReplyToPostId) && !isEmptyString(post.inReplyToUserId) && <Box component="div" sx={{ mt: 1, maxHeight: '7.85em', overflowY: 'hidden', border: '1px solid', borderColor: 'grey.500', borderRadius: 1, opacity: .8 }}>
                   <BeforeReplyComponent inReplyToPostId={post.inReplyToPostId} inReplyToUserId={post.inReplyToUserId} />
                 </Box>
               }

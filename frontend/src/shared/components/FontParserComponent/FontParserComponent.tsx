@@ -83,8 +83,9 @@ const convertUrlsToLinks = (html: string) => html
 const convertHashTagsToLinks = (html: string) => html
   .replace((/(?<![="]|color: )#([^\s#]+)/g), match => `<a href="/search?query=${encodeURIComponent(match)}" class="normal-link">${match}</a>`);
 
+/** 絵文字リアクションを画像にする */
 const convertEmojiReactions = (html: string, emojis: Array<Emoji>) => html
-  .replace((/(\s)(:[a-z0-9-]+:)(\s)/g), (_match, pattern1, pattern2, pattern3) => {
+  .replace((/(\s|^)(:[a-z0-9-]+:)(\s|$)/g), (_match, pattern1, pattern2, pattern3) => {
     const foundEmoji = emojis.find(emoji => `:${emoji.name}:` === pattern2);
     if(foundEmoji == null) return pattern1 + pattern2 + pattern3;  // 見つからなかったらそのまま返す
     return pattern1 + `<img src="${emojiConstants.ossUrl}${foundEmoji.imageUrl}" class="emoji-reaction" title=":${foundEmoji.name}:" alt=":${foundEmoji.name}:">` + pattern3;

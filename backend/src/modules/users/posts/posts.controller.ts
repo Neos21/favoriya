@@ -70,7 +70,10 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':userId/posts/:postId')
   public async removeOneById(@Param('userId') userId: string, @Param('postId') postId: string, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
-    if(!isValidJwtUserId(request, response, userId)) return;
+    const jwtPayload = (request as unknown as { user: { role: string } }).user;
+    if(jwtPayload.role !== 'Admin') {  // 管理者は誰の投稿でも消せるようにする・それ以外のロールは本人のみ削除可能
+      if(!isValidJwtUserId(request, response, userId)) return;
+    }
     
     const result = await this.postsService.removeOneById(userId, postId);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);

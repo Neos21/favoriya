@@ -27,7 +27,7 @@ export class RepliesService {
     try {
       const posts = await this.postsRepository
         .createQueryBuilder('posts')
-        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.favouritesCount', 'posts.createdAt'])  // 投稿内容 : ココではリプライ元を取得しない
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.createdAt'])  // 投稿内容 : ココではリプライ元を取得しない
         .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
         .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
         .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する

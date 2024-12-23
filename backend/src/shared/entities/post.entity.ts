@@ -24,10 +24,6 @@ export class PostEntity {
   @Column({ name: 'visibility', nullable: true })
   public visibility: string;
   
-  /** この投稿がふぁぼられた数 (キャッシュ用) */
-  @Column({ name: 'favourites_count', default: 0 })
-  public favouritesCount: number;
-  
   /** 返信元の ID */
   @Column({ name: 'in_reply_to_post_id', type: 'bigint', nullable: true })
   public inReplyToPostId: string;

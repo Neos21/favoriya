@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
-//import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-//import { ErrorFallbackComponent } from './core/components/ErrorFallbackComponent/ErrorFallbackComponent';
+import { ErrorFallbackComponent } from './core/components/ErrorFallbackComponent/ErrorFallbackComponent';
 import { LayoutComponent } from './core/components/LayoutComponent/LayoutComponent';
-//import { onError } from './core/on-error';
+import { onError } from './core/on-error';
 import { AuthGuardRoute } from './core/routes/AuthGuardRoute';
 import { ThemeModeProvider } from './core/themes/ThemeModeContextProvider';
 import { GlobalTimelinePage } from './pages/global-timeline/GlobalTimelinePage';
@@ -37,7 +37,7 @@ export const App = () => (
     <BrowserRouter>
       <Provider store={store}>
         <ThemeModeProvider>
-          {/* <ErrorBoundary FallbackComponent={ErrorFallbackComponent} onError={onError}> */}
+          <ErrorBoundary FallbackComponent={ErrorFallbackComponent} onError={onError}>
             <Routes>
               <Route element={<LayoutComponent />}>
                 <Route element={<AuthGuardRoute />}>
@@ -70,7 +70,7 @@ export const App = () => (
               <Route path="/login"  element={<LoginPage  />} />
               <Route path="*"       element={<Navigate to="/" />} />
             </Routes>
-          {/* </ErrorBoundary> */}
+          </ErrorBoundary>
         </ThemeModeProvider>
       </Provider>
     </BrowserRouter>
