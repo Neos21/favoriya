@@ -331,7 +331,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
     <Modal open={isEmojisModalOpen}>
       <Box component="div" sx={modalStyleConstants}>
         <Stack direction="row" spacing={1}>
-          <TextField name="emoji" label="検索" fullWidth margin="normal" size="small" sx={{ m: 0 }} />
+          <TextField name="emoji" label="検索" fullWidth margin="normal" size="small" sx={{ m: 0 }} disabled />
           <IconButton sx={{ color: 'grey.600' }} size="small" onClick={onCloseEmojisModal}><CloseIcon fontSize="inherit" /></IconButton>
         </Stack>
         <Box component="div" sx={{ mt: 2, maxHeight: '47vh', overflowY: 'auto' }}>
