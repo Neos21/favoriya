@@ -31,6 +31,7 @@ export const LayoutComponent: FC = () => {
   useEffect(() => {
     (async () => {
       try {
+        if(userState == null || isEmptyString(userState.id)) return;
         const response = await apiGet('/notifications/number-of-unreads', `?user_id=${userState.id}`);
         const result: Result<number> = await response.json();
         dispatch(setUnreadNotifications({ unreadNotifications: result.result }));
@@ -39,7 +40,7 @@ export const LayoutComponent: FC = () => {
         console.warn('未読件数の取得に失敗', error);
       }
     })();
-  }, [apiGet, dispatch, userState.id]);
+  }, [apiGet, dispatch, userState, userState.id]);
   
   // 画面遷移ごとに実行する
   useEffect(() => {
