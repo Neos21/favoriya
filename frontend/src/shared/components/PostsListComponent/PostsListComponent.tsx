@@ -99,21 +99,21 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
       const found = convertedEmojiReactions.find(convertedEmojiReaction => convertedEmojiReaction.id === emojiReaction.emojiId);
       if(found == null) {
         convertedEmojiReactions.push({
-          id      : emojiReaction.emoji.id,
-          name    : emojiReaction.emoji.name,
-          imageUrl: emojiReaction.emoji.imageUrl,
+          id      : emojiReaction?.emoji?.id,
+          name    : emojiReaction?.emoji?.name,
+          imageUrl: emojiReaction?.emoji?.imageUrl,
           users   : [{
-            emojiReactionId: emojiReaction.id,
-            userId         : emojiReaction.reactionByUser.id,
-            avatarUrl      : emojiReaction.reactionByUser.avatarUrl
+            emojiReactionId: emojiReaction?.id,
+            userId         : emojiReaction?.reactionByUser?.id,
+            avatarUrl      : emojiReaction?.reactionByUser?.avatarUrl
           }]
         });
       }
       else {
         found.users.push({
-          emojiReactionId: emojiReaction.id,
-          userId         : emojiReaction.reactionByUser.id,
-          avatarUrl      : emojiReaction.reactionByUser.avatarUrl
+          emojiReactionId: emojiReaction?.id,
+          userId         : emojiReaction?.reactionByUser?.id,
+          avatarUrl      : emojiReaction?.reactionByUser?.avatarUrl
         });
       }
     });
