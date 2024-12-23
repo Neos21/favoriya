@@ -24,7 +24,7 @@ export default defineConfig(props => {
       rollupOptions: {
         output: {
           manualChunks: {
-            react: ['react', 'react-dom', 'react-router-dom'],
+            react: ['react', 'react-dom', 'react-router-dom', 'react-error-boundary'],
             mui  : ['@emotion/react', '@emotion/styled', '@mui/icons-material', '@mui/material'],
             redux: ['@reduxjs/toolkit', 'react-redux']
           }

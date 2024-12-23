@@ -240,3 +240,7 @@ html.light .font-parser-component kbd {
   from { transform: translateY(-100%); }
   to   { transform: translateY( 100%); }
 }
+
+.font-parser-component img.emoji-reaction {
+  height: 16px;
+}

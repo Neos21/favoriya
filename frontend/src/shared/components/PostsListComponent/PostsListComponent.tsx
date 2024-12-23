@@ -1,5 +1,5 @@
-import { FC, Fragment, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { ChangeEvent, FC, Fragment, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,6 +18,7 @@ import { modalStyleConstants } from '../../constants/modal-style-constants';
 import { userConstants } from '../../constants/user-constants';
 import { useApiDelete, useApiGet, useApiPost } from '../../hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../services/convert-date-to-jst';
+import { setAllEmojis } from '../../stores/emojis-slice';
 import { BeforeReplyComponent } from '../BeforeReplyComponent/BeforeReplyComponent';
 
 import type { EmojiReaction, EmojiReactionApi } from '../../../common/types/emoji-reaction';
@@ -48,6 +49,8 @@ type ConvertedEmojiReaction = {
 /** Posts List Component */
 export const PostsListComponent: FC<Props> = ({ propPosts }) => {
   const userState = useSelector((state: RootState) => state.user);
+  const emojisState = useSelector((state: RootState) => state.emojis);
+  const dispatch = useDispatch();
   const apiGet = useApiGet();
   const apiPost = useApiPost();
   const apiDelete = useApiDelete();
@@ -57,22 +60,35 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
   const [isEmojisModalOpen, setIsEmojisModalOpen] = useState<boolean>(false);  // 絵文字リアクションモーダル
   const [selectedPost, setSelectedPost] = useState<{ userId: string, postId: string }>(null);  // 絵文字リアクションモーダルを開いた時に選択した投稿
   const [emojis, setEmojis] = useState<Array<Emoji>>([]);  // 絵文字リアクション一覧
+  const [filteredEmojis, setFilteredEmojis] = useState<Array<Emoji>>([]);  // インクリメンタル検索した時の一覧
+  const [emojiQuery, setEmojiQuery] = useState('');
   
   // 初回読込 : 投稿一覧のセット・絵文字リアクション定義一覧
   useEffect(() => {
     setPosts(propPosts);
     (async () => {
       try {
-        const response = await apiGet('/emojis');  // Throws
-        const emojisApiResult = await response.json();  // Throws
-        setEmojis(emojisApiResult.result.map(emojiApi => snakeToCamelCaseObject(emojiApi)));
+        // Store にキャッシュがなければ取得する
+        if(emojisState.emojis.length === 0) {
+          const response = await apiGet('/emojis');  // Throws
+          const emojisApiResult = await response.json();  // Throws
+          const emojis = emojisApiResult.result.map(emojiApi => snakeToCamelCaseObject(emojiApi));
+          dispatch(setAllEmojis({ emojis: [...emojis] }));  // Store に入れておく
+          setEmojis([...emojis]);
+          setFilteredEmojis([...emojis]);  // デフォルトは全部入れておく
+        }
+        else {
+          setEmojis([...emojisState.emojis]);
+          setFilteredEmojis([...emojisState.emojis]);
+        }
       }
       catch(error) {
         setEmojis(null);
+        setFilteredEmojis(null);
         console.error('絵文字リアクション一覧の取得に失敗', error);
       }
     })();
-  }, [apiGet, propPosts]);
+  }, [apiGet, dispatch, emojisState.emojis, propPosts]);
   
   if(propPosts == null || propPosts.length === 0) return <Typography component="p" sx={{ mt: 3 }}>投稿がありません</Typography>;
   
@@ -148,13 +164,24 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
   /** 絵文字リアクションモーダルを開く */
   const onOpenEmojisModal = (userId: string, postId: string) => {
     setSelectedPost({ userId, postId });
+    setFilteredEmojis([...emojis]);  // デフォルトは全部入れておく
     setIsEmojisModalOpen(true);
   };
   
   /** 絵文字リアクションモーダルを閉じる */
   const onCloseEmojisModal = () => {
     setSelectedPost(null);
+    setFilteredEmojis([...emojis]);  // 元に戻しておく
     setIsEmojisModalOpen(false);
+  };
+  
+  /** 絵文字をインクリメンタル検索する */
+  const onSearchEmojis = (event: ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value.toLowerCase();  // 小文字に変換する
+    setEmojiQuery(query);
+
+    const filtered = emojis.filter(emoji => emoji.name.includes(query));  // 部分一致検索
+    setFilteredEmojis(filtered);
   };
   
   /** 絵文字リアクションを選択して登録する */
@@ -301,7 +328,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                   <IconButton sx={{ mr: .5, color: 'grey.600' }} size="small" onClick={() => onOpenEmojisModal(post.userId, post.id)}><EmojiEmotionsIcon fontSize="inherit" /></IconButton>
                 </Tooltip>
                 {convertEmojiReactions(post.emojiReactions).map(convertedEmojiReaction =>
-                  <Tooltip placement="top"  key={convertedEmojiReaction.id} title={convertedEmojiReaction.users.map(user =>
+                  <Tooltip placement="top" key={convertedEmojiReaction.id} title={convertedEmojiReaction.users.map(user =>
                     <Typography component="div" key={user.userId}>
                       <Avatar src={isEmptyString(user.avatarUrl) ? '' : `${userConstants.ossUrl}${user.avatarUrl}`} sx={{ display: 'inline-block', width: '16px', height: '16px', verticalAlign: 'middle', mr: .5, ['& svg']: { width: '100%', marginTop: '3px' } }} />
                       <Typography component="span" sx={{ fontSize: '.86rem' }}>@{user.userId}</Typography>
@@ -331,13 +358,17 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
     <Modal open={isEmojisModalOpen}>
       <Box component="div" sx={modalStyleConstants}>
         <Stack direction="row" spacing={1}>
-          <TextField name="emoji" label="検索" fullWidth margin="normal" size="small" sx={{ m: 0 }} disabled />
+          <TextField name="emoji" label="検索" fullWidth margin="normal" size="small" sx={{ m: 0 }} value={emojiQuery} onChange={onSearchEmojis} />
           <IconButton sx={{ color: 'grey.600' }} size="small" onClick={onCloseEmojisModal}><CloseIcon fontSize="inherit" /></IconButton>
         </Stack>
         <Box component="div" sx={{ mt: 2, maxHeight: '47vh', overflowY: 'auto' }}>
-          {emojis.map(emoji => <Button key={emoji.id} sx={{ p: .25, mr: .5, minWidth: 'auto' }} onClick={() => onSelectEmoji(emoji.id, emoji.name, emoji.imageUrl, selectedPost.userId, selectedPost.postId)}>
-            <img src={`${emojiConstants.ossUrl}${emoji.imageUrl}`} height="24" alt={`:${emoji.name}:`} title={`:${emoji.name}:`} />
-          </Button>)}
+          {filteredEmojis.map(emoji =>
+            <Tooltip placement="top" key={emoji.id} title={`:${emoji.name}:`}>
+              <Button sx={{ p: .25, mr: .5, minWidth: 'auto' }} onClick={() => onSelectEmoji(emoji.id, emoji.name, emoji.imageUrl, selectedPost.userId, selectedPost.postId)}>
+                <img src={`${emojiConstants.ossUrl}${emoji.imageUrl}`} height="24" alt={`:${emoji.name}:`} />
+              </Button>
+            </Tooltip>
+          )}
         </Box>
       </Box>
     </Modal>

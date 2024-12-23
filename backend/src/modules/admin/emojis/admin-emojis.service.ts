@@ -46,7 +46,7 @@ export class AdminEmojisService {
     if(!file.mimetype.startsWith('image/')) return { error: '画像ファイルではありません', code: HttpStatus.BAD_REQUEST };
     
     // リサイズする
-    const resizedBuffer = await this.resizeImage(file.buffer);
+    const resizedBuffer = await this.resizeImage(file.buffer, file.mimetype);
     // ファイル名を作成する
     const fileNameResult = this.createFileName(name, file.originalname);
     // MinIO にアップロードする
@@ -75,7 +75,8 @@ export class AdminEmojisService {
   }
   
   /** リサイズする */
-  private async resizeImage(buffer: Buffer): Promise<Buffer> {
+  private async resizeImage(buffer: Buffer, mimeType: string): Promise<Buffer> {
+    if(mimeType === 'image/gif') return buffer;  // sharp を通すとアニメーション GIF が動かなくなるので GIF は変換しないことにする
     return sharp(buffer).resize(null, emojisConstants.maxImageHeightPx, { fit: 'inside' }).toBuffer();
   }
   

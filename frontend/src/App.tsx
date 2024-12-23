@@ -1,8 +1,11 @@
 import { lazy, Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
+import { ErrorFallbackComponent } from './core/components/ErrorFallbackComponent/ErrorFallbackComponent';
 import { LayoutComponent } from './core/components/LayoutComponent/LayoutComponent';
+import { onError } from './core/on-error';
 import { AuthGuardRoute } from './core/routes/AuthGuardRoute';
 import { ThemeModeProvider } from './core/themes/ThemeModeContextProvider';
 import { GlobalTimelinePage } from './pages/global-timeline/GlobalTimelinePage';
@@ -34,38 +37,40 @@ export const App = () => (
     <BrowserRouter>
       <Provider store={store}>
         <ThemeModeProvider>
-          <Routes>
-            <Route element={<LayoutComponent />}>
-              <Route element={<AuthGuardRoute />}>
-                <Route path="/home-timeline"   element={<HomeTimelinePage   />} />
-                <Route path="/global-timeline" element={<GlobalTimelinePage />} />
-                <Route path="/search"          element={<SearchPage         />} />
-                
-                <Route path="/settings/login-histories" element={<LoginHistoriesPage />} />
-                <Route path="/settings/delete-account"  element={<DeleteAccountPage  />} />
-                <Route path="/settings/change-avatar"   element={<ChangeAvatarPage   />} />
-                <Route path="/settings"                 element={<SettingsPage       />} />
-                
-                <Route path="/notifications" element={<NotificationsPage />} />
-                <Route path="/users"         element={<UsersPage         />} />
-                
-                <Route path="/:userId/followers"     element={<FollowersPage     />} />
-                <Route path="/:userId/followings"    element={<FollowingsPage    />} />
-                <Route path="/:userId/introductions" element={<IntroductionsPage />} />
-                <Route path="/:userId/posts/:postId" element={<PostPage          />} />
-                <Route path="/:userId/posts"         element={<UserPage          />} />
-                <Route path="/:userId"               element={<UserPage          />} />
-                
-                <Route path="/admin/*" element={<AdminGuardRoute />} />
-                
-                <Route path="/" element={<HomePage />} />
+          <ErrorBoundary FallbackComponent={ErrorFallbackComponent} onError={onError}>
+            <Routes>
+              <Route element={<LayoutComponent />}>
+                <Route element={<AuthGuardRoute />}>
+                  <Route path="/home-timeline"   element={<HomeTimelinePage   />} />
+                  <Route path="/global-timeline" element={<GlobalTimelinePage />} />
+                  <Route path="/search"          element={<SearchPage         />} />
+                  
+                  <Route path="/settings/login-histories" element={<LoginHistoriesPage />} />
+                  <Route path="/settings/delete-account"  element={<DeleteAccountPage  />} />
+                  <Route path="/settings/change-avatar"   element={<ChangeAvatarPage   />} />
+                  <Route path="/settings"                 element={<SettingsPage       />} />
+                  
+                  <Route path="/notifications" element={<NotificationsPage />} />
+                  <Route path="/users"         element={<UsersPage         />} />
+                  
+                  <Route path="/:userId/followers"     element={<FollowersPage     />} />
+                  <Route path="/:userId/followings"    element={<FollowingsPage    />} />
+                  <Route path="/:userId/introductions" element={<IntroductionsPage />} />
+                  <Route path="/:userId/posts/:postId" element={<PostPage          />} />
+                  <Route path="/:userId/posts"         element={<UserPage          />} />
+                  <Route path="/:userId"               element={<UserPage          />} />
+                  
+                  <Route path="/admin/*" element={<AdminGuardRoute />} />
+                  
+                  <Route path="/" element={<HomePage />} />
+                </Route>
               </Route>
-            </Route>
-            
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/login"  element={<LoginPage  />} />
-            <Route path="*"       element={<Navigate to="/" />} />
-          </Routes>
+              
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/login"  element={<LoginPage  />} />
+              <Route path="*"       element={<Navigate to="/" />} />
+            </Routes>
+          </ErrorBoundary>
         </ThemeModeProvider>
       </Provider>
     </BrowserRouter>

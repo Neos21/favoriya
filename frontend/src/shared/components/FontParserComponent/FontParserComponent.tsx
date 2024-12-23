@@ -1,4 +1,10 @@
 import DOMPurify from 'dompurify';
+import { useSelector } from 'react-redux';
+
+import { emojiConstants } from '../../constants/emoji-constants';
+import { RootState } from '../../stores/store';
+
+import type { Emoji } from '../../../common/types/emoji';
 
 const fontSizeMap: Record<string, string> = {
   '1' : '0.75em',
@@ -77,12 +83,21 @@ const convertUrlsToLinks = (html: string) => html
 const convertHashTagsToLinks = (html: string) => html
   .replace((/(?<![="]|color: )#([^\s#]+)/g), match => `<a href="/search?query=${encodeURIComponent(match)}" class="normal-link">${match}</a>`);
 
+const convertEmojiReactions = (html: string, emojis: Array<Emoji>) => html
+  .replace((/(\s)(:[a-z0-9-]+:)(\s)/g), (_match, pattern1, pattern2, pattern3) => {
+    const foundEmoji = emojis.find(emoji => `:${emoji.name}:` === pattern2);
+    if(foundEmoji == null) return pattern1 + pattern2 + pattern3;  // 見つからなかったらそのまま返す
+    return pattern1 + `<img src="${emojiConstants.ossUrl}${foundEmoji.imageUrl}" class="emoji-reaction" title=":${foundEmoji.name}:" alt=":${foundEmoji.name}:">` + pattern3;
+  });
+
 type Props = {
   input: string
 };
 
 /** Font Parser Component */
 export const FontParserComponent: React.FC<Props> = ({ input }) => {
+  const emojisState = useSelector((state: RootState) => state.emojis);
+  
   // DOMPurify でサニタイズした HTML を取得し、変換処理を適用する
   const tagSanitizedHtml = DOMPurify.sanitize(input, {
     ALLOWED_TAGS: ['font', 'marquee', 'blink', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'b', 'i', 'u', 's', 'del', 'ins', 'em', 'strong', 'mark', 'code', 'var', 'samp', 'kbd'],  // 許可する要素名
@@ -92,6 +107,7 @@ export const FontParserComponent: React.FC<Props> = ({ input }) => {
   const lineBreaksRemovedHtml = removeLineBreaks(tagTransformedHtml);
   const urlConvertedHtml      = convertUrlsToLinks(lineBreaksRemovedHtml);
   const hashTagConvertedHtml  = convertHashTagsToLinks(urlConvertedHtml);
+  const emojiConvertedHtml    = convertEmojiReactions(hashTagConvertedHtml, emojisState.emojis);
   
-  return <div className="font-parser-component" dangerouslySetInnerHTML={{ __html: hashTagConvertedHtml }} />;
+  return <div className="font-parser-component" dangerouslySetInnerHTML={{ __html: emojiConvertedHtml }} />;
 };
