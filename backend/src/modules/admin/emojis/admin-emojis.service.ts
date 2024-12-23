@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { emojisConstants } from '../../../common/constants/emojis-constants';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
+import { EmojiReactionEntity } from '../../../shared/entities/emoji-reaction.entity';
 import { EmojiEntity } from '../../../shared/entities/emoji.entity';
 
 import type { Result } from '../../../common/types/result';
@@ -19,6 +20,7 @@ export class AdminEmojisService {
   
   constructor(
     @InjectRepository(EmojiEntity) private readonly emojisRepository: Repository<EmojiEntity>,
+    @InjectRepository(EmojiReactionEntity) private readonly emojiReactionsRepository: Repository<EmojiReactionEntity>,
     private readonly nestMinioService: NestMinioService,
   ) { }
   
@@ -147,6 +149,11 @@ export class AdminEmojisService {
     try {
       const deleteResult = await this.emojisRepository.delete({ id });
       if(deleteResult.affected !== 1) return { error: '指定 ID の絵文字リアクションの削除中に問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      
+      // 指定 ID のリアクション絵文字を使ったリアクション情報を全て削除する (表示時にバグるため)
+      const deleteReactionsResult = await this.emojiReactionsRepository.delete({ emojiId: id });
+      this.logger.debug(`削除した絵文字を利用しているリアクションを ${deleteReactionsResult.affected} 件削除`);
+      
       return { result: true };
     }
     catch(error) {
