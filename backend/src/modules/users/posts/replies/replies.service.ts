@@ -34,6 +34,12 @@ export class RepliesService {
         .addSelect(['favourites.id'])
         .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
         .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
+        .leftJoin('posts.emojiReactions', 'emoji_reactions')  // 投稿に対応する EmojiReactionEntity を結合する
+        .addSelect(['emoji_reactions.id', 'emoji_reactions.reactedPostsUserId', 'emoji_reactions.reactedPostId', 'emoji_reactions.userId', 'emoji_reactions.emojiId'])
+        .leftJoin('emoji_reactions.emoji', 'emojis')  // EmojiEntity を結合する
+        .addSelect(['emojis.id', 'emojis.name', 'emojis.imageUrl'])
+        .leftJoin('emoji_reactions.reactionByUser', 'reaction_by_users')  // リアクションしたユーザ情報
+        .addSelect(['reaction_by_users.id', 'reaction_by_users.avatarUrl'])
         .where('posts.in_reply_to_post_id = :inReplyToPostId', { inReplyToPostId })  // 指定の投稿 ID
         .andWhere('posts.in_reply_to_user_id = :inReplyToUserId', { inReplyToUserId })  // 指定のユーザ ID
         .orderBy('posts.createdAt', 'ASC')  // created_at の昇順 (古いモノが上に並ぶようにする)
