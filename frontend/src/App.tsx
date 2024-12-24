@@ -8,6 +8,7 @@ import { LayoutComponent } from './core/components/LayoutComponent/LayoutCompone
 import { onError } from './core/on-error';
 import { AuthGuardRoute } from './core/routes/AuthGuardRoute';
 import { ThemeModeProvider } from './core/themes/ThemeModeContextProvider';
+import { EmojisPage } from './pages/emojis/EmojisPage';
 import { GlobalTimelinePage } from './pages/global-timeline/GlobalTimelinePage';
 import { HomeTimelinePage } from './pages/home-timeline/HomeTimelinePage';
 import { HomePage } from './pages/home/HomePage';
@@ -44,6 +45,7 @@ export const App = () => (
                   <Route path="/home-timeline"   element={<HomeTimelinePage   />} />
                   <Route path="/global-timeline" element={<GlobalTimelinePage />} />
                   <Route path="/search"          element={<SearchPage         />} />
+                  <Route path="/emojis"          element={<EmojisPage         />} />
                   
                   <Route path="/settings/login-histories" element={<LoginHistoriesPage />} />
                   <Route path="/settings/delete-account"  element={<DeleteAccountPage  />} />
