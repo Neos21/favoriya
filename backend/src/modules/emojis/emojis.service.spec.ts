@@ -1,3 +1,4 @@
+import { NestMinioService } from 'nestjs-minio';
 import { Repository } from 'typeorm';
 
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,12 +10,14 @@ import { EmojisService } from './emojis.service';
 describe('EmojisService', () => {
   let service: EmojisService;
   let fakeEmojisRepository: Partial<Repository<EmojiEntity>>;
+  let fakeNestMinioService: Partial<NestMinioService>;
   
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EmojisService,
-        { provide: getRepositoryToken(EmojiEntity), useValue: fakeEmojisRepository }
+        { provide: getRepositoryToken(EmojiEntity), useValue: fakeEmojisRepository },
+        { provide: NestMinioService, useValue: fakeNestMinioService }
       ]
     }).compile();
     

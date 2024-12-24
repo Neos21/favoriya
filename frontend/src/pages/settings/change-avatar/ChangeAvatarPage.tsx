@@ -2,7 +2,6 @@ import { ChangeEvent, FC, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import styled from '@emotion/styled';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Alert, Avatar, Box, Button, Divider, Grid2, Typography } from '@mui/material';
 
@@ -11,21 +10,10 @@ import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { userConstants } from '../../../shared/constants/user-constants';
 import { useApiDelete } from '../../../shared/hooks/use-api-fetch';
 import { setUser } from '../../../shared/stores/user-slice';
+import { VisuallyHiddenInputComponent } from '../../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
 
 import type { RootState } from '../../../shared/stores/store';
 import type { Result } from '../../../common/types/result';
-
-const VisuallyHiddenInput = styled('input')({
-  position: 'absolute',
-  overflow: 'hidden',
-  bottom: 0,
-  left: 0,
-  width: 1,
-  height: 1,
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  whiteSpace: 'nowrap'
-});
 
 /** Change Avatar Page */
 export const ChangeAvatarPage: FC = () => {
@@ -138,7 +126,7 @@ export const ChangeAvatarPage: FC = () => {
     <Typography component="p" sx={{ mt: 3 }}>
       <Button component="label" variant="contained" tabIndex={-1} startIcon={<CloudUploadIcon />}>
         画像を選択
-        <VisuallyHiddenInput type="file" accept="image/*" onChange={onChangeFile} />
+        <VisuallyHiddenInputComponent type="file" accept="image/*" onChange={onChangeFile} />
       </Button>
     </Typography>
     
