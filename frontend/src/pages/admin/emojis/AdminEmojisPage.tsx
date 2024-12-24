@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, Fragment, useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Alert, Box, Button, Divider, Grid2, List, ListItem, ListItemText, TextField, Typography } from '@mui/material';
 
@@ -10,6 +10,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/LoadingSpinn
 import { VisuallyHiddenInputComponent } from '../../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
 import { emojiConstants } from '../../../shared/constants/emoji-constants';
 import { useApiDelete, useApiGet } from '../../../shared/hooks/use-api-fetch';
+import { setAllEmojis } from '../../../shared/stores/emojis-slice';
 
 import type { Result } from '../../../common/types/result';
 import type { RootState } from '../../../shared/stores/store';
@@ -21,6 +22,7 @@ type FormData = {
 
 /** Admin Emojis Page */
 export const AdminEmojisPage: FC = () => {
+  const dispatch = useDispatch();
   const userState = useSelector((state: RootState) => state.user);
   const apiGet = useApiGet();
   const apiDelete = useApiDelete();
@@ -43,14 +45,16 @@ export const AdminEmojisPage: FC = () => {
     try {
       const response = await apiGet('/emojis');  // Throws
       const emojisApiResult = await response.json();  // Throws
-      setEmojis(emojisApiResult.result.map(emojiApi => snakeToCamelCaseObject(emojiApi)));
+      const emojis = emojisApiResult.result.map(emojiApi => snakeToCamelCaseObject(emojiApi));
+      dispatch(setAllEmojis({ emojis: [...emojis] }));  // Store に入れておく
+      setEmojis([...emojis]);
     }
     catch(error) {
       setEmojis(null);
       setListErrorMessage('絵文字リアクション一覧の取得に失敗');
       console.error('絵文字リアクション一覧の取得に失敗', error);
     }
-  }, [apiGet]);
+  }, [apiGet, dispatch]);
   
   // 初回読込
   useEffect(() => {

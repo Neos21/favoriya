@@ -364,7 +364,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
         <Box component="div" sx={{ mt: 2, maxHeight: '47vh', overflowY: 'auto' }}>
           {filteredEmojis.map(emoji =>
             <Tooltip placement="top" key={emoji.id} title={`:${emoji.name}:`}>
-              <Button sx={{ p: .25, mr: .5, minWidth: 'auto' }} onClick={() => onSelectEmoji(emoji.id, emoji.name, emoji.imageUrl, selectedPost.userId, selectedPost.postId)}>
+              <Button sx={{ p: .25, mt: .5, mr: .5, minWidth: 'auto' }} onClick={() => onSelectEmoji(emoji.id, emoji.name, emoji.imageUrl, selectedPost.userId, selectedPost.postId)}>
                 <img src={`${emojiConstants.ossUrl}${emoji.imageUrl}`} height="24" alt={`:${emoji.name}:`} />
               </Button>
             </Tooltip>

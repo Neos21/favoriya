@@ -203,7 +203,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       />
       <Grid2 container>
         <Grid2 size="grow">
-          <Stack direction="row" spacing={1.5} useFlexGap sx={{ mt: 1, flexWrap: 'wrap', ['& button']: { minWidth: 'auto', whiteSpace: 'nowrap' } }}>
+          <Stack direction="row" spacing={1.25} useFlexGap sx={{ mt: 1, flexWrap: 'wrap', ['& button']: { minWidth: 'auto', whiteSpace: 'nowrap' } }}>
             <Button variant="outlined" size="small" color="info"    onClick={() => onInsert('<font size="★" face="serif">', '</font>', ['1', '2', '3', '4', '5', '6', '7'])} sx={{ fontFamily: 'serif' }}>明朝</Button>
             <Button variant="outlined" size="small" color="success" onClick={() => onInsert('<em>', '</em>')}>緑</Button>
             <Button variant="outlined" size="small" color="error"   onClick={() => onInsert('<strong>', '</strong>')}>赤</Button>
@@ -214,7 +214,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
             <Button variant="outlined" size="small" color="inherit" onClick={() => onInsert('<★ align="right">', '</★>' , ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div'])}>右</Button>
           </Stack>
         </Grid2>
-        <Grid2 sx={{ minWidth: '3em', textAlign: 'right' }}>{formData.text.length}</Grid2>
+        <Grid2 sx={{ minWidth: '2.75em', textAlign: 'right' }}>{formData.text.length}</Grid2>
       </Grid2>
       <FormControlLabel control={<Checkbox name="visibility" checked={formData.visibility === 'home'} onChange={onChangeChecked} />} label="グローバルタイムラインに公開しない" />
     </Box>

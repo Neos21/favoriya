@@ -9,12 +9,12 @@ export const LoadingSpinnerComponent: FC = () => {
   useEffect(() => {
     setTimeout(() => {
       setIsIn(true);
-    }, 1000);
+    }, 500);
   }, []);
   
-  return <Fade in={isIn}>
-    <Typography sx={{ mt: 5, textAlign: 'center' }}>
+  return <Typography sx={{ mt: 5, textAlign: 'center' }}>
+    <Fade in={isIn}>
       <CircularProgress />
-    </Typography>
-  </Fade>;
+    </Fade>
+  </Typography>;
 };
