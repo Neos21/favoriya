@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ContrastIcon from '@mui/icons-material/Contrast';
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -83,6 +84,13 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
       <ListItemButton component={Link} to="/search" onClick={onClickItem} selected={location.pathname.startsWith('/search')}>
         <ListItemIcon><SearchIcon /></ListItemIcon>
         <ListItemText primary="検索" />
+      </ListItemButton>
+    </ListItem>
+    
+    <ListItem disablePadding>
+      <ListItemButton component={Link} to="/emojis" onClick={onClickItem} selected={location.pathname === '/emojis'}>
+        <ListItemIcon><EmojiEmotionsIcon /></ListItemIcon>
+        <ListItemText primary="絵文字" />
       </ListItemButton>
     </ListItem>
     

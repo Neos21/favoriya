@@ -1,31 +1,19 @@
 import { ChangeEvent, FC, Fragment, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import styled from '@emotion/styled';
 import { Alert, Box, Button, Divider, Grid2, List, ListItem, ListItemText, TextField, Typography } from '@mui/material';
 
-import { emojisConstants } from '../../../common/constants/emojis-constants';
-import { snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
-import { isEmptyString } from '../../../common/helpers/is-empty-string';
-import { LoadingSpinnerComponent } from '../../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
-import { emojiConstants } from '../../../shared/constants/emoji-constants';
-import { useApiDelete, useApiGet } from '../../../shared/hooks/use-api-fetch';
+import { emojisConstants } from '../../common/constants/emojis-constants';
+import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
+import { isEmptyString } from '../../common/helpers/is-empty-string';
+import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
+import { VisuallyHiddenInputComponent } from '../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
+import { emojiConstants } from '../../shared/constants/emoji-constants';
+import { useApiGet } from '../../shared/hooks/use-api-fetch';
 
-import type { Result } from '../../../common/types/result';
-import type { RootState } from '../../../shared/stores/store';
-import type { Emoji } from '../../../common/types/emoji';
-
-const VisuallyHiddenInput = styled('input')({
-  position: 'absolute',
-  overflow: 'hidden',
-  bottom: 0,
-  left: 0,
-  width: 1,
-  height: 1,
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  whiteSpace: 'nowrap'
-});
+import type { Result } from '../../common/types/result';
+import type { RootState } from '../../shared/stores/store';
+import type { Emoji } from '../../common/types/emoji';
 
 type FormData = {
   name: string
@@ -35,7 +23,6 @@ type FormData = {
 export const EmojisPage: FC = () => {
   const userState = useSelector((state: RootState) => state.user);
   const apiGet = useApiGet();
-  const apiDelete = useApiDelete();
   
   const [selectedFile, setSelectedFile] = useState<File>(null);
   const [previewUrl, setPreviewUrl] = useState<string>(null);
@@ -113,13 +100,13 @@ export const EmojisPage: FC = () => {
     postFormData.append('name', name);
     setIsUploading(true);
     try {
-      const response = await fetch('/api/admin/emojis', {
+      const response = await fetch('/api/emojis', {
         method: 'POST',
         headers: { Authorization: `Bearer ${userState.token}` },
         body: postFormData
       });
-      const newAvatarUrlResult: Result<string> = await response.json();
-      if(newAvatarUrlResult.error != null) return setFormErrorMessage(newAvatarUrlResult.error);
+      const result: Result<string> = await response.json();
+      if(result.error != null) return setFormErrorMessage(result.error);
       
       setSelectedFile(null);
       setPreviewUrl(null);
@@ -128,24 +115,11 @@ export const EmojisPage: FC = () => {
       await onLoadEmojis();  // 再読込
     }
     catch(error) {
-      setFormErrorMessage('画像アップロード中にエラーが発生しました。もう一度やり直してください');
-      console.error('画像アップロード中にエラーが発生', error);
+      setFormErrorMessage('絵文字リアクション登録中にエラーが発生しました。もう一度やり直してください');
+      console.error('絵文字リアクション登録中にエラーが発生', error);
     }
     finally {
       setIsUploading(false);
-    }
-  };
-  
-  /** 絵文字リアクション削除 */
-  const onRemove = async (id: number) => {
-    try {
-      const response = await apiDelete('/admin/emojis', `?id=${id}`);  // Throws
-      if(!response.ok) return setListErrorMessage('絵文字リアクションの削除に失敗しました。もう一度やり直してください');
-      await onLoadEmojis();  // 再読込
-    }
-    catch(error) {
-      setListErrorMessage('絵文字リアクション削除処理に失敗');
-      console.error('絵文字リアクション削除処理に失敗', error);
     }
   };
   
@@ -161,7 +135,7 @@ export const EmojisPage: FC = () => {
       <Grid2>
         <Button component="label" variant="contained" tabIndex={-1}>
           画像を選択
-          <VisuallyHiddenInput type="file" accept="image/*" onChange={onChangeFile} />
+          <VisuallyHiddenInputComponent type="file" accept="image/*" onChange={onChangeFile} />
         </Button>
       </Grid2>
     </Grid2>
@@ -180,7 +154,7 @@ export const EmojisPage: FC = () => {
       <Button variant="contained" color="primary" onClick={onUploadFile} disabled={selectedFile == null || isUploading}>アップロード</Button>
     </Box>
     
-    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>一覧・削除</Typography>
+    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>一覧</Typography>
     
     {emojis == null && listErrorMessage == null && <LoadingSpinnerComponent />}
     {emojis == null && listErrorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{listErrorMessage}</Alert>}
@@ -193,13 +167,10 @@ export const EmojisPage: FC = () => {
           <ListItemText
             primary={
               <Grid2 container spacing={1} sx={{ alignItems: 'center' }}>
-                <Grid2 size={6}>
+                <Grid2 size={8}>
                   <img src={`${emojiConstants.ossUrl}${emoji.imageUrl}`} height="32" alt={`:${emoji.name}:`} title={`:${emoji.name}:`} />
                 </Grid2>
-                <Grid2 size={3}>:{emoji.name}:</Grid2>
-                <Grid2 size={3} sx={{ textAlign: 'right' }}>
-                  <Button variant="contained" color="error" onClick={() => onRemove(emoji.id)}>削除</Button>
-                </Grid2>
+                <Grid2 size={4}>:{emoji.name}:</Grid2>
               </Grid2>
             }
           />

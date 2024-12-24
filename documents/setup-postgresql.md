@@ -16,7 +16,7 @@ $ psql --version
 psql (PostgreSQL) 16.6 (Ubuntu 16.6-0ubuntu0.24.04.1)
 
 $ vi /etc/postgresql/12/main/postgresql.conf
-$ vi /etc/postgresql/16/main/postgresql.conf 
+$ vi /etc/postgresql/16/main/postgresql.conf
   listen_address = '*'
   # に変更する
 

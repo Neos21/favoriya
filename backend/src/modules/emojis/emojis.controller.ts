@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { camelToSnakeCaseObject } from '../../common/helpers/convert-case';
@@ -24,5 +24,16 @@ export class EmojisController {
     
     const emojisApi = result.result.map(emojiEntity => camelToSnakeCaseObject(emojiEntity));
     return response.status(HttpStatus.OK).json({ result: emojisApi });
+  }
+  
+  /** 絵文字リアクション画像をアップロードする */
+  @UseGuards(JwtAuthGuard)
+  @Post('')
+  @UseInterceptors(FileInterceptor('file'))
+  public async create(@Body('name') name: string, @UploadedFile() file: Express.Multer.File, @Res() response: Response): Promise<Response<Result<string>>> {
+    const result = await this.emojisService.create(name, file);
+    if(result.error != null) return response.status(result.code ?? HttpStatus.INTERNAL_SERVER_ERROR).json(result);
+    
+    return response.status(HttpStatus.OK).json(result);
   }
 }
