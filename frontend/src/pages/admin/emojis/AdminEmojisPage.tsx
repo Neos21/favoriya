@@ -7,9 +7,9 @@ import { emojisConstants } from '../../../common/constants/emojis-constants';
 import { snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
+import { VisuallyHiddenInputComponent } from '../../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
 import { emojiConstants } from '../../../shared/constants/emoji-constants';
 import { useApiDelete, useApiGet } from '../../../shared/hooks/use-api-fetch';
-import { VisuallyHiddenInputComponent } from '../../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
 
 import type { Result } from '../../../common/types/result';
 import type { RootState } from '../../../shared/stores/store';

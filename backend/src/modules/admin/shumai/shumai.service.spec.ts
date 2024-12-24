@@ -3,8 +3,8 @@ import { Repository } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
-import { ShumaiService } from './shumai.service';
 import { PostEntity } from '../../../shared/entities/post.entity';
+import { ShumaiService } from './shumai.service';
 
 describe('ShumaiService', () => {
   let service: ShumaiService;

@@ -6,9 +6,9 @@ import { Repository } from 'typeorm';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { EmojiEntity } from '../../shared/entities/emoji.entity';
 import { emojisConstants } from '../../common/constants/emojis-constants';
 import { isEmptyString } from '../../common/helpers/is-empty-string';
+import { EmojiEntity } from '../../shared/entities/emoji.entity';
 
 import type { Result } from '../../common/types/result';
 
@@ -40,10 +40,10 @@ export class EmojisService {
     }
   }
   
-  /** 絵文字リアクション情報一覧を削除する */
+  /** 絵文字リアクション情報一覧を取得する */
   public async findAll(): Promise<Result<Array<EmojiEntity>>> {
     try {
-      const emojiEntities = await this.emojisRepository.find({ order: { createdAt: 'DESC' }});
+      const emojiEntities = await this.emojisRepository.find({ order: { name: 'ASC' }});
       return { result: emojiEntities };
     }
     catch(error) {
@@ -56,7 +56,9 @@ export class EmojisService {
   public async create(name: string, file: Express.Multer.File): Promise<Result<string>> {
     if(file.size > (emojisConstants.maxFileSizeKb * 1024)) return { error: `ファイルサイズが ${emojisConstants.maxFileSizeKb} KB を超えています`, code: HttpStatus.BAD_REQUEST };
     if(!file.mimetype.startsWith('image/')) return { error: '画像ファイルではありません', code: HttpStatus.BAD_REQUEST };
-    
+    // 同名の絵文字リアクションがないか存在チェックする
+    const findOneByNameResult = await this.findOneByName(name);
+    if(findOneByNameResult.error != null) return findOneByNameResult as Result<string>;
     // リサイズする
     const resizedBuffer = await this.resizeImage(file.buffer, file.mimetype);
     // ファイル名を作成する
@@ -69,6 +71,19 @@ export class EmojisService {
     if(insertResult.error != null) return insertResult as Result<string>;
     // 登録した絵文字リアクション画像のパスを返す
     return imageUrlResult;
+  }
+  
+  /** 存在チェック */
+  private async findOneByName(name: string): Promise<Result<boolean>> {
+    try {
+      const emojiEntity = await this.emojisRepository.findOneBy({ name });
+      if(emojiEntity != null) return { error: '同名の絵文字リアクションが既に登録されています', code: HttpStatus.BAD_REQUEST };
+      return { result: true };
+    }
+    catch(error) {
+      this.logger.error('絵文字リアクション画像アップロードに伴う DB 登録に失敗', error);
+      return { error: '絵文字リアクション画像アップロードに伴う DB 登録に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+    }
   }
   
   /** リサイズする */
@@ -95,8 +110,8 @@ export class EmojisService {
       return { result: `/${emojisConstants.bucketName}/${fileName}` };
     }
     catch(error) {
-      this.logger.error('画像のアップロードに失敗', error);
-      return { error: '画像のアップロードに失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+      this.logger.error('絵文字リアクション画像のアップロードに失敗', error);
+      return { error: '絵文字リアクション画像のアップロードに失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
   
