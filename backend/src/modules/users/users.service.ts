@@ -18,25 +18,45 @@ export class UsersService {
   
   constructor(@InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>) { }
   
-  /** 匿名さんユーザを登録する */
+  /** システムユーザを登録する */
   public async onModuleInit(): Promise<void> {
     try {
       const existsAnonymous = await this.usersRepository.findOneBy({ id: 'anonymous' });
-      if(existsAnonymous != null) return this.logger.debug('匿名さん作成済');
+      if(existsAnonymous != null) {
+        this.logger.debug('匿名さん作成済');
+      }
+      else {
+        const insertResult = await this.usersRepository.insert(new UserEntity({
+          id          : 'anonymous',
+          passwordHash: '',
+          name        : '匿名さん',
+          role        : 'Anonymous',
+          profileText : '匿名投稿用のユーザです',
+          createdAt   : new Date(0),
+          updatedAt   : new Date(0)
+        }));
+        this.logger.debug('匿名さんを作成', JSON.stringify(insertResult));
+      }
       
-      const insertResult = await this.usersRepository.insert(new UserEntity({
-        id          : 'anonymous',
-        passwordHash: '',
-        name        : '匿名さん',
-        role        : 'Anonymous',
-        profileText : '匿名投稿用のユーザです',
-        createdAt   : new Date(0),
-        updatedAt   : new Date(0)
-      }));
-      this.logger.debug('匿名さんを作成', JSON.stringify(insertResult));
+      const existsShumai = await this.usersRepository.findOneBy({ id: 'shumai' });
+      if(existsShumai != null) {
+        this.logger.debug('しゅうまい君作成済');
+      }
+      else {
+        const insertResult = await this.usersRepository.insert(new UserEntity({
+          id          : 'shumai',
+          passwordHash: '',
+          name        : 'しゅうまい君',
+          role        : 'Shumai',
+          profileText : 'マルコフ連鎖で生成した文章を投稿するユーザです',
+          createdAt   : new Date(0),
+          updatedAt   : new Date(0)
+        }));
+        this.logger.debug('しゅうまい君を作成', JSON.stringify(insertResult));
+      }
     }
     catch(error) {
-      this.logger.warn('匿名さんの作成に失敗', error);
+      this.logger.warn('システムユーザの作成に失敗', error);
     }
   }
   

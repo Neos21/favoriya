@@ -7,9 +7,9 @@ import { emojisConstants } from '../../common/constants/emojis-constants';
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
+import { VisuallyHiddenInputComponent } from '../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
 import { emojiConstants } from '../../shared/constants/emoji-constants';
 import { useApiGet } from '../../shared/hooks/use-api-fetch';
-import { VisuallyHiddenInputComponent } from '../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
 
 import type { Result } from '../../common/types/result';
 import type { RootState } from '../../shared/stores/store';
@@ -105,8 +105,8 @@ export const EmojisPage: FC = () => {
         headers: { Authorization: `Bearer ${userState.token}` },
         body: postFormData
       });
-      const newAvatarUrlResult: Result<string> = await response.json();
-      if(newAvatarUrlResult.error != null) return setFormErrorMessage(newAvatarUrlResult.error);
+      const result: Result<string> = await response.json();
+      if(result.error != null) return setFormErrorMessage(result.error);
       
       setSelectedFile(null);
       setPreviewUrl(null);
@@ -115,8 +115,8 @@ export const EmojisPage: FC = () => {
       await onLoadEmojis();  // 再読込
     }
     catch(error) {
-      setFormErrorMessage('画像アップロード中にエラーが発生しました。もう一度やり直してください');
-      console.error('画像アップロード中にエラーが発生', error);
+      setFormErrorMessage('絵文字リアクション登録中にエラーが発生しました。もう一度やり直してください');
+      console.error('絵文字リアクション登録中にエラーが発生', error);
     }
     finally {
       setIsUploading(false);

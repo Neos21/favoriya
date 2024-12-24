@@ -15,6 +15,8 @@ import { AdminController } from './modules/admin/admin.controller';
 import { AdminService } from './modules/admin/admin.service';
 import { AdminEmojisController } from './modules/admin/emojis/admin-emojis.controller';
 import { AdminEmojisService } from './modules/admin/emojis/admin-emojis.service';
+import { ShumaiController } from './modules/admin/shumai/shumai.controller';
+import { ShumaiService } from './modules/admin/shumai/shumai.service';
 import { AuthController } from './modules/auth/auth.controller';
 import { AuthService } from './modules/auth/auth.service';
 import { EmojisController } from './modules/emojis/emojis.controller';
@@ -145,6 +147,7 @@ import { UserEntity } from './shared/entities/user.entity';
     PublicController,
     RepliesController,
     SearchController,
+    ShumaiController,
     TimelineController,
     UsersController
   ],
@@ -169,6 +172,7 @@ import { UserEntity } from './shared/entities/user.entity';
     PublicService,
     RepliesService,
     SearchService,
+    ShumaiService,
     TimelineService,
     TopicsService,
     UserDeletionService,
