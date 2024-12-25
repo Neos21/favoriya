@@ -71,7 +71,7 @@ const convertTags = (html: string) => {
 
 /** ブロック要素の開始タグ直前・終了タグ直後にある改行を削る (空行ができないようにする) */
 const removeLineBreaks = (html: string) => html
-  .replace((/\n(<(marquee|h1|h2|h3|h4|h5|h6|p|div)>)/g  ), '$1')
+  .replace((/\n(<(marquee|h1|h2|h3|h4|h5|h6|p|div))/g   ), '$1')
   .replace((/(<\/(marquee|h1|h2|h3|h4|h5|h6|p|div)>)\n/g), '$1');
 
 /** URL 文字列を a 要素にする */
@@ -85,7 +85,7 @@ const convertHashTagsToLinks = (html: string) => html
 
 /** 絵文字リアクションを画像にする */
 const convertEmojiReactions = (html: string, emojis: Array<Emoji>) => html
-  .replace((/(\s|^)(:[a-z0-9-]+:)(\s|$)/g), (_match, pattern1, pattern2, pattern3) => {
+  .replace((/(\s|>|^)(:[a-z0-9-]+:)(\s|<|$)/g), (_match, pattern1, pattern2, pattern3) => {
     const foundEmoji = emojis.find(emoji => `:${emoji.name}:` === pattern2);
     if(foundEmoji == null) return pattern1 + pattern2 + pattern3;  // 見つからなかったらそのまま返す
     return pattern1 + `<img src="${emojiConstants.ossUrl}${foundEmoji.imageUrl}" class="emoji-reaction" title=":${foundEmoji.name}:" alt=":${foundEmoji.name}:">` + pattern3;
