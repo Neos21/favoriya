@@ -242,5 +242,5 @@ html.light .font-parser-component kbd {
 }
 
 .font-parser-component img.emoji-reaction {
-  height: 16px;
+  height: 1em;
 }

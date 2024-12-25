@@ -27,7 +27,7 @@ export const ShumaiPage: FC = () => {
     setErrorMessage(null);
     setSucceededMessage(null);
     try {
-      if(!Number.isInteger(formData.numberOfPosts)) return setErrorMessage('整数を入力してください');
+      if(!Number.isInteger(Number(formData.numberOfPosts))) return setErrorMessage('整数を入力してください');
       
       const response = await apiGet('/admin/shumai/get-random-posts', `?number_of_posts=${formData.numberOfPosts}`);  // Throws
       const textsResult: Result<Array<string>> = await response.json();  // Throws

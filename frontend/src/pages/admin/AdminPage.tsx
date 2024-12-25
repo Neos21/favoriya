@@ -11,15 +11,10 @@ export const AdminPage: FC = () => {
   return <>
     <Typography component="h1" variant="h4" sx={{ mt: 3 }}>管理者用</Typography>
     
-    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>しゅうまい君</Typography>
-    <Typography component="p" sx={{ mt: 3 }}>
-      <Link to="/admin/shumai" className="hover-underline">しゅうまい君画面に移動する</Link>
-    </Typography>
-    
-    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>絵文字リアクション管理</Typography>
-    <Typography component="p" sx={{ mt: 3 }}>
-      <Link to="/admin/emojis" className="hover-underline">絵文字リアクション管理画面に移動する</Link>
-    </Typography>
+    <ul>
+      <li><Link to="/admin/shumai" className="normal-link">しゅうまい君</Link></li>
+      <li><Link to="/admin/emojis" className="normal-link">絵文字リアクション管理</Link></li>
+    </ul>
     
     <ServerMetricsComponent />
     

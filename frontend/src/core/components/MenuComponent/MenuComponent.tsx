@@ -88,13 +88,6 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
     </ListItem>
     
     <ListItem disablePadding>
-      <ListItemButton component={Link} to="/emojis" onClick={onClickItem} selected={location.pathname === '/emojis'}>
-        <ListItemIcon><EmojiEmotionsIcon /></ListItemIcon>
-        <ListItemText primary="絵文字" />
-      </ListItemButton>
-    </ListItem>
-    
-    <ListItem disablePadding>
       <ListItemButton component={Link} to={`/@${userState.id}`} onClick={onClickItem} selected={location.pathname === `/@${userState.id}`}>
         <ListItemIcon>
           { isEmptyString(userState.avatarUrl) && <AccountCircleIcon />}
@@ -124,6 +117,13 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
       <ListItemButton component={Link} to="/users" onClick={onClickItem} selected={location.pathname === '/users'}>
         <ListItemIcon><PeopleIcon /></ListItemIcon>
         <ListItemText primary="ユーザ一覧" />
+      </ListItemButton>
+    </ListItem>
+    
+    <ListItem disablePadding>
+      <ListItemButton component={Link} to="/emojis" onClick={onClickItem} selected={location.pathname === '/emojis'}>
+        <ListItemIcon><EmojiEmotionsIcon /></ListItemIcon>
+        <ListItemText primary="絵文字" />
       </ListItemButton>
     </ListItem>
     
