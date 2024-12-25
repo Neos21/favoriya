@@ -48,7 +48,8 @@ export class UsersService {
           passwordHash: '',
           name        : 'しゅうまい君',
           role        : 'Shumai',
-          profileText : 'マルコフ連鎖で生成した文章を投稿するユーザです',
+          avatarUrl   : '/users/avatar/shumai.png',
+          profileText : 'マルコフ連鎖で生成した文章を投稿します',
           createdAt   : new Date(0),
           updatedAt   : new Date(0)
         }));

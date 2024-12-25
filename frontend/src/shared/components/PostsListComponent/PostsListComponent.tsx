@@ -355,7 +355,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
       </Fragment>)}
     </List>
     
-    <Modal open={isEmojisModalOpen}>
+    <Modal open={isEmojisModalOpen} onClose={onCloseEmojisModal}>
       <Box component="div" sx={modalStyleConstants}>
         <Stack direction="row" spacing={1}>
           <TextField name="emoji" label="検索" fullWidth margin="normal" size="small" sx={{ m: 0 }} value={emojiQuery} onChange={onSearchEmojis} />

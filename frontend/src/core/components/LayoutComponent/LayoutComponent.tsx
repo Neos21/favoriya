@@ -6,6 +6,7 @@ import { Box, Container, Drawer, useMediaQuery } from '@mui/material';
 
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { useApiGet } from '../../../shared/hooks/use-api-fetch';
+import { dateToJstDate } from '../../../shared/services/convert-date-to-jst';
 import { setUnreadNotifications } from '../../../shared/stores/notifications-slice';
 import { AppBarComponent } from '../AppBarComponent/AppBarComponent';
 import { MenuComponent } from '../MenuComponent/MenuComponent';
@@ -27,8 +28,8 @@ export const LayoutComponent: FC = () => {
   
   const onCloseDrawer = () => setIsOpen(false);
   
-  // 画面初期表示時に未読件数を取得する
   useEffect(() => {
+    // 画面初期表示時に未読件数を取得する
     (async () => {
       try {
         if(userState == null || isEmptyString(userState.id)) return;
@@ -40,15 +41,49 @@ export const LayoutComponent: FC = () => {
         console.warn('未読件数の取得に失敗', error);
       }
     })();
+    
+    // 背景画像を時間帯によって差し替える
+    const setBackgroundImage = () => {
+      const jstNow = dateToJstDate(new Date());
+      const jstHour = jstNow.getHours();
+      if(0 <= jstHour && jstHour < 4) {
+        document.body.classList.add('midnight');
+        document.body.classList.remove(            'sunrise', 'morning', 'noon', 'sunset', 'night');
+      }
+      else if(4 <= jstHour && jstHour < 8) {
+        document.body.classList.add('sunrise');
+        document.body.classList.remove('midnight',            'morning', 'noon', 'sunset', 'night');
+      }
+      else if(8 <= jstHour && jstHour < 12) {
+        document.body.classList.add('morning');
+        document.body.classList.remove('midnight', 'sunrise',            'noon', 'sunset', 'night');
+      }
+      else if(12 <= jstHour && jstHour < 16) {
+        document.body.classList.add('noon');
+        document.body.classList.remove('midnight', 'sunrise', 'morning',         'sunset', 'night');
+      }
+      else if(16 <= jstHour && jstHour < 20) {
+        document.body.classList.add('sunset');
+        document.body.classList.remove('midnight', 'sunrise', 'morning', 'noon',           'night');
+      }
+      else if(20 <= jstHour && jstHour < 24) {
+        document.body.classList.add('night');
+        document.body.classList.remove('midnight', 'sunrise', 'morning', 'noon', 'sunset'         );
+      }
+    };
+    setBackgroundImage();
+    const intervalId = setInterval(setBackgroundImage, 30 * 60 * 1000);  // 30分ごと
+    
+    return () => {
+      clearInterval(intervalId);
+      document.body.classList.remove('midnight', 'sunrise', 'morning', 'noon', 'sunset', 'night');
+    };
   }, [apiGet, dispatch, userState, userState.id]);
   
   // 画面遷移ごとに実行する
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
-  
-  // 未ログイン時は枠を出さない
-  if(isEmptyString(userState.id)) return <Outlet />;
   
   return <Box component="div" sx={{ display: 'flex', height: '100vh' }}>
     <Drawer

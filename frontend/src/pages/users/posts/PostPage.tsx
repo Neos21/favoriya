@@ -115,7 +115,7 @@ export const PostPage: FC = () => {
       
       <PostFormComponent onSubmit={onSubmit} inReplyToPostId={paramPostId} inReplyToUserId={paramUserId} />
       
-      <Modal open={isModalOpen}>
+      <Modal open={isModalOpen} onClose={onCancelConfirm}>
         <Box component="div" sx={modalStyleConstants}>
           <Typography component="h2" variant="h5">本当に削除しますか？</Typography>
           <Grid2 container spacing={3} sx={{ mt: 3 }}>

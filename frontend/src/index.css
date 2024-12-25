@@ -2,37 +2,111 @@
   --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, YuGothic, "Yu Gothic", "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: "Noto Sans Mono CJK JP", Osaka-mono, "MS Gothic", Menlo, Consolas, Courier, "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-serif: Georgia, YuMincho, "Yu Mincho", "Noto Serif JP", "Noto Serif CJK JP", "Hiragino Mincho ProN", "HGS明朝E", serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  
+  --background-colour-dark :   0,  16,  32;  /* #001020 */
+  --background-colour-light: 255, 253, 254;  /* #fffdfe */
 }
 
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+html.dark {
+  --background-colour: var(--background-colour-dark);
+}
+@media (prefers-color-scheme: dark) {
+  html {
+    --background-colour: var(--background-colour-dark);
+  }
+}
+html.light {
+  --background-colour: var(--background-colour-light);
+}
+
+
 html {
-  height: 100%;
+  min-height: 100vh !important;
+  height: 100vh;
   overflow-y: scroll !important;  /* Drawer を開いた時に消させない */
   font-family: var(--font-family-sans-serif);
   word-break: break-all;
   cursor: default;
+  
+  background-color: transparent !important;
   transition: background-color .2s;
 }
 
-html.dark,
 html.dark body {
-  background-color: #001020 !important;
+  background-color: rgb(var(--background-colour-dark)) !important;
 }
 @media (prefers-color-scheme: dark) {
-  html,
   html body {
-    background-color: #001020 !important;
+    background-color: rgb(var(--background-colour-dark)) !important;
   }
 }
-
-html.light,
 html.light body {
-  background-color: #fffdfe !important;  /* `thtmes.tsx` と揃える */
+  background-color: rgb(var(--background-colour-light)) !important;  /* `thtmes.tsx` と揃える */
 }
 
 body {
-  height: 100%;
+  min-height: 100vh !important;
+  height: 100vh;
   padding-right: 0 !important;  /* Drawer を開いた時に勝手に付くので切る */
-  transition: background-color .2s;
+  background-position: right bottom;  /* 初期位置 */
+  background-size: 300px 300px;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  transition: background-size .2s, background-color .2s;
+}
+@media (max-width: 960px) {
+  body {
+    background-size: 175px 175px;
+  }
+}
+
+body.midnight {
+  background-image:
+    linear-gradient(to right , rgba(var(--background-colour), 1), rgba(var(--background-colour), .4) 40px),
+    linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .4) 50px),
+    url("/bg-midnight.jpg");
+  background-position: right bottom -50px;
+}
+body.sunrise {
+  background-image:
+    linear-gradient(to right , rgba(var(--background-colour), 1), rgba(var(--background-colour), .25) 25px),
+    linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .25) 30px),
+    url("/bg-sunrise.jpg");
+  background-position: right bottom -60px;
+}
+body.morning {
+  background-image:
+    linear-gradient(to right , rgba(var(--background-colour), 1), rgba(var(--background-colour), .25) 25px),
+    linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .25) 30px),
+    url("/bg-morning.jpg");
+  background-position: right bottom -60px;
+}
+body.noon {
+  background-image:
+    linear-gradient(to right , rgba(var(--background-colour), 1), rgba(var(--background-colour), .2) 25px),
+    linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .2) 30px),
+    url("/bg-noon.jpg");
+  background-position: right bottom -40px;
+}
+body.sunset {
+  background-image:
+    linear-gradient(to right , rgba(var(--background-colour), 1), rgba(var(--background-colour), .2) 20px),
+    linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .2) 30px),
+    url("/bg-sunset.jpg");
+  background-position: right -20px bottom -40px;
+}
+body.night {
+  background-image:
+    linear-gradient(to right , rgba(var(--background-colour), 1), rgba(var(--background-colour), .4) 20px),
+    linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .4) 30px),
+    url("/bg-night.jpg");
+  background-position: right bottom -50px;
 }
 
 #root {
@@ -103,7 +177,6 @@ html.dark .app-bar-component {
     background-color: #001838 !important;
   }
 }
-
 html.light .app-bar-component {
   background-color: #c7e3fb !important;
 }
@@ -131,7 +204,6 @@ html.dark .menu-component-list .Mui-selected {
     background-color: rgba(243, 33, 150, .85) !important;
   }
 }
-
 html.light .menu-component-list :hover .MuiButtonBase-root,
 html.light .menu-component-list .Mui-selected {
   background-color: rgba(243, 33, 150, .3) !important;

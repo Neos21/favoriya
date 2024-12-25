@@ -225,7 +225,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       </Box>
     }
     
-    <Modal open={isModalOpen}>
+    <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <Box component="div" sx={modalStyleConstants}>
         <Typography component="h2" variant="h5">投稿で使える機能</Typography>
         <Box component="div" sx={{ mt: 2, maxHeight: '47vh', overflowY: 'auto' }}>
