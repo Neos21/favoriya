@@ -19,7 +19,7 @@ import { userConstants } from '../../constants/user-constants';
 import { useApiDelete, useApiGet, useApiPost } from '../../hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../services/convert-date-to-jst';
 import { setAllEmojis } from '../../stores/emojis-slice';
-import { BeforeReplyComponent } from '../BeforeReplyComponent/BeforeReplyComponent';
+import { BeforeReplyComponent } from './components/BeforeReplyComponent/BeforeReplyComponent';
 
 import type { EmojiReaction, EmojiReactionApi } from '../../../common/types/emoji-reaction';
 import type { RootState } from '../../stores/store';

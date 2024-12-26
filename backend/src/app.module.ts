@@ -44,6 +44,8 @@ import { PostEmojisController } from './modules/users/posts/emojis/post-emojis.c
 import { PostEmojisService } from './modules/users/posts/emojis/post-emojis.service';
 import { FavouritesController } from './modules/users/posts/favourites/favourites.controller';
 import { FavouritesService } from './modules/users/posts/favourites/favourites.service';
+import { PollsController } from './modules/users/posts/polls/polls.controller';
+import { PollsService } from './modules/users/posts/polls/polls.service';
 import { PostDecorationService } from './modules/users/posts/post-decoration.service';
 import { PostValidationService } from './modules/users/posts/post-validation.service';
 import { PostsController } from './modules/users/posts/posts.controller';
@@ -60,6 +62,9 @@ import { FollowEntity } from './shared/entities/follow.entity';
 import { IntroductionEntity } from './shared/entities/introduction.entity';
 import { LoginHistoryEntity } from './shared/entities/login-history.entity';
 import { NotificationEntity } from './shared/entities/notification.entity';
+import { PollOptionEntity } from './shared/entities/poll-option.entity';
+import { PollVoteEntity } from './shared/entities/poll-vote.entity';
+import { PollEntity } from './shared/entities/poll.entity';
 import { PostEntity } from './shared/entities/post.entity';
 import { TopicEntity } from './shared/entities/topic.entity';
 import { UserEntity } from './shared/entities/user.entity';
@@ -111,6 +116,9 @@ import { UserEntity } from './shared/entities/user.entity';
       IntroductionEntity,
       LoginHistoryEntity,
       NotificationEntity,
+      PollEntity,
+      PollOptionEntity,
+      PollVoteEntity,
       PostEntity,
       TopicEntity,
       UserEntity
@@ -142,6 +150,7 @@ import { UserEntity } from './shared/entities/user.entity';
     IntroductionsController,
     LoginHistoriesController,
     NotificationsController,
+    PollsController,
     PostsController,
     PostEmojisController,
     PublicController,
@@ -165,6 +174,7 @@ import { UserEntity } from './shared/entities/user.entity';
     IntroductionsService,
     LoginHistoriesService,
     NotificationsService,
+    PollsService,
     PostsService,
     PostDecorationService,
     PostEmojisService,

@@ -2,6 +2,7 @@ import { CamelToSnakeCaseObject } from './cases';
 
 import type { EmojiReaction } from './emoji-reaction';
 import type { Favourite } from './favourite';
+import type { Poll } from './poll';
 import type { Topic } from './topic';
 import type { User } from './user';
 
@@ -14,6 +15,7 @@ export type Post = {
   visibility?: string;
   inReplyToPostId?: string;
   inReplyToUserId?: string;
+  hasPoll?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   
@@ -21,6 +23,7 @@ export type Post = {
   favourites?: Array<Favourite>;
   emojiReactions?: Array<EmojiReaction>;
   topic?: Topic;
+  poll?: Poll;
 };
 
 export type PostApi = CamelToSnakeCaseObject<Post>;

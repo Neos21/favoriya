@@ -2,19 +2,21 @@ import DOMPurify from 'dompurify';
 import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
-import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, Grid2, IconButton, InputLabel, MenuItem, Modal, Select, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, Grid2, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 
 import { topicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { getRandomFromArray } from '../../../common/helpers/get-random-from-array';
 import { getRandomIntInclusive } from '../../../common/helpers/get-random-int-inclusive';
 import { isValidText } from '../../../common/helpers/validators/validator-post';
-import { modalStyleConstants } from '../../constants/modal-style-constants';
+import { Result } from '../../../common/types/result';
 import { FontParserComponent } from '../FontParserComponent/FontParserComponent';
+import { PostFormHelpComponent } from './components/PostFormHelpComponent/PostFormHelpComponent';
+import { PostFormInfoMessageComponent } from './components/PostFormInfoMessageComponent/PostFormInfoMessageComponent';
 
 import type { RootState } from '../../stores/store';
 import type { PostApi } from '../../../common/types/post';
+import type { RandomLimit } from '../../types/random-limit';
 
 type Props = {
   /** 投稿時に呼ばれる関数 */
@@ -23,7 +25,7 @@ type Props = {
   inReplyToPostId?: string,
   /** リプライ時に使用 */
   inReplyToUserId?: string
-}
+};
 
 type FormData = {
   topicId   : number,
@@ -31,41 +33,32 @@ type FormData = {
   visibility: string | null
 };
 
-type RandomLimit = {
-  mode: 'min' | 'max' | 'minmax',
-  min?: number,
-  max?: number
+// トピックをランダムに選択する
+const choiceTopicId = () => {
+  const random = getRandomIntInclusive(0, 1);  // 通常モードの割合を増やす
+  if(random === 0) {
+    const topics = Object.values(topicsConstants);
+    return getRandomFromArray(topics).id;
+  }
+  else {
+    return topicsConstants.normal.id;
+  }
 };
 
 /** Post Form Component */
 export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inReplyToUserId }) => {
   const userState = useSelector((state: RootState) => state.user);
   
-  // トピックをランダムに選択する
-  const choiceTopicId = () => {
-    const random = getRandomIntInclusive(0, 2);  // 通常モードの割合を増やす
-    if(random === 0) {
-      const topics = Object.values(topicsConstants);
-      return getRandomFromArray(topics).id;
-    }
-    else {
-      return topicsConstants.normal.id;
-    }
-  };
-  
   const [formData, setFormData] = useState<FormData>({
     topicId   : choiceTopicId(),
     text      : '',
     visibility: null
   });
-  
   const [randomLimit, setRandomLimit] = useState<RandomLimit>(topicsConstants.randomLimit.generateLimit());
   
   const [cursorPosition, setCursorPosition] = useState(0);
   const textFieldRef = useRef<HTMLTextAreaElement>(null);
-  
   const [errorMessage, setErrorMessage] = useState<string>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
   // トピック ID を変更するたびにランダムリミットを更新する
   useEffect(() => {
@@ -87,7 +80,6 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     const textarea = textFieldRef.current;
     if(textarea != null) setCursorPosition(textarea.selectionStart ?? 0);
   };
-  
   /** On Insert */
   const onInsert = (rawStartTag: string, rawEndTag: string, replacements?: Array<string>) => {
     const textarea = textFieldRef.current;
@@ -117,7 +109,6 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if((event.ctrlKey || event.metaKey) && event.key === 'Enter') handleSubmit(event as unknown as FormEvent<HTMLFormElement>);
   };
-  
   /** Handle Submit */
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -131,19 +122,16 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     // 基本的な入力チェック
     const validationText = isValidText(text);
     if(validationText.error != null) return setErrorMessage(validationText.error);
-    
     // トピックごとの入力チェック
     const textContent = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-    
     const topic = Object.values(topicsConstants).find(topic => topic.id === topicId);
     if(topic == null) return setErrorMessage('不正なトピックです');
-    
     if([topicsConstants.englishOnly.id, topicsConstants.kanjiOnly.id, topicsConstants.senryu.id].includes(topic.id)) {
-      const validationResult = (topic as any)?.validateFunction(textContent);  // eslint-disable-line @typescript-eslint/no-explicit-any
+      const validationResult = (topic as unknown as { validateFunction: (textContent: string) => Result<boolean> }).validateFunction(textContent);
       if(validationResult.error != null) return setErrorMessage(validationResult.error);
     }
     else if(topic.id === topicsConstants.randomLimit.id) {
-      const validationResult = (topic as any)?.validateFunction(textContent, randomLimit.mode, randomLimit.min, randomLimit.max);  // eslint-disable-line @typescript-eslint/no-explicit-any
+      const validationResult = (topic as unknown as { validateFunction: (textContent: string, mode: string, min: number, max: number) => Result<boolean> }).validateFunction(textContent, randomLimit.mode, randomLimit.min, randomLimit.max);
       if(validationResult.error != null) return setErrorMessage(validationResult.error);
     }
     
@@ -168,19 +156,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   
   return <>
     {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
-    
-    {formData.topicId === topicsConstants.englishOnly.id       && <Alert severity="info" sx={{ mt: 3 }}>「英語のみ」モード is English only.</Alert>}
-    {formData.topicId === topicsConstants.kanjiOnly.id         && <Alert severity="info" sx={{ mt: 3 }}>「漢字のみ」モード…之・漢字限定、投稿可能。</Alert>}
-    {formData.topicId === topicsConstants.senryu.id            && <Alert severity="info" sx={{ mt: 3 }}>「川柳」モードでは改行または全角スペースで文章を区切り、五・七・五の形式にすると投稿できます。</Alert>}
-    {formData.topicId === topicsConstants.anonymous.id         && <Alert severity="info" sx={{ mt: 3 }}>「匿名投稿」モードでは「匿名さん」による代理投稿ができます。その代わり投稿の削除ができませんのでご注意ください。</Alert>}
-    {formData.topicId === topicsConstants.randomDecorations.id && <Alert severity="info" sx={{ mt: 3 }}>「ランダム装飾」モードでは行ごとに文字装飾を勝手に挿入したり、挿入しなかったりします。結果は投稿してみてのお楽しみ！</Alert>}
-    {formData.topicId === topicsConstants.randomLimit.id       && <Alert severity="info" sx={{ mt: 3 }}>
-      「ランダムリミット」モードではランダムに最低・最大文字数が決定されます。
-        {randomLimit.mode === 'min'    && `今回は最低 ${randomLimit.min} 文字`}
-        {randomLimit.mode === 'max'    && `今回は ${randomLimit.max} 文字以内`}
-        {randomLimit.mode === 'minmax' && `今回は最低 ${randomLimit.min} 文字・${randomLimit.max} 文字以内`}
-      で入力してください。
-    </Alert>}
+    <PostFormInfoMessageComponent selectedTopicId={formData.topicId} randomLimit={randomLimit} />
     
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
       <Grid2 container>
@@ -188,19 +164,16 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
           <FormControl fullWidth size="small">
             <InputLabel id="post-form-select-topic">トピック</InputLabel>
             <Select labelId="post-form-select-topic" name="topicId" label="トピック" value={formData.topicId} onChange={onChange}>
-              {Object.values(topicsConstants).map(topic => (
-                <MenuItem key={topic.id} value={topic.id}>{topic.name}</MenuItem>
-              ))}
+              {Object.values(topicsConstants).map(topic => <MenuItem key={topic.id} value={topic.id}>{topic.name}</MenuItem>)}
             </Select>
           </FormControl>
         </Grid2>
         <Grid2 size="grow" sx={{ placeSelf: 'end', textAlign: 'right' }}>
-          <Tooltip title="ヘルプ">
-            <IconButton sx={{ mr: 3 }} onClick={() => setIsModalOpen(true)}><HelpOutlineOutlinedIcon /></IconButton>
-          </Tooltip>
+          <PostFormHelpComponent />
           <Button type="submit" variant="contained">投稿</Button>
         </Grid2>
       </Grid2>
+      
       <TextField
         name="text" label="投稿" value={formData.text} onChange={onChange} onKeyDown={onKeyDown}
         required multiline
@@ -209,6 +182,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
         onSelect={onSaveCursorPosition} // フォーカス移動時にカーソル位置を保持する
         onBlur={onSaveCursorPosition}  // フォーカスが外れた時にカーソル位置を保持する
       />
+      
       <Grid2 container>
         <Grid2 size="grow">
           <Stack direction="row" spacing={1.25} useFlexGap sx={{ mt: 1, flexWrap: 'wrap', ['& button']: { minWidth: 'auto', whiteSpace: 'nowrap' } }}>
@@ -232,32 +206,5 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
         <FontParserComponent input={formData.text} />
       </Box>
     }
-    
-    <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-      <Box component="div" sx={modalStyleConstants}>
-        <Typography component="h2" variant="h6">投稿で使える機能</Typography>
-        <Box component="div" sx={{ mt: 2, maxHeight: '47vh', overflowY: 'auto' }}>
-          <Typography component="p">以下の HTML タグが利用できます :</Typography>
-          <ul style={{ margin: '1rem 0 0', paddingLeft: '1.25rem' }} className="font-parser-component">
-            <li>font :
-              <ul style={{ margin: '0', paddingLeft: '1rem' }}>
-                <li>size … 1 ～ 7・-4 ～ +4</li>
-                <li>color</li>
-                <li>face … serif で明朝体、など</li>
-              </ul>
-            </li>
-            <li>marquee : direction・behavior・scrollamount</li>
-            <li>blink … <span style={{ animation: 'blink-animation 1.5s step-start infinite' }}>Example</span></li>
-            <li>h1～h6・p・div : align</li>
-            <li><b>b</b>・<i>i</i>・<u>u</u>・<s>s</s>・<del>del</del>・<ins>ins</ins></li>
-            <li><em>em</em>・<strong>strong</strong>・<mark>mark</mark></li>
-            <li><code>code</code>・<var>var</var>・<samp>samp</samp>・<kbd>kbd</kbd></li>
-          </ul>
-        </Box>
-        <Box component="div" sx={{ mt: 2, textAlign: 'right' }}>
-          <Button variant="contained" color="primary" onClick={() => setIsModalOpen(false)}>OK</Button>
-        </Box>
-      </Box>
-    </Modal>
   </>;
 };

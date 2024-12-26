@@ -1,7 +1,8 @@
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
 import { EmojiReactionEntity } from './emoji-reaction.entity';
 import { FavouriteEntity } from './favourite.entity';
+import { PollEntity } from './poll.entity';
 import { TopicEntity } from './topic.entity';
 import { UserEntity } from './user.entity';
 
@@ -32,6 +33,10 @@ export class PostEntity {
   @Column({ name: 'in_reply_to_user_id', nullable: true })
   public inReplyToUserId: string;
   
+  /** アンケートを持っているか否か */
+  @Column({ name: 'has_poll', default: false })
+  public hasPoll: boolean;
+  
   @CreateDateColumn({ name: 'created_at' })
   public readonly createdAt: Date;
   
@@ -55,6 +60,10 @@ export class PostEntity {
   @ManyToOne(() => TopicEntity, topicEntity => topicEntity.posts, { eager: true, createForeignKeyConstraints: false })  // eager によって紐付いて取得される
   @JoinColumn({ name: 'topic_id', referencedColumnName: 'id' })
   public topic: TopicEntity;
+  
+  /** アンケートとの関連付け */
+  @OneToOne(() => PollEntity, pollEntity => pollEntity.post, { nullable: true, cascade: true })
+  public poll: PollEntity;
   
   constructor(partial: Partial<PostEntity>) { Object.assign(this, partial); }
   

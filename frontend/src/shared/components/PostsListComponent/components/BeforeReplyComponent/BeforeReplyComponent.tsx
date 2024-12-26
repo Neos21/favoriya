@@ -3,17 +3,17 @@ import { Link } from 'react-router-dom';
 
 import { Alert, Avatar, Grid2, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
 
-import { snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
-import { isEmptyString } from '../../../common/helpers/is-empty-string';
-import { FontParserComponent } from '../../components/FontParserComponent/FontParserComponent';
-import { httpStatusConstants } from '../../constants/http-status-constants';
-import { userConstants } from '../../constants/user-constants';
-import { useApiGet } from '../../hooks/use-api-fetch';
-import { epochTimeMsToJstString } from '../../services/convert-date-to-jst';
-import { LoadingSpinnerComponent } from '../LoadingSpinnerComponent/LoadingSpinnerComponent';
+import { snakeToCamelCaseObject } from '../../../../../common/helpers/convert-case';
+import { isEmptyString } from '../../../../../common/helpers/is-empty-string';
+import { FontParserComponent } from '../../../../components/FontParserComponent/FontParserComponent';
+import { httpStatusConstants } from '../../../../constants/http-status-constants';
+import { userConstants } from '../../../../constants/user-constants';
+import { useApiGet } from '../../../../hooks/use-api-fetch';
+import { epochTimeMsToJstString } from '../../../../services/convert-date-to-jst';
+import { LoadingSpinnerComponent } from '../../../LoadingSpinnerComponent/LoadingSpinnerComponent';
 
-import type { Post, PostApi } from '../../../common/types/post';
-import type { Result } from '../../../common/types/result';
+import type { Post, PostApi } from '../../../../../common/types/post';
+import type { Result } from '../../../../../common/types/result';
 
 type Props = {
   inReplyToPostId: string,
@@ -37,20 +37,19 @@ export const BeforeReplyComponent: FC<Props> = ({ inReplyToPostId, inReplyToUser
         if(postApiResult.error != null) return setStatus(response.status === httpStatusConstants.notFound ? 'not-found' : 'failed');
         
         setPost(snakeToCamelCaseObject(postApiResult.result) as Post);
+        setStatus('succeeded');
       }
       catch(error) {
         setStatus('failed');
-        return console.error('投稿の取得に失敗', error);
+        console.error('投稿の取得に失敗', error);
       }
-      
-      setStatus('succeeded');
     })();
   }, [apiGet, inReplyToUserId, inReplyToPostId]);
   
   return <>
     {status === 'loading' && <LoadingSpinnerComponent />}
     
-    {status === 'not-found' && <Alert severity="error" sx={{ mt: 1 }}>指定のリプライ元は存在しません</Alert>}
+    {status === 'not-found' && <Alert severity="warning" sx={{ mt: 1 }}>指定のリプライ元は存在しません</Alert>}
     
     {status === 'failed' && <Alert severity="error" sx={{ mt: 1 }}>リプライ元の取得に失敗</Alert>}
     

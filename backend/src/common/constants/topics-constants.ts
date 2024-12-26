@@ -90,5 +90,9 @@ export const topicsConstants = {
         throw new Error('Invalid Mode');
       }
     }
+  },
+  poll: {
+    id: 8,
+    name: 'アンケートモード'
   }
 };
