@@ -90,7 +90,7 @@ export const GlobalTimelinePage: FC = () => {
   };
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>グローバルタイムライン</Typography>
+    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>グローバル</Typography>
     
     <PostFormComponent onSubmit={onSubmit} />
     
