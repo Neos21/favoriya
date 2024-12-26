@@ -19,13 +19,19 @@ export class SearchService {
     try {
       const posts = await this.postsRepository
         .createQueryBuilder('posts')
-        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.createdAt'])  // 投稿内容
+        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.createdAt', 'posts.inReplyToPostId', 'posts.inReplyToUserId'])  // 投稿内容
         .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
         .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
         .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
         .addSelect(['favourites.id'])
         .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
         .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
+        .leftJoin('posts.emojiReactions', 'emoji_reactions')  // 投稿に対応する EmojiReactionEntity を結合する
+        .addSelect(['emoji_reactions.id', 'emoji_reactions.reactedPostsUserId', 'emoji_reactions.reactedPostId', 'emoji_reactions.userId', 'emoji_reactions.emojiId'])
+        .leftJoin('emoji_reactions.emoji', 'emojis')  // EmojiEntity を結合する
+        .addSelect(['emojis.id', 'emojis.name', 'emojis.imageUrl'])
+        .leftJoin('emoji_reactions.reactionByUser', 'reaction_by_users')  // リアクションしたユーザ情報
+        .addSelect(['reaction_by_users.id', 'reaction_by_users.avatarUrl'])
         .where('posts.text ILIKE :query', { query: `%${query}%` })  // 本文の部分一致検索 (PostgreSQL の ILIKE で大文字小文字を区別しない)
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
         .skip(offset)

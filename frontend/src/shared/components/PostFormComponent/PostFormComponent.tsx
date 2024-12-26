@@ -238,7 +238,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
                 <li>face … serif で明朝体、など</li>
               </ul>
             </li>
-            <li>marquee : direction・scrollamout</li>
+            <li>marquee : direction・behavior・scrollamoumt</li>
             <li>blink … <span style={{ animation: 'blink-animation 1.5s step-start infinite' }}>Example</span></li>
             <li>h1～h6・p・div : align</li>
             <li><b>b</b>・<i>i</i>・<u>u</u>・<s>s</s>・<del>del</del>・<ins>ins</ins></li>
