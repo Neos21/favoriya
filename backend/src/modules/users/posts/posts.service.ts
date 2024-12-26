@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { topicsConstants } from '../../../common/constants/topics-constants';
 import { PostEntity } from '../../../shared/entities/post.entity';
+import { postsQueryBuilder } from '../../../shared/helpers/posts-query-builder';
 
 import type { Post } from '../../../common/types/post';
 import type { Result } from '../../../common/types/result';
@@ -39,21 +40,7 @@ export class PostsService {
   /** 指定ユーザの投稿一覧を取得する */
   public async findById(userId: string, offset: number = 0, limit: number = 50): Promise<Result<Array<PostEntity>>> {
     try {
-      const posts = await this.postsRepository
-        .createQueryBuilder('posts')
-        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.createdAt', 'posts.inReplyToPostId', 'posts.inReplyToUserId'])  // 投稿内容
-        .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
-        .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
-        .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
-        .addSelect(['favourites.id'])
-        .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
-        .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
-        .leftJoin('posts.emojiReactions', 'emoji_reactions')  // 投稿に対応する EmojiReactionEntity を結合する
-        .addSelect(['emoji_reactions.id', 'emoji_reactions.reactedPostsUserId', 'emoji_reactions.reactedPostId', 'emoji_reactions.userId', 'emoji_reactions.emojiId'])
-        .leftJoin('emoji_reactions.emoji', 'emojis')  // EmojiEntity を結合する
-        .addSelect(['emojis.id', 'emojis.name', 'emojis.imageUrl'])
-        .leftJoin('emoji_reactions.reactionByUser', 'reaction_by_users')  // リアクションしたユーザ情報
-        .addSelect(['reaction_by_users.id', 'reaction_by_users.avatarUrl'])
+      const posts = await postsQueryBuilder(this.postsRepository)
         .where('posts.userId = :userId', { userId })  // 指定のユーザ ID
         .orderBy('posts.createdAt', 'DESC')  // created_at の降順
         .skip(offset)
@@ -70,21 +57,7 @@ export class PostsService {
   /** 指定ユーザの投稿1件を取得する */
   public async findOneById(userId: string, postId: string): Promise<Result<PostEntity>> {
     try {
-      const post = await this.postsRepository
-        .createQueryBuilder('posts')
-        .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.createdAt', 'posts.inReplyToPostId', 'posts.inReplyToUserId'])  // 投稿内容
-        .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
-        .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
-        .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
-        .addSelect(['favourites.id'])
-        .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報
-        .addSelect(['favourited_by_users.id', 'favourited_by_users.avatarUrl'])
-        .leftJoin('posts.emojiReactions', 'emoji_reactions')  // 投稿に対応する EmojiReactionEntity を結合する
-        .addSelect(['emoji_reactions.id', 'emoji_reactions.reactedPostsUserId', 'emoji_reactions.reactedPostId', 'emoji_reactions.userId', 'emoji_reactions.emojiId'])
-        .leftJoin('emoji_reactions.emoji', 'emojis')  // EmojiEntity を結合する
-        .addSelect(['emojis.id', 'emojis.name', 'emojis.imageUrl'])
-        .leftJoin('emoji_reactions.reactionByUser', 'reaction_by_users')  // リアクションしたユーザ情報
-        .addSelect(['reaction_by_users.id', 'reaction_by_users.avatarUrl'])
+      const post = await postsQueryBuilder(this.postsRepository)
         .where('posts.userId = :userId AND posts.id = :postId', { userId, postId })  // 指定のユーザ ID・投稿 ID
         .getOne();
       if(post == null) return { error: '指定の投稿は存在しません', code: HttpStatus.NOT_FOUND };

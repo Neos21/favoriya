@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
+import { getRandomFromArray } from '../../../common/helpers/get-random-from-array';
+
 /** Post Decoration Service */
 @Injectable()
 export class PostDecorationService {
@@ -60,9 +62,9 @@ export class PostDecorationService {
     const afterText = beforeText
       .split('\n')
       .map(lineText => {
-        const choicedTag = Object.assign({}, this.tagChoices[Math.floor(Math.random() * this.tagChoices.length)]);
+        const choicedTag = Object.assign({}, getRandomFromArray(this.tagChoices));
         if(choicedTag.replacements != null) {
-          choicedTag.start = choicedTag.start.replace((/★/), choicedTag.replacements[Math.floor(Math.random() * choicedTag.replacements.length)]);
+          choicedTag.start = choicedTag.start.replace((/★/), getRandomFromArray(choicedTag.replacements));
         }
         return choicedTag.start + lineText + choicedTag.end;
       })
@@ -76,17 +78,17 @@ export class PostDecorationService {
     if(lines.length !== 3) return beforeText;  // 3行になっていない場合は何もしない
     // タグがなければ1行目をスタイリングする
     if(!(/</).test(lines[0])) {
-      const choicedTag = Object.assign({}, this.senryu1stLineChoices[Math.floor(Math.random() * this.senryu1stLineChoices.length)]);
+      const choicedTag = Object.assign({}, getRandomFromArray(this.senryu1stLineChoices));
       lines[0] = choicedTag.start + lines[0] + choicedTag.end;
     }
     // タグがなければ2行目をスタイリングする
     if(!(/</).test(lines[1])) {
-      const choicedTag = Object.assign({}, this.senryu2ndLineChoices[Math.floor(Math.random() * this.senryu2ndLineChoices.length)]);
+      const choicedTag = Object.assign({}, getRandomFromArray(this.senryu2ndLineChoices));
       lines[1] = choicedTag.start + lines[1] + choicedTag.end;
     }
     // タグがなければ2行目をスタイリングする
     if(!(/</).test(lines[2])) {
-      const choicedTag = Object.assign({}, this.senryu3rdLineChoices[Math.floor(Math.random() * this.senryu3rdLineChoices.length)]);
+      const choicedTag = Object.assign({}, getRandomFromArray(this.senryu3rdLineChoices));
       lines[2] = choicedTag.start + lines[2] + choicedTag.end;
     }
     const afterText = lines.join('\n');

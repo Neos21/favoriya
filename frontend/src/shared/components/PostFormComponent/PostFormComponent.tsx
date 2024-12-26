@@ -7,6 +7,8 @@ import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, Grid2, Ico
 
 import { topicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
+import { getRandomFromArray } from '../../../common/helpers/get-random-from-array';
+import { getRandomIntInclusive } from '../../../common/helpers/get-random-int-inclusive';
 import { isValidText } from '../../../common/helpers/validators/validator-post';
 import { modalStyleConstants } from '../../constants/modal-style-constants';
 import { FontParserComponent } from '../FontParserComponent/FontParserComponent';
@@ -41,8 +43,14 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   
   // トピックをランダムに選択する
   const choiceTopicId = () => {
-    const topics = Object.values(topicsConstants);
-    return topics[Math.floor(Math.random() * topics.length)].id;
+    const random = getRandomIntInclusive(0, 2);  // 通常モードの割合を増やす
+    if(random === 0) {
+      const topics = Object.values(topicsConstants);
+      return getRandomFromArray(topics).id;
+    }
+    else {
+      return topicsConstants.normal.id;
+    }
   };
   
   const [formData, setFormData] = useState<FormData>({
@@ -88,7 +96,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     const beforeText = formData.text.slice(0, cursorPosition);
     const afterText  = formData.text.slice(cursorPosition);
     
-    const choiced  = replacements == null ? null        : replacements[Math.floor(Math.random() * replacements.length)];
+    const choiced  = replacements == null ? null        : getRandomFromArray(replacements);
     const startTag = replacements == null ? rawStartTag : rawStartTag.replace((/★/g), choiced);
     const endTag   = replacements == null ? rawEndTag   : rawEndTag  .replace((/★/g), choiced);
     const newCursorPosition = cursorPosition + startTag.length; // 開始タグの後ろにカーソル位置を設定する
@@ -227,7 +235,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     
     <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <Box component="div" sx={modalStyleConstants}>
-        <Typography component="h2" variant="h5">投稿で使える機能</Typography>
+        <Typography component="h2" variant="h6">投稿で使える機能</Typography>
         <Box component="div" sx={{ mt: 2, maxHeight: '47vh', overflowY: 'auto' }}>
           <Typography component="p">以下の HTML タグが利用できます :</Typography>
           <ul style={{ margin: '1rem 0 0', paddingLeft: '1.25rem' }} className="font-parser-component">
@@ -238,7 +246,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
                 <li>face … serif で明朝体、など</li>
               </ul>
             </li>
-            <li>marquee : direction・behavior・scrollamoumt</li>
+            <li>marquee : direction・behavior・scrollamount</li>
             <li>blink … <span style={{ animation: 'blink-animation 1.5s step-start infinite' }}>Example</span></li>
             <li>h1～h6・p・div : align</li>
             <li><b>b</b>・<i>i</i>・<u>u</u>・<s>s</s>・<del>del</del>・<ins>ins</ins></li>

@@ -114,14 +114,12 @@ export const UserInfoFormComponent: FC = () => {
         type="text" name="name" label="ユーザ名" value={formData.name} onChange={onChangeText}
         required
         fullWidth margin="normal"
-        error={formErrors.name != null}
-        helperText={formErrors.name}
+        error={formErrors.name != null} helperText={formErrors.name}
       />
       <TextField
         multiline name="profileText" label="プロフィールテキスト" value={formData.profileText} onChange={onChangeText}
         fullWidth rows={4} margin="normal"
-        error={formErrors.profileText != null}
-        helperText={formErrors.profileText}
+        error={formErrors.profileText != null} helperText={formErrors.profileText}
       />
       
       {formData.profileText !== '' &&  // プレビュー

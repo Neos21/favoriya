@@ -77,15 +77,13 @@ export const ChangePasswordFormComponent: FC = () => {
         type="password" name="currentPassword" label="現在のパスワード" value={formData.currentPassword} onChange={onChange}
         required autoComplete="current-passowrd"
         fullWidth margin="normal"
-        error={formErrors.currentPassword != null}
-        helperText={formErrors.currentPassword}
+        error={formErrors.currentPassword != null} helperText={formErrors.currentPassword}
       />
       <TextField
         type="password" name="newPassword" label="新規パスワード" value={formData.newPassword} onChange={onChange}
         required autoComplete="new-passowrd"
         fullWidth margin="normal"
-        error={formErrors.newPassword != null}
-        helperText={formErrors.newPassword}
+        error={formErrors.newPassword != null} helperText={formErrors.newPassword}
       />
       <Box component="div" sx={{ mt: 4, textAlign: 'right' }}>
         <Button type="submit" variant="contained">パスワード変更</Button>

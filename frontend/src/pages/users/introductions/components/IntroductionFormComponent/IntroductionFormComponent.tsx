@@ -113,8 +113,7 @@ export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUse
       <TextField
         multiline name="text" label="紹介文" value={formData.text} onChange={onChange}
         fullWidth rows={4} margin="normal"
-        error={formErrors.text != null}
-        helperText={formErrors.text}
+        error={formErrors.text != null} helperText={formErrors.text}
       />
       {formData.text !== '' &&  // プレビュー
         <Box component="div" sx={{ mt: 2, p: 1, border: '1px solid', borderColor: 'grey.600', borderRadius: 1, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>

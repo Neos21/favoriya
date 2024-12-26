@@ -1,3 +1,6 @@
+import { getRandomFromArray } from '../helpers/get-random-from-array';
+import { getRandomIntInclusive } from '../helpers/get-random-int-inclusive';
+
 import type { Result } from '../../common/types/result';
 
 /** トピック定義 */
@@ -48,26 +51,20 @@ export const topicsConstants = {
     id: 7,
     name: 'ランダムリミットモード',
     generateLimit: (): { mode: 'min' | 'max' | 'minmax', min?: number, max?: number } => {
-      const getRandomIntInclusive = (min: number, max: number): number => {
-        const minCeiled  = Math.ceil(min);
-        const maxFloored = Math.floor(max);
-        return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);  // 上限を含み下限も含む
-      };
-      
       const modes = ['min', 'max', 'minmax'];
-      const mode = modes[Math.floor(Math.random() * modes.length)];
+      const mode = getRandomFromArray(modes);
       
       if(mode === 'min') {
-        const min = getRandomIntInclusive(1, 250);
+        const min = getRandomIntInclusive(10, 140);
         return { mode, min };
       }
       else if(mode === 'max') {
-        const max = getRandomIntInclusive(10, 500);
+        const max = getRandomIntInclusive(5, 140);
         return { mode, max };
       }
       else if(mode === 'minmax') {
-        const number1 = getRandomIntInclusive( 1, 250);
-        const number2 = getRandomIntInclusive(10, 500);
+        const number1 = getRandomIntInclusive(10, 140);
+        const number2 = getRandomIntInclusive( 5, 140);
         const min = number1 <= number2 ? number1 : number2;
         const max = number1 <= number2 ? number2 : number1;
         return { mode, min, max };

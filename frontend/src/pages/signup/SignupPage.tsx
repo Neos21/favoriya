@@ -7,6 +7,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import { Alert, Box, Button, Container, Divider, Fade, Modal, TextField, Tooltip, Typography } from '@mui/material';
 
+import { getRandomFromArray } from '../../common/helpers/get-random-from-array';
 import { isValidId, isValidPassword } from '../../common/helpers/validators/validator-user';
 import { modalStyleConstants } from '../../shared/constants/modal-style-constants';
 import { userConstants } from '../../shared/constants/user-constants';
@@ -40,7 +41,7 @@ export const SignupPage: FC = () => {
         '匿名投稿できる SNS。'
       ];
       try {
-        const choicedMessage = messageChoices[Math.floor(Math.random() * messageChoices.length)];
+        const choicedMessage = getRandomFromArray(messageChoices);
         if(choicedMessage == null) {
           const response = await apiGetWithoutToken('/public/number-of-users');
           const result: Result<number> = await response.json();
@@ -118,15 +119,13 @@ export const SignupPage: FC = () => {
           type="text" name="id" label="User ID"
           required autoFocus
           fullWidth margin="normal"
-          error={formErrors.id != null}
-          helperText={formErrors.id}
+          error={formErrors.id != null} helperText={formErrors.id}
         />
         <TextField
           type="password" name="password" label="Password"
           required autoComplete="current-password"
           fullWidth margin="normal"
-          error={formErrors.password != null}
-          helperText={formErrors.password}
+          error={formErrors.password != null} helperText={formErrors.password}
         />
         <Button type="submit" variant="contained" fullWidth sx={{ mt: 3 }} endIcon={<PersonAddAlt1Icon />}>Sign Up</Button>
       </Box>

@@ -26,6 +26,8 @@ html.light {
 }
 
 html {
+  min-height: 100%;
+  height: 100%;
   overflow-y: scroll !important;  /* Drawer を開いた時に消させない */
   font-family: var(--font-family-sans-serif);
   word-break: break-all;
@@ -47,6 +49,8 @@ html.light body {
 }
 
 body {
+  min-height: 100%;
+  height: 100%;
   padding-right: 0 !important;  /* Drawer を開いた時に勝手に付くので切る */
 }
 
@@ -113,6 +117,11 @@ body.night #root::before {
     linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .4) 30px),
     url("/bg-night.jpg");
   background-position: right bottom -50px;
+}
+
+#root {
+  min-height: 100%;
+  height: 100%;
 }
 
 a {

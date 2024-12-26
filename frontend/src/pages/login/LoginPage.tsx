@@ -7,6 +7,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import { Alert, Box, Button, Container, Divider, Fade, TextField, Tooltip, Typography } from '@mui/material';
 
+import { getRandomFromArray } from '../../common/helpers/get-random-from-array';
 import { userConstants } from '../../shared/constants/user-constants';
 import { apiGetWithoutToken } from '../../shared/services/api/api-fetch';
 import { initialUserState, setUser } from '../../shared/stores/user-slice';
@@ -36,7 +37,7 @@ export const LoginPage: FC = () => {
         '匿名投稿できる SNS。'
       ];
       try {
-        const choicedMessage = messageChoices[Math.floor(Math.random() * messageChoices.length)];
+        const choicedMessage = getRandomFromArray(messageChoices);
         if(choicedMessage == null) {
           const response = await apiGetWithoutToken('/public/number-of-users');
           const result: Result<number> = await response.json();
