@@ -16,7 +16,7 @@ export const PostFormHelpComponent: FC = () => {
     
     <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <Box component="div" sx={modalStyleConstants}>
-        <Typography component="h2" variant="h6">投稿で使える機能</Typography>
+        <Typography component="h2">投稿で使える機能</Typography>
         <Box component="div" sx={{ mt: 2, maxHeight: '47vh', overflowY: 'auto' }}>
           <Typography component="p">以下の HTML タグが利用できます :</Typography>
           <ul style={{ margin: '1rem 0 0', paddingLeft: '1.25rem' }} className="font-parser-component">

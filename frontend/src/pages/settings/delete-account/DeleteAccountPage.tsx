@@ -41,7 +41,7 @@ export const DeleteAccountPage: FC = () => {
   };
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>アカウントを削除する</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>アカウントを削除する</Typography>
     
     <Typography component="p" sx={{ mt: 3 }}>
       <Button component={Link} to="/settings" variant="contained">戻る</Button>
@@ -58,7 +58,7 @@ export const DeleteAccountPage: FC = () => {
         </li>
         <li>削除したアカウントのユーザ ID は、他の人が登録に利用できるようになります
           <ul>
-            <li>ご自身で再度同じ ID を使って登録することもできます)</li>
+            <li>ご自身で再度同じ ID を使って登録することもできます</li>
           </ul>
         </li>
         <li>アカウント削除処理には若干時間がかかります。削除が完了するとログイン画面に遷移しますので、ボタンを押したらしばらくお待ちください</li>

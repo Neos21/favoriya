@@ -49,12 +49,12 @@ export const AfterRepliesComponent: FC<Props> = ({ inReplyToPostId, inReplyToUse
     {status === 'loading' && <LoadingSpinnerComponent />}
     
     {status === 'failed' && <>
-      <Typography component="h2" variant="h5" sx={{ mt: 3 }}>リプライ一覧</Typography>
+      <Typography component="h2" sx={{ mt: 3 }}>リプライ一覧</Typography>
       <Alert severity="error" sx={{ mt: 3 }}>リプライ一覧の取得に失敗</Alert>
     </>}
     
     {status === 'succeeded' && posts.length > 0 && <>
-      <Typography component="h2" variant="h5" sx={{ mt: 3 }}>リプライ一覧</Typography>
+      <Typography component="h2" sx={{ mt: 3 }}>リプライ一覧</Typography>
       <PostsListComponent propPosts={posts} />
     </>}
   </>;

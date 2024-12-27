@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import { ChangeEvent, FC, FormEvent, Fragment, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import CloseIcon from '@mui/icons-material/Close';
@@ -166,7 +166,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       if(topicId === topicsConstants.poll.id) {
         newPostApi.has_poll = true;
         newPostApi.poll = { expires_at: formData.pollExpires };
-        (newPostApi.poll as any).poll_options = formData.pollOptions.map(pollOption => ({ text: pollOption }));
+        (newPostApi.poll as any).poll_options = formData.pollOptions.map(pollOption => ({ text: pollOption }));  // eslint-disable-line @typescript-eslint/no-explicit-any
       }
       await onSubmit(newPostApi);  // Throws
       

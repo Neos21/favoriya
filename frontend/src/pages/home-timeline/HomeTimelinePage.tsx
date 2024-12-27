@@ -90,7 +90,7 @@ export const HomeTimelinePage: FC = () => {
   };
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>ホーム</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>ホーム</Typography>
     
     <PostFormComponent onSubmit={onSubmit} />
     

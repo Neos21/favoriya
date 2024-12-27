@@ -40,7 +40,7 @@ export const LoginHistoriesPage: FC = () => {
   }, [apiGet, userState.id]);
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>ログイン履歴</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>ログイン履歴</Typography>
     
     <Typography component="p" sx={{ mt: 3 }}>
       <Button component={Link} to="/settings" variant="contained">戻る</Button>

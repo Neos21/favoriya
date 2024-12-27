@@ -70,7 +70,7 @@ export const NotificationsPage: FC = () => {
   }, [apiGet, apiPost, dispatch, userState.id]);
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>通知一覧</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>通知一覧</Typography>
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     

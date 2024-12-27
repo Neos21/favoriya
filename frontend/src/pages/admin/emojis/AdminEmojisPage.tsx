@@ -142,9 +142,9 @@ export const AdminEmojisPage: FC = () => {
   };
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>絵文字リアクション管理</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>絵文字リアクション管理</Typography>
     
-    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>登録</Typography>
+    <Typography component="h2" sx={{ mt: 3 }}>登録</Typography>
     
     <Grid2 container spacing={1} sx={{ mt: 3 }}>
       <Grid2 size="grow">
@@ -172,7 +172,7 @@ export const AdminEmojisPage: FC = () => {
       <Button variant="contained" color="primary" onClick={onUploadFile} disabled={selectedFile == null || isUploading}>アップロード</Button>
     </Box>
     
-    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>一覧・削除</Typography>
+    <Typography component="h2" sx={{ mt: 3 }}>一覧・削除</Typography>
     
     {emojis == null && listErrorMessage == null && <LoadingSpinnerComponent />}
     {emojis == null && listErrorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{listErrorMessage}</Alert>}

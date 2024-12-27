@@ -104,7 +104,7 @@ export const IntroductionsPage: FC = () => {
   };
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>@{paramUserId} : 相互フォロワーからの紹介</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>@{paramUserId} : 相互フォロワーからの紹介</Typography>
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     

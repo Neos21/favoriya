@@ -11,7 +11,6 @@ import { PostsListComponent } from '../../../shared/components/PostsListComponen
 import { httpStatusConstants } from '../../../shared/constants/http-status-constants';
 import { modalStyleConstants } from '../../../shared/constants/modal-style-constants';
 import { useApiDelete, useApiGet, useApiPost } from '../../../shared/hooks/use-api-fetch';
-import { epochTimeMsToJstString } from '../../../shared/services/convert-date-to-jst';
 import { AfterRepliesComponent } from './components/AfterRepliesComponent';
 
 import type { RootState } from '../../../shared/stores/store';
@@ -31,7 +30,7 @@ export const PostPage: FC = () => {
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'not-found' | 'failed'>('loading');
   const [post, setPost] = useState<Post>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [reloadTrigger, SetReloadTrigger] = useState<boolean>(false);
+  const [reloadTrigger, setReloadTrigger] = useState<boolean>(false);
   
   // 念のため `@` を除去するテイで作っておく
   const paramUserId = rawParamUserId.startsWith('@') ? rawParamUserId.slice(1) : rawParamUserId;
@@ -61,7 +60,7 @@ export const PostPage: FC = () => {
       throw new Error(responseResult.error ?? 'リプライ時にエラーが発生しました');
     }
     
-    SetReloadTrigger(previoursReloadTrigger => !previoursReloadTrigger);  // フラグ変数を入れ替えることで子コンポーネントの読込処理を実行させる
+    setReloadTrigger(previoursReloadTrigger => !previoursReloadTrigger);  // フラグ変数を入れ替えることで子コンポーネントの読込処理を実行させる
   };
   
   // 初回読込
@@ -88,13 +87,7 @@ export const PostPage: FC = () => {
   if(!rawParamUserId.startsWith('@')) return <Navigate to={`/@${rawParamUserId}/posts/${paramPostId}`} />;
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>
-      @{paramUserId}
-      {status === 'succeeded' && <>
-        <Typography component="span" variant="h4" sx={{ mx: 1 }}>:</Typography>
-        {epochTimeMsToJstString(post.id, 'YYYY-MM-DD HH:mm:SS')}
-      </>}
-    </Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>@{paramUserId}</Typography>
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     
@@ -117,7 +110,7 @@ export const PostPage: FC = () => {
       
       <Modal open={isModalOpen} onClose={onCancelConfirm}>
         <Box component="div" sx={modalStyleConstants}>
-          <Typography component="h2" variant="h5">本当に削除しますか？</Typography>
+          <Typography component="h2">本当に削除しますか？</Typography>
           <Grid2 container spacing={3} sx={{ mt: 3 }}>
             <Grid2 size={6}><Button variant="contained" onClick={onCancelConfirm}>キャンセル</Button></Grid2>
             <Grid2 size={6} sx={{ textAlign: 'right' }}><Button variant="contained" color="error" onClick={onDelete}>削除する</Button></Grid2>

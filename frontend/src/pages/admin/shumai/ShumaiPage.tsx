@@ -92,7 +92,7 @@ export const ShumaiPage: FC = () => {
   };
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>しゅうまい君</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>しゅうまい君</Typography>
     
     <Grid2 container sx={{ mt: 3 }} spacing={1} alignItems="end">
       <Grid2 size="grow">

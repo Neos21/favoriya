@@ -36,7 +36,7 @@ export const UsersWithLatestLoginComponent: FC = () => {
   }, [onLoadUsers]);
   
   return <>
-    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>最終ログイン日時</Typography>
+    <Typography component="h2" sx={{ mt: 3 }}>最終ログイン日時</Typography>
     <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>
       <Button variant="contained" onClick={onLoadUsers}>再読込</Button>
     </Box>

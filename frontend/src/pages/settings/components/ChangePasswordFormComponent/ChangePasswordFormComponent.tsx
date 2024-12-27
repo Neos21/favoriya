@@ -66,7 +66,7 @@ export const ChangePasswordFormComponent: FC = () => {
   };
   
   return <>
-    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>パスワード変更</Typography>
+    <Typography component="h2" sx={{ mt: 3 }}>パスワード変更</Typography>
     
     {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
     

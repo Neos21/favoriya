@@ -107,7 +107,7 @@ export const SearchPage: FC = () => {
   };
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>検索</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>検索</Typography>
     
     <Stack component="form" onSubmit={onSearch} direction="row" sx={{ mt: 3 }} spacing={1}>
       <TextField

@@ -33,7 +33,6 @@ html {
   word-break: break-all;
   cursor: default;
   background-color: transparent !important;
-  transition: background-color .2s;
 }
 
 html.dark body {
@@ -68,7 +67,7 @@ body {
   background-position: right bottom;  /* 初期位置 */
   background-size: 300px 300px;
   background-repeat: no-repeat;
-  transition: background-size .2s, background-color .2s;
+  transition: background-size .15s;
 }
 @media (max-width: 960px) {
   #root::before {
@@ -78,8 +77,8 @@ body {
 
 body.midnight #root::before {
   background-image:
-    linear-gradient(to right , rgba(var(--background-colour), 1), rgba(var(--background-colour), .4) 40px),
-    linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .4) 50px),
+    linear-gradient(to right , rgba(var(--background-colour), 1), rgba(var(--background-colour), .3) 40px),
+    linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .3) 50px),
     url("/bg-midnight.jpg");
   background-position: right bottom -50px;
 }
@@ -113,8 +112,8 @@ body.sunset #root::before {
 }
 body.night #root::before {
   background-image:
-    linear-gradient(to right , rgba(var(--background-colour), 1), rgba(var(--background-colour), .4) 20px),
-    linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .4) 30px),
+    linear-gradient(to right , rgba(var(--background-colour), 1), rgba(var(--background-colour), .3) 20px),
+    linear-gradient(to bottom, rgba(var(--background-colour), 1), rgba(var(--background-colour), .3) 30px),
     url("/bg-night.jpg");
   background-position: right bottom -50px;
 }
@@ -124,14 +123,14 @@ body.night #root::before {
   height: 100%;
 }
 
+
+/* Misc
+ * ================================================================================ */
+
 a {
   color: inherit;
   text-decoration: none;
 }
-
-
-/* Misc
- * ================================================================================ */
 
 a.hover-underline:hover, a.hover-underline:focus,
 a.hidden-link:hover, a.hidden-link:focus {
@@ -159,6 +158,13 @@ samp,
 kbd {
   font-family: var(--font-family-monospace);
 }
+
+h1.MuiTypography-root { font-size: 1.7em;  font-weight: bold; }
+h2.MuiTypography-root { font-size: 1.5em;  font-weight: bold; }
+h3.MuiTypography-root { font-size: 1.3em;  font-weight: bold; }
+h4.MuiTypography-root { font-size: 1.1em;  font-weight: bold; }
+h5.MuiTypography-root { font-size: 1.05em; font-weight: bold; }
+h6.MuiTypography-root { font-size: 1em;    font-weight: bold; }
 
 
 /* Layout Component

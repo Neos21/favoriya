@@ -7,10 +7,10 @@ import { Alert, Avatar, Box, Button, Divider, Grid2, Typography } from '@mui/mat
 
 import { commonUserConstants } from '../../../common/constants/user-constants';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
+import { VisuallyHiddenInputComponent } from '../../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
 import { userConstants } from '../../../shared/constants/user-constants';
 import { useApiDelete } from '../../../shared/hooks/use-api-fetch';
 import { setUser } from '../../../shared/stores/user-slice';
-import { VisuallyHiddenInputComponent } from '../../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
 
 import type { RootState } from '../../../shared/stores/store';
 import type { Result } from '../../../common/types/result';
@@ -110,7 +110,7 @@ export const ChangeAvatarPage: FC = () => {
   };
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>アバター変更</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>アバター変更</Typography>
     
     <Typography component="p" sx={{ mt: 3 }}>
       <Button component={Link} to="/settings" variant="contained">戻る</Button>

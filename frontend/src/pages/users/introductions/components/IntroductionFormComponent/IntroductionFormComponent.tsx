@@ -91,7 +91,7 @@ export const IntroductionFormComponent: FC<Props> = ({ recipientUserId, actorUse
   };
   
   return <>
-    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>紹介文を書く</Typography>
+    <Typography component="h2" sx={{ mt: 3 }}>紹介文を書く</Typography>
     
     {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
     

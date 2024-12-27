@@ -4,9 +4,11 @@ import { Outlet, useLocation } from 'react-router-dom';
 
 import { Box, Container, Drawer, useMediaQuery } from '@mui/material';
 
+import { snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { useApiGet } from '../../../shared/hooks/use-api-fetch';
 import { dateToJstDate } from '../../../shared/services/convert-date-to-jst';
+import { setAllEmojis } from '../../../shared/stores/emojis-slice';
 import { setUnreadNotifications } from '../../../shared/stores/notifications-slice';
 import { AppBarComponent } from '../AppBarComponent/AppBarComponent';
 import { MenuComponent } from '../MenuComponent/MenuComponent';
@@ -22,6 +24,7 @@ export const LayoutComponent: FC = () => {
   const dispatch = useDispatch();
   const isNarrowWindow = useMediaQuery('(max-width: 599.98px)');  // 画面幅が 600px 以内かどうか
   const userState = useSelector((state: RootState) => state.user);
+  const emojisState = useSelector((state: RootState) => state.emojis);
   const apiGet = useApiGet();
   
   const [isOpen, setIsOpen] = useState<boolean>(false);  // Drawer を開いているか否か
@@ -29,8 +32,8 @@ export const LayoutComponent: FC = () => {
   const onCloseDrawer = () => setIsOpen(false);
   
   useEffect(() => {
-    // 画面初期表示時に未読件数を取得する
     (async () => {
+      // 未読件数を取得する
       try {
         if(userState == null || isEmptyString(userState.id)) return;
         const response = await apiGet('/notifications/number-of-unreads', `?user_id=${userState.id}`);
@@ -39,6 +42,17 @@ export const LayoutComponent: FC = () => {
       }
       catch(error) {
         console.warn('未読件数の取得に失敗', error);
+      }
+      // 絵文字リアクション一覧を取得しておく
+      try {
+        if(emojisState.emojis.length !== 0) return;
+        const response = await apiGet('/emojis');  // Throws
+        const emojisApiResult = await response.json();  // Throws
+        const emojis = emojisApiResult.result.map(emojiApi => snakeToCamelCaseObject(emojiApi));
+        dispatch(setAllEmojis({ emojis: [...emojis] }));
+      }
+      catch(error) {
+        console.warn('絵文字リアクション一覧の取得に失敗', error);
       }
     })();
     
@@ -78,7 +92,7 @@ export const LayoutComponent: FC = () => {
       clearInterval(intervalId);
       document.body.classList.remove('midnight', 'sunrise', 'morning', 'noon', 'sunset', 'night');
     };
-  }, [apiGet, dispatch, userState, userState.id]);
+  }, [apiGet, dispatch, emojisState.emojis.length, userState, userState.id]);
   
   // 画面遷移ごとに実行する
   useEffect(() => {
@@ -103,7 +117,7 @@ export const LayoutComponent: FC = () => {
     <Box component="div" sx={{ flexGrow: 1 }}>
       <AppBarComponent drawerWidth={drawerWidth} isNarrowWindow={isNarrowWindow} onToggleDrawer={() => setIsOpen(!isOpen)} />
       
-      {/* AppBar の高さが 64px あるため padding-top を指定している */}
+      {/* AppBar の高さ分の padding-top を指定している */}
       <Container maxWidth="md" sx={{ minWidth: 300, paddingTop: (isNarrowWindow ? '56px' : '64px'), paddingBottom: 4 }}>
         <Outlet />
       </Container>

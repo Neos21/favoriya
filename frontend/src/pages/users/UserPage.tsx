@@ -145,7 +145,7 @@ export const UserPage: FC = () => {
   };
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>@{paramUserId}</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>@{paramUserId}</Typography>
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     

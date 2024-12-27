@@ -26,7 +26,7 @@ export class PollsService {
           userId: postsUserId,
           postId
         },
-        relations: ['poll_options', 'poll_votes']
+        relations: ['pollOptions', 'pollVotes']
       });
       if(pollEntity == null) return { error: '対象のアンケートが見つかりません', code: HttpStatus.NOT_FOUND };
       return { result: pollEntity };

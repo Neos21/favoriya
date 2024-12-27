@@ -49,7 +49,7 @@ export const FollowingsPage: FC = () => {
   if(!rawParamUserId.startsWith('@')) return <Navigate to={`/@${rawParamUserId}/followings`} />;
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>@{paramUserId} : フォロー中一覧</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>@{paramUserId} : フォロー中一覧</Typography>
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     

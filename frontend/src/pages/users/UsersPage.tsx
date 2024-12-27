@@ -40,7 +40,7 @@ export const UsersPage: FC = () => {
   }, [apiGet]);
   
   return <>
-    <Typography component="h1" variant="h4" sx={{ mt: 3 }}>ユーザ一覧</Typography>
+    <Typography component="h1" sx={{ mt: 3 }}>ユーザ一覧</Typography>
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     

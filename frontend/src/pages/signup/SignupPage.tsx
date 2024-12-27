@@ -144,7 +144,7 @@ export const SignupPage: FC = () => {
       
       <Modal open={isModalOpen}>
         <Box component="div" sx={modalStyleConstants}>
-          <Typography component="h2" variant="h5">ユーザ登録が完了しました</Typography>
+          <Typography component="h2">ユーザ登録が完了しました</Typography>
           <Typography component="p" sx={{ mt: 3 }}>ログイン画面でログインしてください</Typography>
           <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>
             <Button variant="contained" autoFocus onClick={onCloseModal}>OK</Button>

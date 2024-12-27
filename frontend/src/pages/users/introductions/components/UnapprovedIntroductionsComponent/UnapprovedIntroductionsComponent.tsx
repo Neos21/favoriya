@@ -78,7 +78,7 @@ export const UnapprovedIntroductionsComponent: FC<Props> = ({ recipientUserId, o
   };
   
   return <>
-    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>承認待ちの紹介一覧</Typography>
+    <Typography component="h2" sx={{ mt: 3 }}>承認待ちの紹介一覧</Typography>
     
     {status === 'loading' && <LoadingSpinnerComponent />}
     

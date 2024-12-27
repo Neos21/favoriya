@@ -32,7 +32,7 @@ export const ServerMetricsComponent: FC = () => {
   }, [onLoadServerMetrics]);
   
   return <>
-    <Typography component="h2" variant="h5" sx={{ mt: 3 }}>サーバメトリクス</Typography>
+    <Typography component="h2" sx={{ mt: 3 }}>サーバメトリクス</Typography>
     <Box component="div" sx={{ mt: 3, textAlign: 'right' }}>
       <Button variant="contained" onClick={onLoadServerMetrics}>再読込</Button>
     </Box>
