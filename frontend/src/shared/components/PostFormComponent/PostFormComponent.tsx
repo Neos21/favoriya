@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, Fragment, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, Grid2, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
@@ -9,11 +9,11 @@ import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { getRandomFromArray } from '../../../common/helpers/get-random-from-array';
 import { getRandomIntInclusive } from '../../../common/helpers/get-random-int-inclusive';
 import { isValidText } from '../../../common/helpers/validators/validator-post';
-import { Result } from '../../../common/types/result';
 import { FontParserComponent } from '../FontParserComponent/FontParserComponent';
 import { PostFormHelpComponent } from './components/PostFormHelpComponent/PostFormHelpComponent';
 import { PostFormInfoMessageComponent } from './components/PostFormInfoMessageComponent/PostFormInfoMessageComponent';
 
+import type { Result } from '../../../common/types/result';
 import type { RootState } from '../../stores/store';
 import type { PostApi } from '../../../common/types/post';
 import type { RandomLimit } from '../../types/random-limit';
@@ -28,9 +28,11 @@ type Props = {
 };
 
 type FormData = {
-  topicId   : number,
-  text      : string,
-  visibility: string | null
+  topicId    : number,
+  text       : string,
+  visibility : string | null,
+  pollVotes  : Array<string>,
+  pollExpires: string | null
 };
 
 // トピックをランダムに選択する
@@ -50,9 +52,11 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   const userState = useSelector((state: RootState) => state.user);
   
   const [formData, setFormData] = useState<FormData>({
-    topicId   : choiceTopicId(),
-    text      : '',
-    visibility: null
+    topicId    : choiceTopicId(),
+    text       : '',
+    visibility : null,
+    pollVotes  : [],
+    pollExpires: null
   });
   const [randomLimit, setRandomLimit] = useState<RandomLimit>(topicsConstants.randomLimit.generateLimit());
   
@@ -66,13 +70,30 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   }, [formData.topicId]);
   
   /** On Change */
+  const handleFormChange = (name: string, value: string | number) => {
+    setFormData(previousFormData => ({ ...previousFormData, [name]: value }));
+  };
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setFormData(previousFormData => ({ ...previousFormData, [name]: value }));
+    handleFormChange(name, value);
   };
   const onChangeChecked = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
     setFormData(previousFormData => ({ ...previousFormData, [name]: checked ? 'home': null }));
+  };
+  const onChangePollVote = (index: number, value: string) => {
+    const newPollVotes = [...formData.pollVotes];
+    newPollVotes[index] = value;
+    setFormData(previousFormData => ({ ...previousFormData, pollvotes: newPollVotes }));
+  };
+  const onAddPollVote = () => {
+    if(formData.pollVotes.length >= 6) return;
+    setFormData(previousFormData => ({ ...previousFormData, pollvotes: [...previousFormData.pollVotes, ''] }));
+  };
+  const onRemovePollVote = (index: number) => {
+    if(formData.pollVotes.length <= 2) return;
+    const newPollVotes = formData.pollVotes.filter((_, pollVoteIndex) => pollVoteIndex !== index);
+    setFormData(previousFormData => ({ ...previousFormData, pollvotes: newPollVotes }));
   };
   
   /** カーソル位置を保持する */
@@ -206,5 +227,26 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
         <FontParserComponent input={formData.text} />
       </Box>
     }
+    
+    {formData.topicId === topicsConstants.poll.id && <>
+      {formData.pollVotes.map((pollVote, index) => <Fragment key={index}>
+        <TextField label={`候補 ${index + 1}`} value={pollVote} onChange={event => onChangePollVote(index, event.target.value)} />
+        <Button onClick={() => onRemovePollVote(index)} disabled={index === 0 || index === 1}>削除</Button>
+      </Fragment>)}
+      <Box component="div">
+        <Button onClick={onAddPollVote} disabled={formData.pollVotes.length >= 6}>追加</Button>
+      </Box>
+      <FormControl fullWidth size="small">
+        <InputLabel id="post-form-select-poll-expires">期限</InputLabel>
+        <Select labelId="post-form-select-poll-expires" name="pollExpires" label="期限" value={formData.pollExpires} onChange={onChange}>
+          <MenuItem value="5 minutes" >5 分</MenuItem>
+          <MenuItem value="30 minutes">30 分</MenuItem>
+          <MenuItem value="1 hour"    >1 時間</MenuItem>
+          <MenuItem value="6 hours"   >6 時間</MenuItem>
+          <MenuItem value="12 hours"  >12 時間</MenuItem>
+          <MenuItem value="1 day"     >1 日</MenuItem>
+        </Select>
+      </FormControl>
+    </>}
   </>;
 };

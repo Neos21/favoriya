@@ -179,7 +179,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
   const onSearchEmojis = (event: ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value.toLowerCase();  // 小文字に変換する
     setEmojiQuery(query);
-
+    
     const filtered = emojis.filter(emoji => emoji.name.includes(query));  // 部分一致検索
     setFilteredEmojis(filtered);
   };
