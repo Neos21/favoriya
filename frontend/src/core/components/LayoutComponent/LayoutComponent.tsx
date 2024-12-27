@@ -72,7 +72,7 @@ export const LayoutComponent: FC = () => {
       }
     };
     setBackgroundImage();
-    const intervalId = setInterval(setBackgroundImage, 30 * 60 * 1000);  // 30分ごと
+    const intervalId = setInterval(setBackgroundImage, 10 * 60 * 1000);  // 10分ごと
     
     return () => {
       clearInterval(intervalId);

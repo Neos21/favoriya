@@ -4,6 +4,8 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { topicsConstants } from '../../../common/constants/topics-constants';
+import { PollEntity } from '../../../shared/entities/poll.entity';
+import { PollOptionEntity } from '../../../shared/entities/poll-option.entity';
 import { PostEntity } from '../../../shared/entities/post.entity';
 import { postsQueryBuilder } from '../../../shared/helpers/posts-query-builder';
 
@@ -15,7 +17,11 @@ import type { Result } from '../../../common/types/result';
 export class PostsService {
   private readonly logger: Logger = new Logger(PostsService.name);
   
-  constructor(@InjectRepository(PostEntity) private readonly postsRepository: Repository<PostEntity>) { }
+  constructor(
+    @InjectRepository(PostEntity) private readonly postsRepository: Repository<PostEntity>,
+    @InjectRepository(PollEntity) private readonly pollsRepository: Repository<PollEntity>,
+    @InjectRepository(PollOptionEntity) private readonly pollOptionsRepository: Repository<PollOptionEntity>
+  ) { }
   
   /** 投稿する */
   public async create(post: Post): Promise<Result<boolean>> {
@@ -26,9 +32,17 @@ export class PostsService {
         topicId        : post.topicId,
         visibility     : post.visibility,
         inReplyToPostId: post.inReplyToPostId,
-        inReplyToUserId: post.inReplyToUserId
+        inReplyToUserId: post.inReplyToUserId,
+        hasPoll        : post.topicId === topicsConstants.poll.id
       });
-      await this.postsRepository.insert(newPostEntity);
+      const createdPostEntity = await this.postsRepository.save(newPostEntity);
+      
+      // アンケートモード
+      if(post.topicId === topicsConstants.poll.id) {
+        const result = await this.createPoll(post, createdPostEntity);
+        if(result.error != null) return result;
+      }
+      
       return { result: true };
     }
     catch(error) {
@@ -84,5 +98,42 @@ export class PostsService {
       this.logger.error('投稿の削除に失敗', error);
       return { error: '投稿の削除に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
+  }
+  
+  /** アンケートモードの時に選択肢を登録する */
+  private async createPoll(post: Post, createdPostEntity: PostEntity): Promise<Result<boolean>> {
+    try {
+      const newPollEntity = new PollEntity({
+        userId   : post.userId,
+        postId   : createdPostEntity.id,
+        expiresAt: this.createExpiresAt(post.poll.expiresAt as string)
+      });
+      const createdPollEntity = await this.pollsRepository.save(newPollEntity);
+      
+      for(const pollOption of post.poll.pollOptions) {
+        const newPollOptionEntity = new PollOptionEntity({
+          pollId: createdPollEntity.id,
+          text  : pollOption.text
+        });
+        await this.pollOptionsRepository.insert(newPollOptionEntity);
+      }
+      
+      return { result: true };
+    }
+    catch(error) {
+      this.logger.error('アンケートの登録処理に失敗', error);
+      return { error: 'アンケートの登録処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+    }
+  }
+  
+  private createExpiresAt(expiresAt: string): Date {
+    const now = new Date();
+    if(expiresAt === '5 minutes' ) return new Date(now.getTime() +       5 * 60 * 1000);
+    if(expiresAt === '30 minutes') return new Date(now.getTime() +      30 * 60 * 1000);
+    if(expiresAt === '1 hour'    ) return new Date(now.getTime() +  1 * 60 * 60 * 1000);
+    if(expiresAt === '6 hours'   ) return new Date(now.getTime() +  6 * 60 * 60 * 1000);
+    if(expiresAt === '12 hours'  ) return new Date(now.getTime() + 12 * 60 * 60 * 1000);
+    if(expiresAt === '1 day'     ) return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    throw new Error('Invalid Expires At');
   }
 }

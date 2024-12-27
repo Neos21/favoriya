@@ -2,6 +2,7 @@ import { getRandomFromArray } from '../helpers/get-random-from-array';
 import { getRandomIntInclusive } from '../helpers/get-random-int-inclusive';
 
 import type { Result } from '../../common/types/result';
+import { isEmptyString } from '../helpers/is-empty-string';
 
 /** トピック定義 */
 export const topicsConstants = {
@@ -93,6 +94,12 @@ export const topicsConstants = {
   },
   poll: {
     id: 8,
-    name: 'アンケートモード'
+    name: 'アンケートモード',
+    validateFunction: (texts: Array<string>): Result<boolean> => {
+      if(texts.some(text => isEmptyString(text))) return { error: '未入力の選択肢があります' };
+      const maxLength = 50;
+      if(texts.some(text => text.length > maxLength)) return { error: `選択肢は ${maxLength} 文字以内で入力してください` };
+      return { result: true };
+    }
   }
 };
