@@ -1,11 +1,9 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, ParseIntPipe, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-import { topicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { isValidJwtUserId } from '../../../shared/helpers/is-valid-jwt-user-id';
-import { PostDecorationService } from './post-decoration.service';
-import { PostValidationService } from './post-validation.service';
 import { PostsService } from './posts.service';
 
 import type { Request, Response } from 'express';
@@ -15,35 +13,30 @@ import type { Post as TypePost, PostApi } from '../../../common/types/post';
 /** Posts Controller */
 @Controller('api/users')
 export class PostsController {
-  constructor(
-    private readonly postValidationService: PostValidationService,
-    private readonly postDecorationService: PostDecorationService,
-    private readonly postsService: PostsService
-  ) { }
+  private readonly logger: Logger = new Logger(PostsController.name);
+  
+  constructor(private readonly postsService: PostsService) { }
   
   /** 投稿する */
   @UseGuards(JwtAuthGuard)
   @Post(':userId/posts')  // キャメルケースでないと動作しない
-  public async create(@Param('userId') userId: string, @Body() postApi: PostApi, @Req() request: Request, @Res() response: Response): Promise<Response<Result<null>>> {
+  @UseInterceptors(FileInterceptor('file'))
+  public async create(@Param('userId') userId: string, @Body('post_json') postJson: string, @UploadedFile() file: Express.Multer.File, @Req() request: Request, @Res() response: Response): Promise<Response<Result<void>>> {
     if(!isValidJwtUserId(request, response, userId)) return;
     
-    const post: TypePost = snakeToCamelCaseObject(postApi) as TypePost;
-    
-    // トピックごとに入力チェックする
-    const validationResult = this.postValidationService.validateText(post.text, post.topicId);
-    if(validationResult.error != null) return response.status(validationResult.code ?? HttpStatus.BAD_REQUEST).json(validationResult);
-    
-    // 川柳モードの時にスタイリングできそうならする
-    if(post.topicId === topicsConstants.senryu.id) post.text = this.postDecorationService.senryuStyle(post.text);
-    // ランダム装飾モードの場合に行ごとにタグを入れたり入れなかったりする
-    if(post.topicId === topicsConstants.randomDecorations.id) post.text = this.postDecorationService.decorateRandomly(post.text);
-    // 勝手に AI 生成モードの場合にテキストを変更してもらう
-    if(post.topicId === topicsConstants.aiGenerated.id) post.text = await this.postDecorationService.generateByAi(post.text);
-    
-    const result = await this.postsService.create(post);
-    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
-    
-    return response.status(HttpStatus.CREATED).end();
+    try {
+      const postApi: PostApi = JSON.parse(postJson);  // Throws
+      const post: TypePost = snakeToCamelCaseObject(postApi) as TypePost;
+      
+      const result = await this.postsService.create(post, file);
+      if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
+      
+      return response.status(HttpStatus.CREATED).end();
+    }
+    catch(error) {
+      this.logger.error('投稿処理に失敗', error);
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: '投稿処理に失敗' });
+    }
   }
   
   /** 投稿一覧を取得する */

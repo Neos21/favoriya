@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { emojisConstants } from '../../../common/constants/emojis-constants';
+import { commonEmojisConstants } from '../../../common/constants/emojis-constants';
 import { EmojiReactionEntity } from '../../../shared/entities/emoji-reaction.entity';
 import { EmojiEntity } from '../../../shared/entities/emoji.entity';
 
@@ -52,8 +52,8 @@ export class AdminEmojisService {
   /** 既存のオブジェクトを削除する */
   private async removeObject(imageUrl: string): Promise<Result<boolean>> {
     try {
-      const objectName = imageUrl.replace(`/${emojisConstants.bucketName}/`, '');  // バケット名を除去しオブジェクト名を抽出する
-      await this.nestMinioService.getMinio().removeObject(emojisConstants.bucketName, objectName);
+      const objectName = imageUrl.replace(`/${commonEmojisConstants.bucketName}/`, '');  // バケット名を除去しオブジェクト名を抽出する
+      await this.nestMinioService.getMinio().removeObject(commonEmojisConstants.bucketName, objectName);
       return { result: true };
     }
     catch(error) {

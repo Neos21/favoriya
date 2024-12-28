@@ -20,7 +20,7 @@ export class UsersController {
   
   /** ユーザ登録する */
   @Post('')
-  public async create(@Body() userApi: UserApi, @Res() response: Response): Promise<Response<Result<null>>> {
+  public async create(@Body() userApi: UserApi, @Res() response: Response): Promise<Response<Result<void>>> {
     const user: User = snakeToCamelCaseObject(userApi) as User;
     const result = await this.usersService.create(user);
     if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);

@@ -1,5 +1,6 @@
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
+import { AttachmentEntity } from './attachment.entity';
 import { EmojiReactionEntity } from './emoji-reaction.entity';
 import { FavouriteEntity } from './favourite.entity';
 import { PollEntity } from './poll.entity';
@@ -62,8 +63,12 @@ export class PostEntity {
   public topic: TopicEntity;
   
   /** アンケートとの関連付け */
-  @OneToOne(() => PollEntity, pollEntity => pollEntity.post, { nullable: true, cascade: true })
+  @OneToOne(() => PollEntity, pollEntity => pollEntity.post, { nullable: true, cascade: true, createForeignKeyConstraints: false })
   public poll: PollEntity;
+  
+  /** 添付ファイルとの関連付け */
+  @OneToOne(() => AttachmentEntity, attachmentEntity => attachmentEntity.post, { nullable: true, cascade: true, createForeignKeyConstraints: false })
+  public attachment: AttachmentEntity;
   
   constructor(partial: Partial<PostEntity>) { Object.assign(this, partial); }
   

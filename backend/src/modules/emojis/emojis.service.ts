@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { emojisConstants } from '../../common/constants/emojis-constants';
+import { commonEmojisConstants } from '../../common/constants/emojis-constants';
 import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { EmojiEntity } from '../../shared/entities/emoji.entity';
 
@@ -25,13 +25,13 @@ export class EmojisService {
   /** バケットがなければ作成する */
   public async onModuleInit(): Promise<void> {
     try {
-      const existsBucket = await this.nestMinioService.getMinio().bucketExists(emojisConstants.bucketName);
+      const existsBucket = await this.nestMinioService.getMinio().bucketExists(commonEmojisConstants.bucketName);
       if(existsBucket) {
         this.logger.debug('絵文字リアクション用のバケット作成済');
       }
       else {
         this.logger.debug('絵文字リアクション用のバケット未作成・作成開始');
-        await this.nestMinioService.getMinio().makeBucket(emojisConstants.bucketName);
+        await this.nestMinioService.getMinio().makeBucket(commonEmojisConstants.bucketName);
         this.logger.debug('絵文字リアクション用のバケット作成完了');
       }
     }
@@ -54,7 +54,7 @@ export class EmojisService {
   
   /** 絵文字リアクション画像をアップロードする */
   public async create(name: string, file: Express.Multer.File): Promise<Result<string>> {
-    if(file.size > (emojisConstants.maxFileSizeKb * 1024)) return { error: `ファイルサイズが ${emojisConstants.maxFileSizeKb} KB を超えています`, code: HttpStatus.BAD_REQUEST };
+    if(file.size > (commonEmojisConstants.maxFileSizeKb * 1024)) return { error: `ファイルサイズが ${commonEmojisConstants.maxFileSizeKb} KB を超えています`, code: HttpStatus.BAD_REQUEST };
     if(!file.mimetype.startsWith('image/')) return { error: '画像ファイルではありません', code: HttpStatus.BAD_REQUEST };
     // 同名の絵文字リアクションがないか存在チェックする
     const findOneByNameResult = await this.findOneByName(name);
@@ -89,7 +89,7 @@ export class EmojisService {
   /** リサイズする */
   private async resizeImage(buffer: Buffer, mimeType: string): Promise<Buffer> {
     if(mimeType === 'image/gif') return buffer;  // sharp を通すとアニメーション GIF が動かなくなるので GIF は変換しないことにする
-    return sharp(buffer).resize(null, emojisConstants.maxImageHeightPx, { fit: 'inside' }).toBuffer();
+    return sharp(buffer).resize(null, commonEmojisConstants.maxImageHeightPx, { fit: 'inside' }).toBuffer();
   }
   
   /** ファイル名を組み立てる */
@@ -104,10 +104,10 @@ export class EmojisService {
   /** MinIO にアップロードする */
   private async putObject(buffer: Buffer, mimeType: string, fileName: string): Promise<Result<string>> {
     try {
-      await this.nestMinioService.getMinio().putObject(emojisConstants.bucketName, fileName, buffer, buffer.byteLength, {
+      await this.nestMinioService.getMinio().putObject(commonEmojisConstants.bucketName, fileName, buffer, buffer.byteLength, {
         'Content-Type': mimeType
       });
-      return { result: `/${emojisConstants.bucketName}/${fileName}` };
+      return { result: `/${commonEmojisConstants.bucketName}/${fileName}` };
     }
     catch(error) {
       this.logger.error('絵文字リアクション画像のアップロードに失敗', error);

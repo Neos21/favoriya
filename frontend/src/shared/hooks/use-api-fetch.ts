@@ -36,6 +36,22 @@ export const useApiPost = () => {
   return apiPost;
 };
 
+/** Post FormData */
+export const useApiPostFormData = () => {
+  const userState = useSelector((state: RootState) => state.user);
+  const token = userState.token;
+  const apiPostFormData = useCallback(async (apiPath: string, formData: FormData): Promise<Response> => {
+    return fetch(`/api${apiPath}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formData
+    });
+  }, [token]);
+  return apiPostFormData;
+};
+
 /** Put */
 export const useApiPut = () => {
   const userState = useSelector((state: RootState) => state.user);

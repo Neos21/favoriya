@@ -10,7 +10,7 @@ import { PostFormComponent } from '../../../shared/components/PostFormComponent/
 import { PostsListComponent } from '../../../shared/components/PostsListComponent/PostsListComponent';
 import { httpStatusConstants } from '../../../shared/constants/http-status-constants';
 import { modalStyleConstants } from '../../../shared/constants/modal-style-constants';
-import { useApiDelete, useApiGet, useApiPost } from '../../../shared/hooks/use-api-fetch';
+import { useApiDelete, useApiGet, useApiPostFormData } from '../../../shared/hooks/use-api-fetch';
 import { AfterRepliesComponent } from './components/AfterRepliesComponent';
 
 import type { RootState } from '../../../shared/stores/store';
@@ -24,7 +24,7 @@ export const PostPage: FC = () => {
   const navigate = useNavigate();
   const userState = useSelector((state: RootState) => state.user);
   const apiGet = useApiGet();
-  const apiPost = useApiPost();
+  const apiPostFormData = useApiPostFormData();
   const apiDelete = useApiDelete();
   
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'not-found' | 'failed'>('loading');
@@ -53,10 +53,14 @@ export const PostPage: FC = () => {
   };
   
   /** リプライする */
-  const onSubmit = async (newPostApi: PostApi) => {
-    const response = await apiPost(`/users/${paramUserId}/posts/${paramPostId}/replies`, newPostApi);  // Throws
+  const onSubmit = async (newPostApi: PostApi, file?: File) => {
+    const formData = new FormData();
+    formData.append('post_json', JSON.stringify(newPostApi));
+    if(file != null) formData.append('file', file);
+    
+    const response = await apiPostFormData(`/users/${paramUserId}/posts/${paramPostId}/replies`, formData);  // Throws
     if(!response.ok) {
-      const responseResult: Result<null> = await response.json();  // Throws
+      const responseResult: Result<void> = await response.json();  // Throws
       throw new Error(responseResult.error ?? 'リプライ時にエラーが発生しました');
     }
     

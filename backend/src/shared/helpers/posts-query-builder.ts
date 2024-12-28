@@ -3,10 +3,13 @@ import { Repository } from 'typeorm';
 import { PostEntity } from '../entities/post.entity';
 
 /** 投稿を取得する系の共通する部分 */
-export const postsQueryBuilder = (postsRepository: Repository<PostEntity>) => {
+export const postsQueryBuilder = (postsRepository: Repository<PostEntity>, isAfterRepliesMode: boolean = false) => {
+  const selectColumns = ['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.createdAt'];
+  if(!isAfterRepliesMode) selectColumns.push('posts.inReplyToPostId', 'posts.inReplyToUserId');
+  
   return postsRepository
     .createQueryBuilder('posts')
-    .select(['posts.id', 'posts.userId', 'posts.text', 'posts.topicId', 'posts.createdAt', 'posts.inReplyToPostId', 'posts.inReplyToUserId'])  // 投稿内容
+    .select(selectColumns)  // 投稿内容 (リプライ取得時はリプライ元を取得しない)
     .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
     .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
     .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する

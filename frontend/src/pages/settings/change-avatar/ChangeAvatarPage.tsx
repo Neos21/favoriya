@@ -9,7 +9,7 @@ import { commonUserConstants } from '../../../common/constants/user-constants';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { VisuallyHiddenInputComponent } from '../../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
 import { userConstants } from '../../../shared/constants/user-constants';
-import { useApiDelete } from '../../../shared/hooks/use-api-fetch';
+import { useApiDelete, useApiPostFormData } from '../../../shared/hooks/use-api-fetch';
 import { setUser } from '../../../shared/stores/user-slice';
 
 import type { RootState } from '../../../shared/stores/store';
@@ -19,6 +19,7 @@ import type { Result } from '../../../common/types/result';
 export const ChangeAvatarPage: FC = () => {
   const dispatch = useDispatch();
   const userState = useSelector((state: RootState) => state.user);
+  const apiPostFormData = useApiPostFormData();
   const apiDelete = useApiDelete();
   
   const [selectedFile, setSelectedFile] = useState<File>(null);
@@ -49,11 +50,7 @@ export const ChangeAvatarPage: FC = () => {
     formData.append('file', selectedFile);
     setIsUploading(true);
     try {
-      const response = await fetch(`/api/users/${userState.id}/avatar`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${userState.token}` },
-        body: formData
-      });
+      const response = await apiPostFormData(`/users/${userState.id}/avatar`, formData);
       const newAvatarUrlResult: Result<string> = await response.json();
       if(newAvatarUrlResult.error != null) return setErrorMessage(newAvatarUrlResult.error);
       

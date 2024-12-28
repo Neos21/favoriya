@@ -1,5 +1,6 @@
 import { CamelToSnakeCaseObject } from './cases';
 
+import type { Attachment } from './attachment';
 import type { EmojiReaction } from './emoji-reaction';
 import type { Favourite } from './favourite';
 import type { Poll } from './poll';
@@ -24,6 +25,7 @@ export type Post = {
   emojiReactions?: Array<EmojiReaction>;
   topic?: Topic;
   poll?: Poll;
+  attachment?: Attachment;
 };
 
 export type PostApi = CamelToSnakeCaseObject<Post>;

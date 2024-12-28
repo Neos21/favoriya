@@ -8,7 +8,7 @@ server {
   ssl_certificate_key  /etc/letsencrypt/live/EXAMPLE.com/privkey.pem;
   
   # File Upload Max Size
-  client_max_body_size  10M;
+  client_max_body_size  15M;
   
   # Error Page
   error_page 502 /502.html;

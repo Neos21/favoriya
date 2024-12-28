@@ -104,7 +104,7 @@ export class PostDecorationService {
   public async generateByAi(beforeText: string): Promise<string> {
     try {
       const textContent = DOMPurify(new JSDOM('').window).sanitize(beforeText, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-      const response = await fetch('https://api.rnilaweera.lk/api/v1/user/gpt', {
+      const response = await fetch('https://api.rnilaweera.lk/api/v1/user/gpt', {  // Node.js 内蔵の Fetch API が使えている
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

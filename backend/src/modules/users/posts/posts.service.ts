@@ -1,13 +1,17 @@
+import { NestMinioService } from 'nestjs-minio';
 import { Repository } from 'typeorm';
 
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { topicsConstants } from '../../../common/constants/topics-constants';
-import { PollEntity } from '../../../shared/entities/poll.entity';
+import { commonPostsConstants } from '../../../common/constants/posts-constants';
+import { commonTopicsConstants } from '../../../common/constants/topics-constants';
 import { PollOptionEntity } from '../../../shared/entities/poll-option.entity';
+import { PollEntity } from '../../../shared/entities/poll.entity';
 import { PostEntity } from '../../../shared/entities/post.entity';
 import { postsQueryBuilder } from '../../../shared/helpers/posts-query-builder';
+import { PostDecorationService } from './post-decoration.service';
+import { PostValidationService } from './post-validation.service';
 
 import type { Post } from '../../../common/types/post';
 import type { Result } from '../../../common/types/result';
@@ -20,28 +24,62 @@ export class PostsService {
   constructor(
     @InjectRepository(PostEntity) private readonly postsRepository: Repository<PostEntity>,
     @InjectRepository(PollEntity) private readonly pollsRepository: Repository<PollEntity>,
-    @InjectRepository(PollOptionEntity) private readonly pollOptionsRepository: Repository<PollOptionEntity>
+    @InjectRepository(PollOptionEntity) private readonly pollOptionsRepository: Repository<PollOptionEntity>,
+    private readonly nestMinioService: NestMinioService,
+    private readonly postValidationService: PostValidationService,
+    private readonly postDecorationService: PostDecorationService,
   ) { }
   
+  /** バケットがなければ作成する */
+  public async onModuleInit(): Promise<void> {
+    try {
+      const existsBucket = await this.nestMinioService.getMinio().bucketExists(commonPostsConstants.bucketName);
+      if(existsBucket) {
+        this.logger.debug('添付ファイル用のバケット作成済');
+      }
+      else {
+        this.logger.debug('添付ファイル用のバケット未作成・作成開始');
+        await this.nestMinioService.getMinio().makeBucket(commonPostsConstants.bucketName);
+        this.logger.debug('添付ファイル用のバケット作成完了');
+      }
+    }
+    catch(error) {
+      this.logger.error('添付ファイル用のバケットの確認・作成に失敗', error);
+    }
+  }
+  
   /** 投稿する */
-  public async create(post: Post): Promise<Result<boolean>> {
+  public async create(post: Post, file?: Express.Multer.File): Promise<Result<boolean>> {
+    // トピックごとに入力チェックする
+    const validationResult = this.postValidationService.validateText(post.text, post.topicId);
+    if(validationResult.error != null) return validationResult;
+    
+    // 川柳モードの時にスタイリングできそうならする
+    if(post.topicId === commonTopicsConstants.senryu.id) post.text = this.postDecorationService.senryuStyle(post.text);
+    // ランダム装飾モードの場合に行ごとにタグを入れたり入れなかったりする
+    if(post.topicId === commonTopicsConstants.randomDecorations.id) post.text = this.postDecorationService.decorateRandomly(post.text);
+    // 勝手に AI 生成モードの場合にテキストを変更してもらう
+    if(post.topicId === commonTopicsConstants.aiGenerated.id) post.text = await this.postDecorationService.generateByAi(post.text);
+    
     try {
       const newPostEntity = new PostEntity({
-        userId         : post.topicId === topicsConstants.anonymous.id ? 'anonymous' : post.userId,
+        userId         : post.topicId === commonTopicsConstants.anonymous.id ? 'anonymous' : post.userId,
         text           : post.text,
         topicId        : post.topicId,
         visibility     : post.visibility,
         inReplyToPostId: post.inReplyToPostId,
         inReplyToUserId: post.inReplyToUserId,
-        hasPoll        : post.topicId === topicsConstants.poll.id
+        hasPoll        : post.topicId === commonTopicsConstants.poll.id
       });
       const createdPostEntity = await this.postsRepository.save(newPostEntity);
       
       // アンケートモード
-      if(post.topicId === topicsConstants.poll.id) {
+      if(post.topicId === commonTopicsConstants.poll.id) {
         const result = await this.createPoll(post, createdPostEntity);
         if(result.error != null) return result;
       }
+      
+      console.log('TODO : 添付ファイル', file);
       
       return { result: true };
     }
@@ -126,6 +164,7 @@ export class PostsService {
     }
   }
   
+  /** アンケート期限の日時を生成する */
   private createExpiresAt(expiresAt: string): Date {
     const now = new Date();
     if(expiresAt === '5 minutes' ) return new Date(now.getTime() +       5 * 60 * 1000);

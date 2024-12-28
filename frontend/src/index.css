@@ -16,13 +16,13 @@
 html.dark {
   --background-colour: var(--background-colour-dark);
 }
-@media (prefers-color-scheme: dark) {
-  html {
-    --background-colour: var(--background-colour-dark);
-  }
-}
 html.light {
   --background-colour: var(--background-colour-light);
+}
+@property --background-colour {  /* CSS 変数のトランジションを期待するが動作してなさそう */
+  syntax: "<color>";
+  inherits: true;
+  initial-value: var(--background-colour-dark);
 }
 
 html {
@@ -31,16 +31,12 @@ html {
   font-family: var(--font-family-sans-serif);
   word-break: break-all;
   cursor: default;
-  background-color: transparent !important;
+  background-color: transparent !important;  /* `index.html` を打ち消す */
+  transition: --background-colour .15s;
 }
 
 html.dark body {
   background-color: rgb(var(--background-colour-dark)) !important;
-}
-@media (prefers-color-scheme: dark) {
-  html body {
-    background-color: rgb(var(--background-colour-dark)) !important;
-  }
 }
 html.light body {
   background-color: rgb(var(--background-colour-light)) !important;  /* `thtmes.tsx` と揃える */
@@ -49,6 +45,7 @@ html.light body {
 body {
   height: 100%;
   padding-right: 0 !important;  /* Drawer を開いた時に勝手に付くので切る */
+  transition: background-color .15s;
 }
 
 /* iOS で background-attachment: fixed; が効かないため */
@@ -186,11 +183,6 @@ h6.MuiTypography-root { font-size: 1em;    font-weight: bold; }
 html.dark .app-bar-component {
   background-color: #001838 !important;
 }
-@media (prefers-color-scheme: dark) {
-  .app-bar-component {
-    background-color: #001838 !important;
-  }
-}
 html.light .app-bar-component {
   background-color: #c7e3fb !important;
 }
@@ -211,12 +203,6 @@ html.light .app-bar-component {
 html.dark .menu-component-list :hover .MuiButtonBase-root,
 html.dark .menu-component-list .Mui-selected {
   background-color: rgba(243, 33, 150, .85) !important;
-}
-@media (prefers-color-scheme: dark) {
-  .menu-component-list :hover .MuiButtonBase-root,
-  .menu-component-list .Mui-selected {
-    background-color: rgba(243, 33, 150, .85) !important;
-  }
 }
 html.light .menu-component-list :hover .MuiButtonBase-root,
 html.light .menu-component-list .Mui-selected {
@@ -276,15 +262,6 @@ html.dark .font-parser-component samp,
 html.dark .font-parser-component kbd {
   background: #333;
 }
-@media (prefers-color-scheme: dark) {
-  .font-parser-component code,
-  .font-parser-component var,
-  .font-parser-component samp,
-  .font-parser-component kbd {
-    background: #333;
-  }
-}
-
 html.light .font-parser-component code,
 html.light .font-parser-component var,
 html.light .font-parser-component samp,
@@ -307,7 +284,7 @@ html.light .font-parser-component kbd {
 
 .font-parser-component marquee[direction="up"],
 .font-parser-component marquee[direction="down"] {
-  height: 4em;
+  height: 4.5em;
 }
 
 @keyframes scroll-left {

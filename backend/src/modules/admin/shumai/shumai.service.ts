@@ -6,7 +6,7 @@ import MarkovChain from '@hideokamoto/markov-chain-tiny';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { topicsConstants } from '../../../common/constants/topics-constants';
+import { commonTopicsConstants } from '../../../common/constants/topics-constants';
 import { PostEntity } from '../../../shared/entities/post.entity';
 
 import type { Result } from '../../../common/types/result';
@@ -50,7 +50,7 @@ export class ShumaiService {
       const newPostEntity = new PostEntity({
         userId : 'shumai',
         text   : text,
-        topicId: topicsConstants.normal.id
+        topicId: commonTopicsConstants.normal.id
       });
       await this.postsRepository.insert(newPostEntity);
       return { result: true };

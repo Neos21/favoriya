@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { topicsConstants } from '../../common/constants/topics-constants';
+import { commonTopicsConstants } from '../../common/constants/topics-constants';
 import { TopicEntity } from '../../shared/entities/topic.entity';
 
 /** Topics Service */
@@ -15,7 +15,7 @@ export class TopicsService {
   
   /** トピック定義を初期投入する */
   public async onModuleInit(): Promise<void> {
-    const topics = Object.values(topicsConstants);
+    const topics = Object.values(commonTopicsConstants);
     for(const topic of topics) {
       await this.topicsRepository.save(new TopicEntity({ id: topic.id, name: topic.name })).catch(() => {});
     }

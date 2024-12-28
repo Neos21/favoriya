@@ -1,11 +1,9 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Logger, Param, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-import { topicsConstants } from '../../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject, snakeToCamelCaseObject } from '../../../../common/helpers/convert-case';
 import { JwtAuthGuard } from '../../../../shared/guards/jwt-auth.guard';
 import { isValidJwtUserId } from '../../../../shared/helpers/is-valid-jwt-user-id';
-import { PostDecorationService } from '../post-decoration.service';
-import { PostValidationService } from '../post-validation.service';
 import { RepliesService } from './replies.service';
 
 import type { Request, Response } from 'express';
@@ -14,11 +12,9 @@ import type { Post as TypePost, PostApi } from '../../../../common/types/post';
 /** Replies Controller */
 @Controller('api/users')
 export class RepliesController {
-  constructor(
-    private readonly repliesService: RepliesService,
-    private readonly postValidationService: PostValidationService,
-    private readonly postDecorationService: PostDecorationService,
-  ) { }
+  private readonly logger: Logger = new Logger(RepliesController.name);
+  
+  constructor(private readonly repliesService: RepliesService) { }
   
   /** リプライ一覧を取得する */
   @UseGuards(JwtAuthGuard)
@@ -34,23 +30,22 @@ export class RepliesController {
   /** リプライする */
   @UseGuards(JwtAuthGuard)
   @Post(':userId/posts/:postId/replies')
-  public async create(@Param('userId') inReplyToUserId: string, @Param('postId') inReplyToPostId: string, @Body() postApi: PostApi, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
-    if(!isValidJwtUserId(request, response, postApi.user_id)) return;  // リプライする人の本人確認
-    
-    const post: TypePost = snakeToCamelCaseObject(postApi) as TypePost;
-    
-    // トピックごとに入力チェックする
-    const validationResult = this.postValidationService.validateText(post.text, post.topicId);
-    if(validationResult.error != null) return response.status(validationResult.code ?? HttpStatus.BAD_REQUEST).json(validationResult);
-    
-    // 川柳モードの時にスタイリングできそうならする
-    if(post.topicId === topicsConstants.senryu.id) post.text = this.postDecorationService.senryuStyle(post.text);
-    // ランダム装飾モードの場合に行ごとにタグを入れたり入れなかったりする
-    if(post.topicId === topicsConstants.randomDecorations.id) post.text = this.postDecorationService.decorateRandomly(post.text);
-    
-    const result = await this.repliesService.create(inReplyToUserId, inReplyToPostId, post);
-    if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
-    
-    return response.status(HttpStatus.CREATED).end();
+  @UseInterceptors(FileInterceptor('file'))
+  public async create(@Param('userId') inReplyToUserId: string, @Param('postId') inReplyToPostId: string, @Body('post_json') postJson: string, @UploadedFile() file: Express.Multer.File, @Req() request: Request, @Res() response: Response): Promise<Response<void>> {
+    try {
+      const postApi: PostApi = JSON.parse(postJson);  // Throws
+      const post: TypePost = snakeToCamelCaseObject(postApi) as TypePost;
+      
+      if(!isValidJwtUserId(request, response, postApi.user_id)) return;  // リプライする人の本人確認
+      
+      const result = await this.repliesService.create(inReplyToUserId, inReplyToPostId, post, file);
+      if(result.error != null) return response.status(result.code ?? HttpStatus.BAD_REQUEST).json(result);
+      
+      return response.status(HttpStatus.CREATED).end();
+    }
+    catch(error) {
+      this.logger.error('リプライ処理に失敗', error);
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'リプライ処理に失敗' });
+    }
   }
 }

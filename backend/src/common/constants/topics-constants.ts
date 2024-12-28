@@ -5,7 +5,7 @@ import { isEmptyString } from '../helpers/is-empty-string';
 import type { Result } from '../../common/types/result';
 
 /** トピック定義 */
-export const topicsConstants = {
+export const commonTopicsConstants = {
   normal: {
     id: 1,
     name: '通常モード'

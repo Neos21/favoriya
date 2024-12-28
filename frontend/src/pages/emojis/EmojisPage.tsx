@@ -1,19 +1,18 @@
 import { ChangeEvent, FC, Fragment, useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { Alert, Box, Button, Divider, Grid2, List, ListItem, ListItemText, TextField, Typography } from '@mui/material';
 
-import { emojisConstants } from '../../common/constants/emojis-constants';
+import { commonEmojisConstants } from '../../common/constants/emojis-constants';
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { VisuallyHiddenInputComponent } from '../../shared/components/VisuallyHiddenInputComponent/VisuallyHiddenInputComponent';
 import { emojiConstants } from '../../shared/constants/emoji-constants';
-import { useApiGet } from '../../shared/hooks/use-api-fetch';
+import { useApiGet, useApiPostFormData } from '../../shared/hooks/use-api-fetch';
 import { setAllEmojis } from '../../shared/stores/emojis-slice';
 
 import type { Result } from '../../common/types/result';
-import type { RootState } from '../../shared/stores/store';
 import type { Emoji } from '../../common/types/emoji';
 
 type FormData = {
@@ -23,8 +22,8 @@ type FormData = {
 /** Emojis Page */
 export const EmojisPage: FC = () => {
   const dispatch = useDispatch();
-  const userState = useSelector((state: RootState) => state.user);
   const apiGet = useApiGet();
+  const apiPostFormData = useApiPostFormData();
   
   const [selectedFile, setSelectedFile] = useState<File>(null);
   const [previewUrl, setPreviewUrl] = useState<string>(null);
@@ -66,7 +65,7 @@ export const EmojisPage: FC = () => {
     setFormSucceededMessage(null);
     const file = event.target.files?.[0];
     if(file == null) return console.warn('ファイルを選択せずにダイアログを閉じた', event);
-    if(file.size > (emojisConstants.maxFileSizeKb * 1024)) return setFormErrorMessage(`ファイルサイズが ${emojisConstants.maxFileSizeKb} KB を超えています`);
+    if(file.size > (commonEmojisConstants.maxFileSizeKb * 1024)) return setFormErrorMessage(`ファイルサイズが ${commonEmojisConstants.maxFileSizeKb} KB を超えています`);
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));  // プレビュー用の URL を作成する
   };
@@ -104,11 +103,7 @@ export const EmojisPage: FC = () => {
     postFormData.append('name', name);
     setIsUploading(true);
     try {
-      const response = await fetch('/api/emojis', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${userState.token}` },
-        body: postFormData
-      });
+      const response = await apiPostFormData('/emojis', postFormData);
       const result: Result<string> = await response.json();
       if(result.error != null) return setFormErrorMessage(result.error);
       

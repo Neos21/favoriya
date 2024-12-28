@@ -7,7 +7,7 @@ import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { PostFormComponent } from '../../shared/components/PostFormComponent/PostFormComponent';
 import { PostsListComponent } from '../../shared/components/PostsListComponent/PostsListComponent';
-import { useApiGet, useApiPost } from '../../shared/hooks/use-api-fetch';
+import { useApiGet, useApiPostFormData } from '../../shared/hooks/use-api-fetch';
 
 import type { Post, PostApi } from '../../common/types/post';
 import type { Result } from '../../common/types/result';
@@ -20,7 +20,7 @@ export const GlobalTimelinePage: FC = () => {
   
   const userState = useSelector((state: RootState) => state.user);
   const apiGet = useApiGet();
-  const apiPost = useApiPost();
+  const apiPostFormData = useApiPostFormData();
   
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -55,10 +55,14 @@ export const GlobalTimelinePage: FC = () => {
   }, [fetchFirstPosts]);
   
   /** 投稿 */
-  const onSubmit = async (newPostApi: PostApi) => {
-    const response = await apiPost(`/users/${userState.id}/posts`, newPostApi);  // Throws
+  const onSubmit = async (newPostApi: PostApi, file?: File) => {
+    const formData = new FormData();
+    formData.append('post_json', JSON.stringify(newPostApi));
+    if(file != null) formData.append('file', file);
+    
+    const response = await apiPostFormData(`/users/${userState.id}/posts`, formData);  // Throws
     if(!response.ok) {
-      const responseResult: Result<null> = await response.json();  // Throws
+      const responseResult: Result<void> = await response.json();  // Throws
       throw new Error(responseResult.error ?? '投稿時にエラーが発生しました');
     }
     
