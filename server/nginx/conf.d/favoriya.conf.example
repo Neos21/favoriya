@@ -10,21 +10,21 @@ server {
   # File Upload Max Size
   client_max_body_size  10M;
   
-  # Well Known
-  location /.well-known {
-    root  /var/www/favoriya;
-  }
-  
-  # Status JSON
-  location /status.json {
-    root  /var/www/favoriya;
-  }
-  
   # Error Page
   error_page 502 /502.html;
-  location /502.html {
-    root  /var/www/favoriya;
-  }
+  location /502.html { root  /var/www/favoriya; }
+  
+  # Assets
+  location /.well-known { root  /var/www/favoriya; }
+  location /status.json { root  /var/www/favoriya; }
+  
+  location /favicon.ico                      { root  /var/www/favoriya; }
+  location /robots.txt                       { root  /var/www/favoriya; }
+  location /manifest.webmanifest             { root  /var/www/favoriya; }
+  location /favicon-192.png                  { root  /var/www/favoriya; }
+  location /favicon-512.png                  { root  /var/www/favoriya; }
+  location /apple-touch-icon.png             { root  /var/www/favoriya; }
+  location /apple-touch-icon-precomposed.png { root  /var/www/favoriya; }
   
   # App
   location / {

@@ -50,6 +50,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               {post.topicId === topicsConstants.anonymous.id         && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25, borderColor: 'grey.500', color: 'grey.500' }}>匿名投稿モード</Alert>}
               {post.topicId === topicsConstants.randomDecorations.id && <Alert severity="warning" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>ランダム装飾モード</Alert>}
               {post.topicId === topicsConstants.randomLimit.id       && <Alert severity="error"   icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>ランダムリミットモード</Alert>}
+              {post.topicId === topicsConstants.aiGenerated.id       && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>勝手に AI 生成モード</Alert>}
               <Typography component="div" sx={{ mt: .75, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
                 <FontParserComponent input={post.text} />
               </Typography>
