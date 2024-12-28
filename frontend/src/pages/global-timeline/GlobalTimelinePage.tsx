@@ -16,7 +16,7 @@ import type { RootState } from '../../shared/stores/store';
 /** Global Timeline Page */
 export const GlobalTimelinePage: FC = () => {
   /** 1回につき読み込む件数 */
-  const offsetAmount = 100;
+  const offsetAmount = 50;
   
   const userState = useSelector((state: RootState) => state.user);
   const apiGet = useApiGet();

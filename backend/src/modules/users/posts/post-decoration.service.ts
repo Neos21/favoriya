@@ -1,10 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import DOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
+
+import { Injectable, Logger } from '@nestjs/common';
 
 import { getRandomFromArray } from '../../../common/helpers/get-random-from-array';
 
 /** Post Decoration Service */
 @Injectable()
 export class PostDecorationService {
+  private readonly logger: Logger = new Logger(PostDecorationService.name);
+  
   /** タグ */
   private readonly tagChoices: Array<{ start: string, end: string, replacements?: Array<string> }> = [
     { start: ''                             , end: '' },  // 一切加工しない
@@ -93,5 +98,31 @@ export class PostDecorationService {
     }
     const afterText = lines.join('\n');
     return afterText;
+  }
+  
+  /** AI にテキストを変換させる */
+  public async generateByAi(beforeText: string): Promise<string> {
+    try {
+      const textContent = DOMPurify(new JSDOM('').window).sanitize(beforeText, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+      const response = await fetch('https://api.rnilaweera.lk/api/v1/user/gpt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer rsnai_C5Y6ZSoUt3LRAWopF6PQ2Uef'
+        },
+        body: JSON.stringify({
+          prompt: `次の文章に任意の言葉を加筆修正したりして、変更後の文章のみを答えてください。\n\n${textContent}`
+        })
+      });
+      const json = await response.json();
+      const afterText = json.message;
+      this.logger.debug('元のテキスト', textContent);
+      this.logger.debug('AI 変換後のテキスト', afterText);
+      return afterText;
+    }
+    catch(error) {
+      this.logger.warn('AI 動作エラー', error);
+      return beforeText;
+    }
   }
 }

@@ -32,7 +32,7 @@ type FormData = {
   topicId    : number,
   text       : string,
   visibility : string | null,
-  pollOptions  : Array<string>,
+  pollOptions: Array<string>,
   pollExpires: string
 };
 
@@ -40,7 +40,7 @@ type FormData = {
 const choiceTopicId = () => {
   const random = getRandomIntInclusive(0, 1);  // 通常モードの割合を増やす
   if(random === 0) {
-    const topicIds = [topicsConstants.englishOnly.id, topicsConstants.kanjiOnly.id, topicsConstants.senryu.id, topicsConstants.randomDecorations.id, topicsConstants.randomLimit.id];
+    const topicIds = [topicsConstants.englishOnly.id, topicsConstants.kanjiOnly.id, topicsConstants.senryu.id, topicsConstants.randomDecorations.id, topicsConstants.randomLimit.id, topicsConstants.aiGenerated.id];
     return getRandomFromArray(topicIds);
   }
   else {
@@ -59,6 +59,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     pollOptions: ['', ''],    // 2つは入れておく
     pollExpires: '5 minutes'  // デフォルト値
   });
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [randomLimit, setRandomLimit] = useState<RandomLimit>(topicsConstants.randomLimit.generateLimit());
   
   const [cursorPosition, setCursorPosition] = useState(0);
@@ -136,6 +137,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     event.preventDefault();
     setErrorMessage(null);
     
+    
     const userId     = userState.id;
     const text       = formData.text.trim();
     const topicId    = formData.topicId;
@@ -152,15 +154,16 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       const validationResult = (topic as unknown as { validateFunction: (textContent: string) => Result<boolean> }).validateFunction(textContent);
       if(validationResult.error != null) return setErrorMessage(validationResult.error);
     }
-    else if(topicId === topicsConstants.randomLimit.id) {
+    if(topicId === topicsConstants.randomLimit.id) {
       const validationResult = (topic as unknown as { validateFunction: (textContent: string, mode: string, min: number, max: number) => Result<boolean> }).validateFunction(textContent, randomLimit.mode, randomLimit.min, randomLimit.max);
       if(validationResult.error != null) return setErrorMessage(validationResult.error);
     }
-    else if(topicId === topicsConstants.poll.id) {
+    if(topicId === topicsConstants.poll.id) {
       const validationResult = (topic as unknown as { validateFunction: (texts: Array<string>) => Result<boolean> }).validateFunction(formData.pollOptions);
       if(validationResult.error != null) return setErrorMessage(validationResult.error);
     }
     
+    setIsSubmitting(true);
     try {
       const newPostApi: PostApi = camelToSnakeCaseObject({ userId, text, topicId, visibility, inReplyToPostId, inReplyToUserId });
       if(topicId === topicsConstants.poll.id) {
@@ -185,6 +188,9 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       setErrorMessage('投稿処理に失敗しました。もう一度やり直してください');
       console.error('投稿処理に失敗', error);
     }
+    finally {
+      setIsSubmitting(false);
+    }
   };
   
   return <>
@@ -203,7 +209,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
         </Grid2>
         <Grid2 size="grow" sx={{ placeSelf: 'end', textAlign: 'right' }}>
           <PostFormHelpComponent />
-          <Button type="submit" variant="contained">投稿</Button>
+          <Button type="submit" variant="contained" disabled={isSubmitting}>投稿</Button>
         </Grid2>
       </Grid2>
       

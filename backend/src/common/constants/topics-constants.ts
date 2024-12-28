@@ -1,8 +1,8 @@
 import { getRandomFromArray } from '../helpers/get-random-from-array';
 import { getRandomIntInclusive } from '../helpers/get-random-int-inclusive';
+import { isEmptyString } from '../helpers/is-empty-string';
 
 import type { Result } from '../../common/types/result';
-import { isEmptyString } from '../helpers/is-empty-string';
 
 /** トピック定義 */
 export const topicsConstants = {
@@ -101,5 +101,9 @@ export const topicsConstants = {
       if(texts.some(text => text.length > maxLength)) return { error: `選択肢は ${maxLength} 文字以内で入力してください` };
       return { result: true };
     }
+  },
+  aiGenerated: {
+    id: 9,
+    name: '勝手に AI 生成モード'
   }
 };
