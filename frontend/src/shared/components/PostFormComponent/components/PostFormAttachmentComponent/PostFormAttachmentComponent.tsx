@@ -61,7 +61,7 @@ export const PostFormAttachmentComponent: FC<Props> = ({ setFormData, setErrorMe
     
     <Tooltip title="画像・音声を添付">
       <Button component="label" variant="outlined" tabIndex={-1} startIcon={<AttachFileIcon />} sx={{ color: 'grey.500', borderColor: 'grey.500', minWidth: 'auto', px: 1, '& .MuiButton-startIcon': { m: 0 } }}>
-        <VisuallyHiddenInputComponent type="file" accept="image/*,.heic,.heif,audio/*" onChange={onChangeFile} />
+        <VisuallyHiddenInputComponent type="file" accept="image/*,.heic,.heif,audio/*,.m4a" onChange={onChangeFile} />
       </Button>
     </Tooltip>
   </Box>;
