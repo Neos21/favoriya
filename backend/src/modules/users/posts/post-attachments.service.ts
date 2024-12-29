@@ -46,19 +46,21 @@ export class PostAttachmentsService {
   /** ファイルをアップロードし DB 登録する */
   public async save(file: Express.Multer.File, createdPostEntity: PostEntity): Promise<Result<string>> {
     if(file.size > (commonPostsConstants.maxFileSizeKb * 1024)) return { error: `ファイルサイズが ${commonPostsConstants.maxFileSizeMb} MB を超えています`, code: HttpStatus.BAD_REQUEST };
-    if(!file.mimetype.startsWith('image/') && !['.heic', 'heif'].some(extName => file.originalname.toLocaleLowerCase().endsWith(extName)) && !file.mimetype.startsWith('audio/')) return { error: '画像または音声ファイルではありません', code: HttpStatus.BAD_REQUEST };
+    if(!file.mimetype.startsWith('image/') && !['.heic', 'heif'].some(extName => file.originalname.toLowerCase().endsWith(extName)) &&
+       !file.mimetype.startsWith('audio/') && !file.originalname.toLowerCase().endsWith('.m4a')
+      ) return { error: '画像または音声ファイルではありません', code: HttpStatus.BAD_REQUEST };
     
     let convertedBuffer: Buffer;
     let extName: string;
     let mimeType: string;
-    if(file.mimetype.startsWith('image/') || ['.heic', 'heif'].some(extName => file.originalname.toLocaleLowerCase().endsWith(extName))) {
+    if(file.mimetype.startsWith('image/') || ['.heic', 'heif'].some(extName => file.originalname.toLowerCase().endsWith(extName))) {
       const resizedBufferResult = await this.resizeImage(file.buffer, file.originalname, file.mimetype);
       if(resizedBufferResult.error != null) return resizedBufferResult as Result<string>;
       convertedBuffer = resizedBufferResult.result;
       extName  = file.mimetype === 'image/gif' ? '.gif'      : '.jpg';
       mimeType = file.mimetype === 'image/gif' ? 'image/gif' : 'image/jpeg';
     }
-    else if(file.mimetype.startsWith('audio/')) {
+    else if(file.mimetype.startsWith('audio/') || file.originalname.toLowerCase().endsWith('.m4a')) {
       const convertedBufferResult = await this.convertAudio(file.buffer);
       if(convertedBufferResult.error != null) return convertedBufferResult as Result<string>;
       convertedBuffer = convertedBufferResult.result;
@@ -109,7 +111,7 @@ export class PostAttachmentsService {
     
     try {
       let convertedBuffer: Buffer | ArrayBuffer = buffer;
-      if(['image/heic', 'image/heif'].includes(mimeType) || ['.heic', 'heif'].some(extName => fileName.toLocaleLowerCase().endsWith(extName))) {
+      if(['image/heic', 'image/heif'].includes(mimeType) || ['.heic', 'heif'].some(extName => fileName.toLowerCase().endsWith(extName))) {
         this.logger.debug('HEIC or HEIF を変換');
         convertedBuffer = await heicConvert({
           buffer: buffer,

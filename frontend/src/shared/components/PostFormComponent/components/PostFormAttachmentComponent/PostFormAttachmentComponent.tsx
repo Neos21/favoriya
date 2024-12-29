@@ -43,10 +43,10 @@ export const PostFormAttachmentComponent: FC<Props> = ({ setFormData, setErrorMe
     if(file.type.startsWith('image/')) {
       setImagePreviewUrl(URL.createObjectURL(file));  // プレビュー用の URL を作成する
     }
-    else if(['.heic', 'heif'].some(extName => file.name.toLocaleLowerCase().endsWith(extName))) {
+    else if(['.heic', 'heif'].some(extName => file.name.toLowerCase().endsWith(extName))) {
       setIsHeicImage(true);
     }
-    else if(file.type.startsWith('audio/')) {
+    else if(file.type.startsWith('audio/') || file.name.toLowerCase().endsWith('.m4a')) {
       setIsAudio(true);
     }
     else {
