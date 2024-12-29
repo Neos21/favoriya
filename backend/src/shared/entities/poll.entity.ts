@@ -26,11 +26,11 @@ export class PollEntity {
   public post: PostEntity;
   
   /** 選択肢 */
-  @OneToMany(() => PollOptionEntity, pollOptionEntity => pollOptionEntity.poll, { createForeignKeyConstraints: false, cascade: true })
+  @OneToMany(() => PollOptionEntity, pollOptionEntity => pollOptionEntity.poll, { createForeignKeyConstraints: false, cascade: true, onDelete: 'CASCADE' })
   public pollOptions: Array<PollOptionEntity>;
   
   /** 選択肢に対する回答 */
-  @OneToMany(() => PollVoteEntity, pollVoteEntity => pollVoteEntity.poll, { createForeignKeyConstraints: false, cascade: true })
+  @OneToMany(() => PollVoteEntity, pollVoteEntity => pollVoteEntity.poll, { createForeignKeyConstraints: false, cascade: true, onDelete: 'CASCADE' })
   public pollVotes: Array<PollVoteEntity>;
   
   constructor(partial: Partial<PollEntity>) { Object.assign(this, partial); }

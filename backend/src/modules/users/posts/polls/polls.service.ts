@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { PollOptionEntity } from '../../../../shared/entities/poll-option.entity';
 import { PollVoteEntity } from '../../../../shared/entities/poll-vote.entity';
 import { PollEntity } from '../../../../shared/entities/poll.entity';
 
@@ -15,6 +16,7 @@ export class PollsService {
   
   constructor(
     @InjectRepository(PollEntity) private readonly pollsRepository: Repository<PollEntity>,
+    @InjectRepository(PollOptionEntity) private readonly pollOptionsRepository: Repository<PollOptionEntity>,
     @InjectRepository(PollVoteEntity) private readonly pollVotesRepository: Repository<PollVoteEntity>
   ) { }
   
@@ -50,6 +52,23 @@ export class PollsService {
     catch(error) {
       this.logger.error('アンケートの取得に失敗', error);
       return { error: 'アンケートの取得に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+    }
+  }
+  
+  /** ユーザに紐付くアンケートを全て削除する */
+  public async removeAllByUserId(userId: string): Promise<Result<boolean>> {
+    try {
+      const pollEntities = await this.pollsRepository.findBy({ userId });
+      for(const pollEntity of pollEntities) {
+        await this.pollOptionsRepository.delete({ pollId: pollEntity.id });
+        await this.pollVotesRepository.delete({ pollId: pollEntity.id });
+        await this.pollsRepository.delete({ id: pollEntity.id });
+      }
+      return { result: true };
+    }
+    catch(error) {
+      this.logger.error('ユーザに紐付くアンケートの一括削除に失敗', error);
+      return { error: 'ユーザに紐付くアンケートの一括削除に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
 }

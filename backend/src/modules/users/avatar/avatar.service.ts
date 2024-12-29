@@ -46,11 +46,13 @@ export class AvatarService {
     if(!file.mimetype.startsWith('image/')) return { error: '画像ファイルではありません', code: HttpStatus.BAD_REQUEST };
     
     // リサイズする
-    const resizedBuffer = await this.resizeImage(file.buffer);
+    const resizedBufferResult = await this.resizeImage(file.buffer);
+    if(resizedBufferResult.error != null) return resizedBufferResult as Result<string>;
     // ファイル名を作成する
     const fileNameResult = this.createFileName(userId, file.originalname);
+    if(fileNameResult.error != null) return fileNameResult;
     // MinIO にアップロードする
-    const avatarUrlResult = await this.putObject(resizedBuffer, file.mimetype, fileNameResult.result);
+    const avatarUrlResult = await this.putObject(resizedBufferResult.result, file.mimetype, fileNameResult.result);
     if(avatarUrlResult.error != null) return avatarUrlResult;
     // 変更前のユーザ情報を取得する
     const beforeUserEntityResult = await this.findOneUserById(userId);
@@ -83,12 +85,18 @@ export class AvatarService {
   }
   
   /** リサイズする */
-  private async resizeImage(buffer: Buffer): Promise<Buffer> {
-    const metadata = await sharp(buffer).metadata();
-    if(metadata.width > commonUserConstants.avatarMaxImageSizePx || metadata.height > commonUserConstants.avatarMaxImageSizePx) {
-      return sharp(buffer).resize(commonUserConstants.avatarMaxImageSizePx, commonUserConstants.avatarMaxImageSizePx, { fit: 'inside' }).toBuffer();
+  private async resizeImage(buffer: Buffer): Promise<Result<Buffer>> {
+    try {
+      const metadata = await sharp(buffer).metadata();
+      if(metadata.width > commonUserConstants.avatarMaxImageSizePx || metadata.height > commonUserConstants.avatarMaxImageSizePx) {
+        return { result: await sharp(buffer).resize(commonUserConstants.avatarMaxImageSizePx, commonUserConstants.avatarMaxImageSizePx, { fit: 'inside' }).toBuffer() };
+      }
+      return { result: buffer };  // リサイズ不要
     }
-    return buffer;  // リサイズ不要
+    catch(error) {
+      this.logger.error('画像ファイルのリサイズに失敗', error);
+      return { error: '画像ファイルのリサイズに失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+    }
   }
   
   /** ファイル名を組み立てる */
@@ -103,9 +111,7 @@ export class AvatarService {
   /** MinIO にアップロードする */
   private async putObject(buffer: Buffer, mimeType: string, fileName: string): Promise<Result<string>> {
     try {
-      await this.nestMinioService.getMinio().putObject(commonUserConstants.bucketName, fileName, buffer, buffer.byteLength, {
-        'Content-Type': mimeType
-      });
+      await this.nestMinioService.getMinio().putObject(commonUserConstants.bucketName, fileName, buffer, buffer.byteLength, { 'Content-Type': mimeType });
       return { result: `/${commonUserConstants.bucketName}/${fileName}` };
     }
     catch(error) {

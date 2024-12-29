@@ -1,15 +1,15 @@
-import { NestMinioService } from 'nestjs-minio';
 import { Repository } from 'typeorm';
 
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { commonPostsConstants } from '../../../common/constants/posts-constants';
 import { commonTopicsConstants } from '../../../common/constants/topics-constants';
 import { PollOptionEntity } from '../../../shared/entities/poll-option.entity';
+import { PollVoteEntity } from '../../../shared/entities/poll-vote.entity';
 import { PollEntity } from '../../../shared/entities/poll.entity';
 import { PostEntity } from '../../../shared/entities/post.entity';
 import { postsQueryBuilder } from '../../../shared/helpers/posts-query-builder';
+import { PostAttachmentsService } from './post-attachments.service';
 import { PostDecorationService } from './post-decoration.service';
 import { PostValidationService } from './post-validation.service';
 
@@ -25,28 +25,11 @@ export class PostsService {
     @InjectRepository(PostEntity) private readonly postsRepository: Repository<PostEntity>,
     @InjectRepository(PollEntity) private readonly pollsRepository: Repository<PollEntity>,
     @InjectRepository(PollOptionEntity) private readonly pollOptionsRepository: Repository<PollOptionEntity>,
-    private readonly nestMinioService: NestMinioService,
+    @InjectRepository(PollVoteEntity) private readonly pollVotesRepository: Repository<PollVoteEntity>,
     private readonly postValidationService: PostValidationService,
     private readonly postDecorationService: PostDecorationService,
+    private readonly postAttachmentsService: PostAttachmentsService
   ) { }
-  
-  /** バケットがなければ作成する */
-  public async onModuleInit(): Promise<void> {
-    try {
-      const existsBucket = await this.nestMinioService.getMinio().bucketExists(commonPostsConstants.bucketName);
-      if(existsBucket) {
-        this.logger.debug('添付ファイル用のバケット作成済');
-      }
-      else {
-        this.logger.debug('添付ファイル用のバケット未作成・作成開始');
-        await this.nestMinioService.getMinio().makeBucket(commonPostsConstants.bucketName);
-        this.logger.debug('添付ファイル用のバケット作成完了');
-      }
-    }
-    catch(error) {
-      this.logger.error('添付ファイル用のバケットの確認・作成に失敗', error);
-    }
-  }
   
   /** 投稿する */
   public async create(post: Post, file?: Express.Multer.File): Promise<Result<boolean>> {
@@ -79,7 +62,10 @@ export class PostsService {
         if(result.error != null) return result;
       }
       
-      console.log('TODO : 添付ファイル', file);
+      if(file != null) {
+        const result = await this.postAttachmentsService.save(file, createdPostEntity);
+        if(result.error != null) return result as Result<boolean>;
+      }
       
       return { result: true };
     }
@@ -130,6 +116,18 @@ export class PostsService {
         this.logger.error('投稿の削除処理で2件以上の削除が発生', deleteResult);
         return { error: '投稿の削除処理で問題が発生', code: HttpStatus.INTERNAL_SERVER_ERROR };
       }
+      
+      // Poll を削除する
+      const pollEntity = await this.pollsRepository.findOneBy({ userId, postId });
+      if(pollEntity != null) {
+        await this.pollOptionsRepository.delete({ pollId: pollEntity.id });
+        await this.pollVotesRepository.delete({ pollId: pollEntity.id });
+        await this.pollsRepository.delete({ id: pollEntity.id });
+      }
+      
+      // Attachment を削除する
+      await this.postAttachmentsService.remove(userId, postId);
+      
       return { result: true };
     }
     catch(error) {

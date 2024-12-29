@@ -12,6 +12,8 @@ export const postsQueryBuilder = (postsRepository: Repository<PostEntity>, isAft
     .select(selectColumns)  // 投稿内容 (リプライ取得時はリプライ元を取得しない)
     .leftJoin('posts.user', 'users')  // 投稿に対応する users を結合する
     .addSelect(['users.name', 'users.avatarUrl'])  // 投稿ユーザの情報
+    .leftJoin('posts.attachment', 'attachments')  // 投稿に紐付く添付ファイル
+    .addSelect(['attachments.id', 'attachments.filePath', 'attachments.mimeType'])
     .leftJoin('posts.favourites', 'favourites')  // 投稿に対する favourites を結合する
     .addSelect(['favourites.id'])
     .leftJoin('favourites.favouritedByUser', 'favourited_by_users')  // ふぁぼったユーザ情報

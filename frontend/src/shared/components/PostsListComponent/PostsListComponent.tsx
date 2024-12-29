@@ -1,12 +1,15 @@
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import FileOpenIcon from '@mui/icons-material/FileOpen';
 import ReplyIcon from '@mui/icons-material/Reply';
-import { Alert, Avatar, Box, Divider, Grid2, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Divider, Grid2, IconButton, List, ListItem, ListItemAvatar, ListItemText, Modal, Tooltip, Typography } from '@mui/material';
 
 import { commonTopicsConstants } from '../../../common/constants/topics-constants';
 import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { FontParserComponent } from '../../components/FontParserComponent/FontParserComponent';
+import { modalStyleConstants } from '../../constants/modal-style-constants';
+import { postConstants } from '../../constants/post-constants';
 import { userConstants } from '../../constants/user-constants';
 import { epochTimeMsToJstString } from '../../services/convert-date-to-jst';
 import { BeforeReplyComponent } from './components/BeforeReplyComponent/BeforeReplyComponent';
@@ -22,7 +25,19 @@ type Props = {
 
 /** Posts List Component */
 export const PostsListComponent: FC<Props> = ({ propPosts }) => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [modalFilePath, setModalFilePath] = useState<string>(null);
+  
   if(propPosts == null || propPosts.length === 0) return <Typography component="p" sx={{ mt: 3 }}>投稿がありません</Typography>;
+  
+  const onOpenModal = (filePath: string) => {
+    setModalFilePath(filePath);
+    setIsModalOpen(true);
+  };
+  const onCloseModal = () => {
+    setIsModalOpen(false);
+    setModalFilePath(null);
+  };
   
   return <>
     <List sx={{ mt: 3 }}>
@@ -55,6 +70,11 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               <Typography component="div" sx={{ mt: .75, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
                 <FontParserComponent input={post.text} />
               </Typography>
+              {post.attachment != null && <Box component="div" sx={{ mt: 1 }}>
+                {post.attachment.mimeType.startsWith('image/') && <img src={`${postConstants.ossUrl}${post.attachment.filePath}`} style={{ width: '64px', height: '64px', objectFit: 'cover', cursor: 'pointer' }} onClick={() => onOpenModal(`${postConstants.ossUrl}${post.attachment.filePath}`)} />}
+                {post.attachment.mimeType.startsWith('audio/') && <audio controls src={`${postConstants.ossUrl}${post.attachment.filePath}`} />}
+                {!post.attachment.mimeType.startsWith('image/') && !post.attachment.mimeType.startsWith('audio/') && <a href={`${postConstants.ossUrl}${post.attachment.filePath}`} target="_blank"><FileOpenIcon sx={{ color: 'grey.500', width: '64px', height: '64px' }} /></a>}
+              </Box>}
               {post.topicId === commonTopicsConstants.poll.id && <PollComponent propPost={post} />}
               
               <Typography component="div" sx={{ mt: .25 }}>
@@ -64,7 +84,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               </Typography>
               
               {// リプライ元表示
-                !isEmptyString(post.inReplyToPostId) && !isEmptyString(post.inReplyToUserId) && <Box component="div" sx={{ mt: 1, maxHeight: '7.85em', overflowY: 'hidden', border: '1px solid', borderColor: 'grey.500', borderRadius: 1, opacity: .8 }}>
+                !isEmptyString(post.inReplyToPostId) && !isEmptyString(post.inReplyToUserId) && <Box component="div" sx={{ mt: 1, maxHeight: '7.85em', overflowY: 'hidden', border: '1px solid', borderColor: 'grey.600', borderRadius: 1, opacity: .8 }}>
                   <BeforeReplyComponent inReplyToPostId={post.inReplyToPostId} inReplyToUserId={post.inReplyToUserId} />
                 </Box>
               }
@@ -74,5 +94,11 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
         <Divider component="li" />
       </Fragment>)}
     </List>
+    
+    <Modal open={isModalOpen} onClose={onCloseModal} sx={{ '& .MuiBackdrop-root': { cursor: 'pointer' } }}>
+      <Box component="div" sx={{ ...modalStyleConstants, p: 0, overflow: 'hidden', maxWidth: '80vw', width: 'auto', textAlign: 'center', cursor: 'pointer' }} onClick={onCloseModal}>
+        <img src={modalFilePath} style={{ maxWidth: '78vw', maxHeight: '80vh', verticalAlign: 'top' }} />
+      </Box>
+    </Modal>
   </>;
 };

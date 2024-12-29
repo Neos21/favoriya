@@ -10,6 +10,8 @@ import { NotificationEntity } from '../../shared/entities/notification.entity';
 import { PostEntity } from '../../shared/entities/post.entity';
 import { UserEntity } from '../../shared/entities/user.entity';
 import { AvatarService } from './avatar/avatar.service';
+import { PollsService } from './posts/polls/polls.service';
+import { PostAttachmentsService } from './posts/post-attachments.service';
 import { UserDeletionService } from './user-deletion.service';
 import { UsersService } from './users.service';
 
@@ -23,6 +25,8 @@ describe('UserDeletionService', () => {
   let fakeUsersRepository: Partial<Repository<UserEntity>>;
   let fakeUsersService: Partial<UsersService>;
   let fakeAvatarService: Partial<AvatarService>;
+  let fakePollsService: Partial<PollsService>;
+  let fakePostAttachmentsService: Partial<PostAttachmentsService>;
   
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,7 +39,9 @@ describe('UserDeletionService', () => {
         { provide: getRepositoryToken(NotificationEntity), useValue: fakeNotificationsRepository },
         { provide: getRepositoryToken(UserEntity), useValue: fakeUsersRepository },
         { provide: UsersService, useValue: fakeUsersService },
-        { provide: AvatarService, useValue: fakeAvatarService }
+        { provide: AvatarService, useValue: fakeAvatarService },
+        { provide: PollsService, useValue: fakePollsService },
+        { provide: PostAttachmentsService, useValue: fakePostAttachmentsService }
       ]
     }).compile();
     

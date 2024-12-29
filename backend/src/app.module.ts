@@ -46,6 +46,7 @@ import { FavouritesController } from './modules/users/posts/favourites/favourite
 import { FavouritesService } from './modules/users/posts/favourites/favourites.service';
 import { PollsController } from './modules/users/posts/polls/polls.controller';
 import { PollsService } from './modules/users/posts/polls/polls.service';
+import { PostAttachmentsService } from './modules/users/posts/post-attachments.service';
 import { PostDecorationService } from './modules/users/posts/post-decoration.service';
 import { PostValidationService } from './modules/users/posts/post-validation.service';
 import { PostsController } from './modules/users/posts/posts.controller';
@@ -55,6 +56,7 @@ import { RepliesService } from './modules/users/posts/replies/replies.service';
 import { UserDeletionService } from './modules/users/user-deletion.service';
 import { UsersController } from './modules/users/users.controller';
 import { UsersService } from './modules/users/users.service';
+import { AttachmentEntity } from './shared/entities/attachment.entity';
 import { EmojiReactionEntity } from './shared/entities/emoji-reaction.entity';
 import { EmojiEntity } from './shared/entities/emoji.entity';
 import { FavouriteEntity } from './shared/entities/favourite.entity';
@@ -109,6 +111,7 @@ import { UserEntity } from './shared/entities/user.entity';
       })
     }),
     TypeOrmModule.forFeature([
+      AttachmentEntity,
       EmojiEntity,
       EmojiReactionEntity,
       FavouriteEntity,
@@ -176,6 +179,7 @@ import { UserEntity } from './shared/entities/user.entity';
     NotificationsService,
     PollsService,
     PostsService,
+    PostAttachmentsService,
     PostDecorationService,
     PostEmojisService,
     PostValidationService,

@@ -4,7 +4,7 @@ import { PostEntity } from './post.entity';
 
 /** 投稿に紐付く添付ファイル */
 @Entity('attachments')
-@Unique(['userId', 'postId'])
+@Unique(['userId', 'postId', 'filePath'])
 export class AttachmentEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   public id: number;

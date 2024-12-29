@@ -1,15 +1,17 @@
 import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import CloseIcon from '@mui/icons-material/Close';
-import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, Grid2, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, Grid2, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 
 import { commonTopicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { getRandomFromArray } from '../../../common/helpers/get-random-from-array';
 import { FontParserComponent } from '../FontParserComponent/FontParserComponent';
+import { PostFormAttachmentComponent } from './components/PostFormAttachmentComponent/PostFormAttachmentComponent';
+import { PostFormDecorationComponent } from './components/PostFormDecorationComponent/PostFormDecorationComponent';
 import { PostFormHelpComponent } from './components/PostFormHelpComponent/PostFormHelpComponent';
 import { PostFormInfoMessageComponent } from './components/PostFormInfoMessageComponent/PostFormInfoMessageComponent';
+import { PostFormPollComponent } from './components/PostFormPollComponent/PostFormPollComponent';
 import { initialFormData } from './helpers/initial-form-data';
 import { validateText } from './helpers/validate-text';
 
@@ -31,11 +33,9 @@ type FormData = {
   text       : string,
   visibility : string | null,
   pollOptions: Array<string>,
-  pollExpires: string
+  pollExpires: string,
+  file       : File | null
 };
-
-const minPollOptions = 2;
-const maxPollOptions = 6;
 
 /** Post Form Component */
 export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inReplyToUserId }) => {
@@ -43,11 +43,12 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   
   const [formData, setFormData] = useState<FormData>(initialFormData());
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>(null);
   const [randomLimit, setRandomLimit] = useState<RandomLimit>(commonTopicsConstants.randomLimit.generateLimit());
+  const [reloadTrigger, setReloadTrigger] = useState<boolean>(false);
   
   const [cursorPosition, setCursorPosition] = useState(0);
   const textFieldRef = useRef<HTMLTextAreaElement>(null);
-  const [errorMessage, setErrorMessage] = useState<string>(null);
   
   // トピック ID を変更するたびにランダムリミットを更新する
   useEffect(() => {
@@ -55,27 +56,11 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   }, [formData.topicId]);
   
   /** On Change */
-  const handleFormChange = (name: string, value: string | number) => {
-    setFormData(previousFormData => ({ ...previousFormData, [name]: value }));
-  };
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    handleFormChange(event.target.name, event.target.value);
+    setFormData(previousFormData => ({ ...previousFormData, [event.target.name]: event.target.value }));
   };
   const onChangeChecked = (event: ChangeEvent<HTMLInputElement>) => {
     setFormData(previousFormData => ({ ...previousFormData, [event.target.name]: event.target.checked ? 'home': null }));
-  };
-  const onChangePollVote = (index: number, value: string) => {
-    const pollOptions = [...formData.pollOptions];
-    pollOptions[index] = value;
-    setFormData(previousFormData => ({ ...previousFormData, pollOptions }));
-  };
-  const onAddPollVote = () => {
-    if(formData.pollOptions.length >= maxPollOptions) return;
-    setFormData(previousFormData => ({ ...previousFormData, pollOptions: [...previousFormData.pollOptions, ''] }));
-  };
-  const onRemovePollVote = (index: number) => {
-    if(formData.pollOptions.length <= minPollOptions) return;
-    setFormData(previousFormData => ({ ...previousFormData, pollOptions: formData.pollOptions.filter((_, pollVoteIndex) => pollVoteIndex !== index) }));
   };
   
   /** カーソル位置を保持する */
@@ -114,21 +99,23 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     const validationTextResult = validateText(text, topicId, randomLimit, formData.pollOptions);
     if(validationTextResult.error != null) return setErrorMessage(validationTextResult.error);
     
+    // オブジェクトを用意する
+    setIsSubmitting(true);
+    const newPostApi: PostApi = camelToSnakeCaseObject({ userId: userState.id, text, topicId, visibility: formData.visibility, inReplyToPostId, inReplyToUserId });
+    if(topicId === commonTopicsConstants.poll.id) {
+      newPostApi.has_poll = true;
+      newPostApi.poll = { expires_at: formData.pollExpires };
+      (newPostApi.poll as any).poll_options = formData.pollOptions.map(pollOption => ({ text: pollOption }));  // eslint-disable-line @typescript-eslint/no-explicit-any
+    }
+    
     try {
-      setIsSubmitting(true);
-      const newPostApi: PostApi = camelToSnakeCaseObject({ userId: userState.id, text, topicId, visibility: formData.visibility, inReplyToPostId, inReplyToUserId });
-      if(topicId === commonTopicsConstants.poll.id) {
-        newPostApi.has_poll = true;
-        newPostApi.poll = { expires_at: formData.pollExpires };
-        (newPostApi.poll as any).poll_options = formData.pollOptions.map(pollOption => ({ text: pollOption }));  // eslint-disable-line @typescript-eslint/no-explicit-any
-      }
-      
-      await onSubmit(newPostApi);  // Throws
+      await onSubmit(newPostApi, formData.file);  // Throws
       
       // 投稿成功
       setFormData(initialFormData());
       setRandomLimit(commonTopicsConstants.randomLimit.generateLimit());
       setCursorPosition(0);
+      setReloadTrigger(previousReloadTrigger => !previousReloadTrigger);
     }
     catch(error) {
       setErrorMessage('投稿処理に失敗しました。もう一度やり直してください');
@@ -160,66 +147,27 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       </Grid2>
       
       <TextField
-        name="text" label="投稿" value={formData.text} onChange={onChange} onKeyDown={onKeyDown}
-        required multiline
-        fullWidth rows={4} margin="normal"
+        multiline name="text" label="投稿" value={formData.text} onChange={onChange} onKeyDown={onKeyDown}
+        required fullWidth rows={4} margin="normal"
         inputRef={input => { textFieldRef.current = input as HTMLTextAreaElement; }}
-        onSelect={onSaveCursorPosition} // フォーカス移動時にカーソル位置を保持する
-        onBlur={onSaveCursorPosition}  // フォーカスが外れた時にカーソル位置を保持する
+        onSelect={onSaveCursorPosition} onBlur={onSaveCursorPosition}
       />
       
       <Grid2 container>
-        <Grid2 size="grow">
-          <Stack direction="row" spacing={1.25} useFlexGap sx={{ mt: 1, flexWrap: 'wrap', ['& button']: { minWidth: 'auto', whiteSpace: 'nowrap' } }}>
-            <Button variant="outlined" size="small" color="info"      onClick={() => onInsert('<font size="★" face="serif">', '</font>', ['1', '2', '3', '4', '5', '6', '7'])} sx={{ fontFamily: 'serif' }}>明朝</Button>
-            <Button variant="outlined" size="small" color="success"   onClick={() => onInsert('<em>', '</em>')}>緑</Button>
-            <Button variant="outlined" size="small" color="secondary" onClick={() => onInsert('<font size="★" color="#936"><b>', '</b></font>', ['3', '4', '5'])}>紫</Button>
-            <Button variant="outlined" size="small" color="error"     onClick={() => onInsert('<strong>', '</strong>')}>赤</Button>
-            <Button variant="outlined" size="small" color="warning"   onClick={() => onInsert('<mark>', '</mark>')}>黄</Button>
-            <Button variant="outlined" size="small" color="inherit"   onClick={() => onInsert('<marquee>', '</marquee>')} sx={{ overflow: 'hidden' }}><span style={{ animation: 'scroll-left 1.5s linear infinite' }}>流</span></Button>
-            <Button variant="outlined" size="small" color="inherit"   onClick={() => onInsert('<blink>', '</blink>')}><span style={{ animation: 'blink-animation 1.5s step-start infinite' }}>光</span></Button>
-            <Button variant="outlined" size="small" color="inherit"   onClick={() => onInsert('<★ align="center">', '</★>', ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div'])}>中</Button>
-            <Button variant="outlined" size="small" color="inherit"   onClick={() => onInsert('<★ align="right">', '</★>' , ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div'])}>右</Button>
-          </Stack>
-        </Grid2>
+        <Grid2 size="grow"><PostFormDecorationComponent onInsert={onInsert} /></Grid2>
         <Grid2 sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>{formData.text.length}</Grid2>
       </Grid2>
       <FormControlLabel control={<Checkbox name="visibility" checked={formData.visibility === 'home'} onChange={onChangeChecked} />} label="グローバルタイムラインに公開しない" />
     </Box>
     
-    {![commonTopicsConstants.anonymous.id, commonTopicsConstants.poll.id].includes(formData.topicId) &&
-      <p>TODO : 添付ファイル</p>
-    }
-    
     {formData.text !== '' &&  // プレビュー
-      <Box component="div" sx={{ mt: 2, p: 1, border: '1px solid', borderColor: 'grey.600', borderRadius: 1, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+      <Box component="div" sx={{ mb: 1.5, p: 1, border: '1px solid', borderColor: 'grey.600', borderRadius: 1, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
         <FontParserComponent input={formData.text} />
       </Box>
     }
     
-    {formData.topicId === commonTopicsConstants.poll.id && <>
-      {formData.pollOptions.map((pollVote, index) =>
-        <Stack key={index} direction="row" spacing={1} sx={{ mt: 1 }}>
-          <TextField label={`候補 ${index + 1}`} value={pollVote} required onChange={event => onChangePollVote(index, event.target.value)} size="small" fullWidth />
-          <Button variant="contained" color="error" onClick={() => onRemovePollVote(index)} disabled={[0, 1].includes(index)}>
-            <CloseIcon />
-          </Button>
-        </Stack>
-      )}
-      <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
-        <FormControl fullWidth size="small">
-          <InputLabel id="post-form-select-poll-expires">期限</InputLabel>
-          <Select labelId="post-form-select-poll-expires" name="pollExpires" label="期限" value={formData.pollExpires} onChange={onChange}>
-            <MenuItem value="5 minutes" >5 分</MenuItem>
-            <MenuItem value="30 minutes">30 分</MenuItem>
-            <MenuItem value="1 hour"    >1 時間</MenuItem>
-            <MenuItem value="6 hours"   >6 時間</MenuItem>
-            <MenuItem value="12 hours"  >12 時間</MenuItem>
-            <MenuItem value="1 day"     >1 日</MenuItem>
-          </Select>
-        </FormControl>
-        <Button variant="contained" onClick={onAddPollVote} disabled={formData.pollOptions.length >= maxPollOptions}>追加</Button>
-      </Stack>
-    </>}
+    {![commonTopicsConstants.anonymous.id, commonTopicsConstants.poll.id].includes(formData.topicId) && <PostFormAttachmentComponent setFormData={setFormData} setErrorMessage={setErrorMessage} reloadTrigger={reloadTrigger} />}
+    
+    {formData.topicId === commonTopicsConstants.poll.id && <PostFormPollComponent formData={formData} setFormData={setFormData} />}
   </>;
 };

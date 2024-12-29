@@ -60,11 +60,13 @@ export class EmojisService {
     const findOneByNameResult = await this.findOneByName(name);
     if(findOneByNameResult.error != null) return findOneByNameResult as Result<string>;
     // リサイズする
-    const resizedBuffer = await this.resizeImage(file.buffer, file.mimetype);
+    const resizedBufferResult = await this.resizeImage(file.buffer, file.mimetype);
+    if(resizedBufferResult.error != null) return resizedBufferResult as Result<string>;
     // ファイル名を作成する
     const fileNameResult = this.createFileName(name, file.originalname);
+    if(fileNameResult.error != null) return fileNameResult;
     // MinIO にアップロードする
-    const imageUrlResult = await this.putObject(resizedBuffer, file.mimetype, fileNameResult.result);
+    const imageUrlResult = await this.putObject(resizedBufferResult.result, file.mimetype, fileNameResult.result);
     if(imageUrlResult.error != null) return imageUrlResult;
     // データベースを登録する
     const insertResult = await this.insertEmoji(name, imageUrlResult.result);
@@ -87,9 +89,15 @@ export class EmojisService {
   }
   
   /** リサイズする */
-  private async resizeImage(buffer: Buffer, mimeType: string): Promise<Buffer> {
-    if(mimeType === 'image/gif') return buffer;  // sharp を通すとアニメーション GIF が動かなくなるので GIF は変換しないことにする
-    return sharp(buffer).resize(null, commonEmojisConstants.maxImageHeightPx, { fit: 'inside' }).toBuffer();
+  private async resizeImage(buffer: Buffer, mimeType: string): Promise<Result<Buffer>> {
+    try {
+      if(mimeType === 'image/gif') return { result: buffer };  // sharp を通すとアニメーション GIF が動かなくなるので GIF は変換しないことにする
+      return { result: await sharp(buffer).resize(null, commonEmojisConstants.maxImageHeightPx, { fit: 'inside' }).toBuffer() };
+    }
+    catch(error) {
+      this.logger.error('画像ファイルのリサイズに失敗', error);
+      return { error: '画像ファイルのリサイズに失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+    }
   }
   
   /** ファイル名を組み立てる */
@@ -104,9 +112,7 @@ export class EmojisService {
   /** MinIO にアップロードする */
   private async putObject(buffer: Buffer, mimeType: string, fileName: string): Promise<Result<string>> {
     try {
-      await this.nestMinioService.getMinio().putObject(commonEmojisConstants.bucketName, fileName, buffer, buffer.byteLength, {
-        'Content-Type': mimeType
-      });
+      await this.nestMinioService.getMinio().putObject(commonEmojisConstants.bucketName, fileName, buffer, buffer.byteLength, { 'Content-Type': mimeType });
       return { result: `/${commonEmojisConstants.bucketName}/${fileName}` };
     }
     catch(error) {

@@ -63,11 +63,11 @@ export class PostEntity {
   public topic: TopicEntity;
   
   /** アンケートとの関連付け */
-  @OneToOne(() => PollEntity, pollEntity => pollEntity.post, { nullable: true, cascade: true, createForeignKeyConstraints: false })
+  @OneToOne(() => PollEntity, pollEntity => pollEntity.post, { nullable: true, cascade: true, onDelete: 'CASCADE', createForeignKeyConstraints: false })
   public poll: PollEntity;
   
   /** 添付ファイルとの関連付け */
-  @OneToOne(() => AttachmentEntity, attachmentEntity => attachmentEntity.post, { nullable: true, cascade: true, createForeignKeyConstraints: false })
+  @OneToOne(() => AttachmentEntity, attachmentEntity => attachmentEntity.post, { nullable: true, onDelete: 'CASCADE', cascade: true, createForeignKeyConstraints: false })
   public attachment: AttachmentEntity;
   
   constructor(partial: Partial<PostEntity>) { Object.assign(this, partial); }

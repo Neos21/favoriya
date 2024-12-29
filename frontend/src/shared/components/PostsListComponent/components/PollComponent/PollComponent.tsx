@@ -87,7 +87,7 @@ export const PollComponent: FC<Props> = ({ propPost }) => {
     <RadioGroup name="pollOptions" value={selectedPollOptionId} onChange={onChange}>
       {poll.pollOptions.map(pollOption => <FormControlLabel key={pollOption.id} control={<Radio />} value={pollOption.id} label={pollOption.text} />)}
     </RadioGroup>
-    <Stack direction="row" spacing={2} sx={{ mt: 1, color: 'grey.500', fontSize: '.86rem', placeItems: 'center' }}>
+    <Stack direction="row" spacing={2} sx={{ mt: 1, color: 'grey.600', fontSize: '.86rem', placeItems: 'center' }}>
       <Button variant="outlined" color="inherit" onClick={onVote}>投票</Button>
       <Typography component="span" sx={{ fontSize: 'inherit' }}>{poll.pollVotes.length} 人</Typography>
       <Typography component="span" sx={{ fontSize: 'inherit' }}>{epochTimeMsToJstString(poll.expiresAt as string, 'YYYY-MM-DD HH:mm:SS')}</Typography>
@@ -102,7 +102,7 @@ export const PollComponent: FC<Props> = ({ propPost }) => {
         <Grid2 size={12}><LinearProgress variant="determinate" key={result.id} value={result.percentage} /></Grid2>
       </Grid2>
     )}
-    <Stack direction="row" spacing={2} sx={{ mt: 1, color: 'grey.500', fontSize: '.86rem', placeItems: 'center' }}>
+    <Stack direction="row" spacing={2} sx={{ mt: 1, color: 'grey.600', fontSize: '.86rem', placeItems: 'center' }}>
       <Typography component="span" sx={{ fontSize: 'inherit' }}>{poll.pollVotes.length} 人</Typography>
       <Typography component="span" sx={{ fontSize: 'inherit' }}>{epochTimeMsToJstString(poll.expiresAt as string, 'YYYY-MM-DD HH:mm:SS')}</Typography>
     </Stack>

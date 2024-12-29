@@ -6,7 +6,8 @@ export const initialFormData = () => {
     topicId    : choiceTopicId(),
     text       : '',
     visibility : null,
-    pollOptions: ['', ''],    // 2つは入れておく
-    pollExpires: '5 minutes'  // デフォルト値
+    pollOptions: ['', ''],     // 2つは入れておく
+    pollExpires: '5 minutes',  // デフォルト値
+    file       : null
   };
 };

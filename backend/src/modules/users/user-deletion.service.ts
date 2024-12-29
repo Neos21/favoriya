@@ -10,6 +10,8 @@ import { NotificationEntity } from '../../shared/entities/notification.entity';
 import { PostEntity } from '../../shared/entities/post.entity';
 import { UserEntity } from '../../shared/entities/user.entity';
 import { AvatarService } from './avatar/avatar.service';
+import { PollsService } from './posts/polls/polls.service';
+import { PostAttachmentsService } from './posts/post-attachments.service';
 import { UsersService } from './users.service';
 
 import type { Result } from '../../common/types/result';
@@ -28,6 +30,8 @@ export class UserDeletionService {
     @InjectRepository(UserEntity) private readonly usersRepository: Repository<UserEntity>,
     private readonly usersService: UsersService,
     private readonly avatarService: AvatarService,
+    private readonly pollsService: PollsService,
+    private readonly postAttachmentsService: PostAttachmentsService
   ) { }
   
   /** ユーザアカウント (紐付く情報全て) を削除する */
@@ -40,7 +44,7 @@ export class UserDeletionService {
     const removeAvadarResult = await this.avatarService.remove(id);
     if(removeAvadarResult.error != null) return removeAvadarResult;
     
-    // ユーザが行ったふぁぼを削除する → PostEntity 側のキャッシュはデクリメントしないことにする
+    // ユーザが行ったふぁぼを削除する
     try {
       const deleteResult = await this.favouritesRepository.delete({ userId: id });
       this.logger.debug(`ふぁぼ削除 [${deleteResult.affected}] 件`);
@@ -49,6 +53,14 @@ export class UserDeletionService {
       this.logger.error('当該ユーザのふぁぼの削除に失敗', error);
       return { error: '当該ユーザのふぁぼの削除に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
+    
+    // ユーザに紐付く投稿のアンケートを全て削除する
+    const deletePollsResult = await this.pollsService.removeAllByUserId(id);
+    if(deletePollsResult.error != null) return deletePollsResult;
+    
+    // ユーザに紐付く投稿の添付ファイルを全て削除する
+    const deleteAttachmentsResult = await this.postAttachmentsService.removeAllByUserId(id);
+    if(deleteAttachmentsResult.error != null) return deleteAttachmentsResult;
     
     // ユーザに紐付く投稿を全て削除する
     try {
