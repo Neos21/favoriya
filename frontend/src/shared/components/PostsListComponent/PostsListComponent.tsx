@@ -56,7 +56,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
                   <Typography component="span">@{post.userId}</Typography>
                 </Grid2>
                 <Grid2>
-                  <Typography component={Link} to={`/@${post.userId}/posts/${post.id}`} className="hover-underline" sx={{ color: 'grey.600', fontSize: '.8rem' }}>{epochTimeMsToJstString(post.id, 'YYYY-MM-DD HH:mm:SS')}</Typography>
+                  <Typography component={Link} to={`/@${post.userId}/posts/${post.id}`} className="hover-underline" sx={{ color: 'grey.600', fontSize: '.8rem' }}>{epochTimeMsToJstString(post.id, 'YYYY-MM-DD HH:mm')}</Typography>
                 </Grid2>
               </Grid2>
               
@@ -84,7 +84,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               </Typography>
               
               {// リプライ元表示
-                !isEmptyString(post.inReplyToPostId) && !isEmptyString(post.inReplyToUserId) && <Box component="div" sx={{ mt: 1, maxHeight: '7.85em', overflowY: 'hidden', border: '1px solid', borderColor: 'grey.600', borderRadius: 1, opacity: .8 }}>
+                !isEmptyString(post.inReplyToPostId) && !isEmptyString(post.inReplyToUserId) && <Box component="div" sx={{ mt: 1, maxHeight: '7.85em', overflowY: 'hidden', border: '1px solid', borderColor: 'grey.600', borderRadius: 1 }}>
                   <BeforeReplyComponent inReplyToPostId={post.inReplyToPostId} inReplyToUserId={post.inReplyToUserId} />
                 </Box>
               }

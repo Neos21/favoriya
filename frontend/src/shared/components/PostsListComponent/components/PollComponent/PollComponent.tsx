@@ -81,6 +81,20 @@ export const PollComponent: FC<Props> = ({ propPost }) => {
     return pollOption;
   });
   
+  const displayExpiresAt = (rawExpiresAt: string) => {
+    const now = new Date();
+    const expiresAt = new Date(Number(rawExpiresAt));
+    if(expiresAt < now) return `(${epochTimeMsToJstString(poll.expiresAt as string, 'YYYY-MM-DD HH:mm')} 終了)`;
+    
+    const restMs  = expiresAt.getTime() - now.getTime();
+    const hours   = Math.floor(restMs / 1000 / 60 / 60) % 24;
+    const minutes = Math.floor(restMs / 1000 / 60) % 60;
+    const seconds = Math.floor(restMs / 1000) % 60;
+    if(hours   > 0) return `残り ${hours} 時間`;
+    if(minutes > 0) return `残り ${minutes} 分`;
+    if(seconds > 0) return `残り ${seconds} 秒`;
+  };
+  
   if(poll == null) return <LoadingSpinnerComponent />;
   
   if(poll != null && !isResultMode) return <>
@@ -89,8 +103,8 @@ export const PollComponent: FC<Props> = ({ propPost }) => {
     </RadioGroup>
     <Stack direction="row" spacing={2} sx={{ mt: 1, color: 'grey.600', fontSize: '.86rem', placeItems: 'center' }}>
       <Button variant="outlined" color="inherit" onClick={onVote}>投票</Button>
-      <Typography component="span" sx={{ fontSize: 'inherit' }}>{poll.pollVotes.length} 人</Typography>
-      <Typography component="span" sx={{ fontSize: 'inherit' }}>{epochTimeMsToJstString(poll.expiresAt as string, 'YYYY-MM-DD HH:mm:SS')}</Typography>
+      <Typography component="span" sx={{ fontSize: 'inherit' }}>{poll.pollVotes.length} 票</Typography>
+      <Typography component="span" sx={{ fontSize: 'inherit' }}>{displayExpiresAt(poll.expiresAt as string)}</Typography>
     </Stack>
   </>;
   
@@ -103,8 +117,8 @@ export const PollComponent: FC<Props> = ({ propPost }) => {
       </Grid2>
     )}
     <Stack direction="row" spacing={2} sx={{ mt: 1, color: 'grey.600', fontSize: '.86rem', placeItems: 'center' }}>
-      <Typography component="span" sx={{ fontSize: 'inherit' }}>{poll.pollVotes.length} 人</Typography>
-      <Typography component="span" sx={{ fontSize: 'inherit' }}>{epochTimeMsToJstString(poll.expiresAt as string, 'YYYY-MM-DD HH:mm:SS')}</Typography>
+      <Typography component="span" sx={{ fontSize: 'inherit' }}>{poll.pollVotes.length} 票</Typography>
+      <Typography component="span" sx={{ fontSize: 'inherit' }}>{displayExpiresAt(poll.expiresAt as string)}</Typography>
     </Stack>
   </>;
 };

@@ -132,7 +132,7 @@ export const IntroductionsPage: FC = () => {
                     <Typography component="span">@{introduction.actorUser.id}</Typography>
                   </Grid2>
                   <Grid2 sx={{ color: 'grey.600', fontSize: '.8rem' }}>
-                    {epochTimeMsToJstString(introduction.updatedAt as string, 'YYYY-MM-DD HH:mm:SS')}
+                    {epochTimeMsToJstString(introduction.updatedAt as string, 'YYYY-MM-DD HH:mm')}
                   </Grid2>
                 </Grid2>
                 <Grid2 container spacing={1} sx={{ mt: 1 }}>

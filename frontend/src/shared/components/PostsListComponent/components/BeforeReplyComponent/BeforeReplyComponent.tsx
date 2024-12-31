@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { Alert, Avatar, Grid2, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from '@mui/material';
 
@@ -22,6 +22,7 @@ type Props = {
 
 /** Before Reply Component */
 export const BeforeReplyComponent: FC<Props> = ({ inReplyToPostId, inReplyToUserId }) => {
+  const navigate = useNavigate();
   const apiGet = useApiGet();
   
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'not-found' | 'failed'>('loading');
@@ -53,7 +54,7 @@ export const BeforeReplyComponent: FC<Props> = ({ inReplyToPostId, inReplyToUser
     
     {status === 'failed' && <Alert severity="error" sx={{ mt: 1 }}>リプライ元の取得に失敗</Alert>}
     
-    {status === 'succeeded' && <List sx={{ pt: 0 }}>
+    {status === 'succeeded' && <List sx={{ pt: 0, opacity: .75, cursor: 'pointer', '&:hover': { opacity: 1 } }} onClick={() => navigate(`/@${post.userId}/posts/${post.id}`)}>
       <ListItem alignItems="flex-start" sx={{ px: .5 }}>
         <ListItemAvatar sx={{ minWidth: '50px' }}>
           <Tooltip title={post.userId} placement="top">
@@ -71,7 +72,7 @@ export const BeforeReplyComponent: FC<Props> = ({ inReplyToPostId, inReplyToUser
               </Grid2>
               <Grid2>
                 <Typography component={Link} to={`/@${post.userId}/posts/${post.id}`} className="hover-underline" sx={{ color: 'grey.600', fontSize: '.8rem' }}>
-                  {epochTimeMsToJstString(post.id, 'YYYY-MM-DD HH:mm:SS')}
+                  {epochTimeMsToJstString(post.id, 'YYYY-MM-DD HH:mm')}
                 </Typography>
               </Grid2>
             </Grid2>

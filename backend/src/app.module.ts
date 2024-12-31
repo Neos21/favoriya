@@ -3,6 +3,7 @@ import * as path from 'node:path';
 
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,6 +12,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { configuration } from './core/configs/configuration';
 import { AccessLogMiddleware } from './core/middlewares/access-log.middleware';
+import { NotFoundExceptionFilter } from './core/middlewares/not-found-exception-filter';
 import { AdminController } from './modules/admin/admin.controller';
 import { AdminService } from './modules/admin/admin.service';
 import { AdminEmojisController } from './modules/admin/emojis/admin-emojis.controller';
@@ -165,6 +167,7 @@ import { UserEntity } from './shared/entities/user.entity';
   ],
   providers: [
     AppService,
+    { provide: APP_FILTER, useClass: NotFoundExceptionFilter },
     
     AdminService,
     AdminEmojisService,

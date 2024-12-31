@@ -2,8 +2,8 @@ import { FC, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
-import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
+import { userConstants } from '../../shared/constants/user-constants';
 
 import type { RootState } from '../../shared/stores/store';
 
@@ -16,8 +16,9 @@ export const HomePage: FC = () => {
   
   // 1回だけ実行するため必要
   useEffect(() => {
-    // Store に情報が復元済ならログイン済とする
-    setIsLoggedIn(!isEmptyString(userState.id));
+    // LocalStorage にユーザ情報が格納されているかだけ確認する・UserState への復元は AuthGuardRoute で行う
+    const userStringified = localStorage.getItem(userConstants.localStorageKey);
+    setIsLoggedIn(userStringified != null);
     setIsLoading(false);
   }, [dispatch, userState]);
   

@@ -64,10 +64,10 @@ export const App = () => (
                   
                   <Route path="/admin/*" element={<AdminGuardRoute />} />
                   
-                  <Route path="/" element={<HomePage />} />
                 </Route>
               </Route>
               
+              <Route path="/"       element={<HomePage   />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/login"  element={<LoginPage  />} />
               <Route path="*"       element={<Navigate to="/" />} />
