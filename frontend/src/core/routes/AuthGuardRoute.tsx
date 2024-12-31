@@ -7,7 +7,7 @@ import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
 import { httpStatusConstants } from '../../shared/constants/http-status-constants';
 import { userConstants } from '../../shared/constants/user-constants';
-import { setUser } from '../../shared/stores/user-slice';
+import { initialUserState, setUser } from '../../shared/stores/user-slice';
 
 import type { RootState } from '../../shared/stores/store';
 import type { User, UserApi } from '../../common/types/user';
@@ -72,6 +72,8 @@ export const AuthGuardRoute: FC = () => {
       }
       catch(error) {
         console.error('Refresh API のコールに失敗', error);
+        localStorage.removeItem(userConstants.localStorageKey);
+        dispatch(setUser(Object.assign({}, initialUserState)));
         setIsLoggedIn(false);
         setIsLoading(false);
         navigate('/login');
