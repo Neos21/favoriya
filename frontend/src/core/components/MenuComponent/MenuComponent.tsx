@@ -123,7 +123,7 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
     <ListItem disablePadding>
       <ListItemButton component={Link} to="/emojis" onClick={onClickItem} selected={location.pathname === '/emojis'}>
         <ListItemIcon><EmojiEmotionsIcon /></ListItemIcon>
-        <ListItemText primary="絵文字" />
+        <ListItemText primary="絵文字登録" />
       </ListItemButton>
     </ListItem>
     
