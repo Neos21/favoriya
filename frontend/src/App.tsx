@@ -40,8 +40,8 @@ export const App = () => (
         <ThemeModeProvider>
           <ErrorBoundary FallbackComponent={ErrorFallbackComponent} onError={onError}>
             <Routes>
-              <Route element={<LayoutComponent />}>
-                <Route element={<AuthGuardRoute />}>
+              <Route element={<AuthGuardRoute />}>
+                <Route element={<LayoutComponent />}>
                   <Route path="/home-timeline"   element={<HomeTimelinePage   />} />
                   <Route path="/global-timeline" element={<GlobalTimelinePage />} />
                   <Route path="/search"          element={<SearchPage         />} />

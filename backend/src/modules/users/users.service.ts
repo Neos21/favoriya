@@ -74,7 +74,7 @@ export class UsersService {
     const passwordHash = await bcryptjs.hash(user.password, salt);
     
     // DB 登録する
-    const newUserEntity = new UserEntity({ id: user.id, passwordHash });
+    const newUserEntity = new UserEntity({ id: user.id, passwordHash, name: user.id });
     try {
       await this.usersRepository.insert(newUserEntity);
       return { result: true };  // 成功

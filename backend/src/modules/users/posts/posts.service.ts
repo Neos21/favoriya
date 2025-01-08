@@ -43,6 +43,8 @@ export class PostsService {
     if(post.topicId === commonTopicsConstants.randomDecorations.id) post.text = this.postDecorationService.decorateRandomly(post.text);
     // 勝手に AI 生成モードの場合にテキストを変更してもらう
     if(post.topicId === commonTopicsConstants.aiGenerated.id) post.text = await this.postDecorationService.generateByAi(post.text);
+    // 匿名投稿モードの場合セキュリティのため投稿者情報をログ出ししておく
+    if(post.topicId === commonTopicsConstants.anonymous.id) this.logger.debug(`Anonymous 投稿 : [${post.userId}] [${post.text}]`);
     
     try {
       const newPostEntity = new PostEntity({

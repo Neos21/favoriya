@@ -46,7 +46,7 @@ export class AvatarService {
     if(!file.mimetype.startsWith('image/')) return { error: '画像ファイルではありません', code: HttpStatus.BAD_REQUEST };
     
     // リサイズする
-    const resizedBufferResult = await this.resizeImage(file.buffer);
+    const resizedBufferResult = await this.resizeImage(file.buffer, file.mimetype);
     if(resizedBufferResult.error != null) return resizedBufferResult as Result<string>;
     // ファイル名を作成する
     const fileNameResult = this.createFileName(userId, file.originalname);
@@ -85,7 +85,9 @@ export class AvatarService {
   }
   
   /** リサイズする */
-  private async resizeImage(buffer: Buffer): Promise<Result<Buffer>> {
+  private async resizeImage(buffer: Buffer, mimeType: string): Promise<Result<Buffer>> {
+    if(mimeType === 'image/gif') return { result: buffer };  // sharp を通すとアニメーション GIF が動かなくなるので GIF は変換しないことにする
+    
     try {
       const metadata = await sharp(buffer).metadata();
       if(metadata.width > commonUserConstants.avatarMaxImageSizePx || metadata.height > commonUserConstants.avatarMaxImageSizePx) {
