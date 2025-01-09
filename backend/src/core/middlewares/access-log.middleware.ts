@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 
 import { cyan, yellow } from '../utils/colour-logger';
+
+import type { NextFunction, Request, Response } from 'express';
 
 /** アクセスログを出力するミドルウェア */
 @Injectable()

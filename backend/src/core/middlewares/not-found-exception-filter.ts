@@ -1,6 +1,6 @@
-import { NextFunction } from 'express';
-
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+
+import type { NextFunction } from 'express';
 
 /** フロントエンド資材が見つからない時に固定 HTML を表示する */
 @Catch()

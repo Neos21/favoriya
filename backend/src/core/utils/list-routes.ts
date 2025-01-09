@@ -1,7 +1,8 @@
-import { Express } from 'express';
 import expressListEndpoints from 'express-list-endpoints';
 
 import { cyan, green, grey, red, yellow } from './colour-logger';
+
+import type { Express } from 'express';
 
 /** ルーティング一覧を組み立てる */
 export const listRoutes = (router: Express): string => {
