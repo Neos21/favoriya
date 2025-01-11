@@ -1,5 +1,8 @@
+import { CanvasRenderingContext2D, createCanvas, registerFont } from 'canvas';
+import DOMPurify from 'dompurify';
 import ffmpeg from 'fluent-ffmpeg';
 import heicConvert from 'heic-convert';
+import { JSDOM } from 'jsdom';
 import { NestMinioService } from 'nestjs-minio';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
@@ -10,10 +13,14 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { commonPostsConstants } from '../../../common/constants/posts-constants';
+import { commonTopicsConstants } from '../../../common/constants/topics-constants';
 import { AttachmentEntity } from '../../../shared/entities/attachment.entity';
 import { PostEntity } from '../../../shared/entities/post.entity';
 
 import type { Result } from '../../../common/types/result';
+
+// フォントを登録する
+registerFont(path.resolve(__dirname, '../../../../assets/huifont29.ttf'), { family: 'HuiFont' });
 
 /** Post Attachments Service */
 @Injectable()
@@ -54,11 +61,21 @@ export class PostAttachmentsService {
     let extName: string;
     let mimeType: string;
     if(file.mimetype.startsWith('image/') || ['.heic', 'heif'].some(extName => file.originalname.toLowerCase().endsWith(extName))) {
-      const resizedBufferResult = await this.resizeImage(file.buffer, file.originalname, file.mimetype);
-      if(resizedBufferResult.error != null) return resizedBufferResult as Result<string>;
-      convertedBuffer = resizedBufferResult.result;
-      extName  = file.mimetype === 'image/gif' ? '.gif'      : '.jpg';
-      mimeType = file.mimetype === 'image/gif' ? 'image/gif' : 'image/jpeg';
+      if(createdPostEntity.topicId === commonTopicsConstants.movaPic.id) {
+        const resizedBufferResult = await this.movaPicImage(file.buffer, file.originalname, file.mimetype, createdPostEntity.text);
+        if(resizedBufferResult.error != null) return resizedBufferResult as Result<string>;
+        convertedBuffer = resizedBufferResult.result;
+        extName  = '.jpg';
+        mimeType = 'image/jpeg';
+      }
+      else {
+        // 通常時
+        const resizedBufferResult = await this.resizeImage(file.buffer, file.originalname, file.mimetype);
+        if(resizedBufferResult.error != null) return resizedBufferResult as Result<string>;
+        convertedBuffer = resizedBufferResult.result;
+        extName  = file.mimetype === 'image/gif' ? '.gif'      : '.jpg';
+        mimeType = file.mimetype === 'image/gif' ? 'image/gif' : 'image/jpeg';
+      }
     }
     else if(file.mimetype.startsWith('audio/') || file.originalname.toLowerCase().endsWith('.m4a')) {
       const convertedBufferResult = await this.convertAudio(file.buffer);
@@ -121,7 +138,7 @@ export class PostAttachmentsService {
       }
       const resizedBuffer = await sharp(convertedBuffer)
         .jpeg({ quality: 85 })
-        .resize({ width: commonPostsConstants.maxImagePx, height: commonPostsConstants.maxImagePx, fit: 'outside', withoutEnlargement: true })  // 長辺を指定ピクセルにリサイズする・それ以下のサイズの場合は拡大はしない
+        .resize({ width: commonPostsConstants.maxImagePx, height: commonPostsConstants.maxImagePx, fit: 'inside', withoutEnlargement: true })  // 長辺を指定ピクセルにリサイズする・それ以下のサイズの場合は拡大はしない
         .toBuffer();
       return { result: resizedBuffer };
     }
@@ -130,6 +147,90 @@ export class PostAttachmentsService {
       return { error: '画像ファイルの変換・リサイズに失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
   }
+  
+  private async movaPicImage(buffer: Buffer, fileName: string, mimeType: string, rawText: string): Promise<Result<Buffer>> {
+    try {
+      const text = DOMPurify(new JSDOM('').window).sanitize(rawText, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+      
+      let convertedBuffer: Buffer | ArrayBuffer = buffer;
+      if(['image/heic', 'image/heif'].includes(mimeType) || ['.heic', 'heif'].some(extName => fileName.toLowerCase().endsWith(extName))) {
+        this.logger.debug('HEIC or HEIF を変換');
+        convertedBuffer = await heicConvert({
+          buffer: buffer,
+          format: 'JPEG',
+          quality: .9
+        });
+      }
+      const resizedBuffer = await sharp(convertedBuffer)
+        .jpeg({ quality: 85 })
+        .resize({ width: commonPostsConstants.maxImagePx, height: commonPostsConstants.maxImagePx, fit: 'inside', withoutEnlargement: true })  // 長辺を指定ピクセルにリサイズする・それ以下のサイズの場合は拡大はしない
+        .toBuffer();
+      
+      const metadata = await sharp(resizedBuffer).metadata();
+      const width  = metadata.width!;
+      const height = metadata.height!;
+      
+      // Canvas を作成する
+      const canvas = createCanvas(width, height);
+      const context = canvas.getContext('2d');
+      context.clearRect(0, 0, width, height);  // 背景を透明にする
+      // フォントとテキストを設定する
+      const fontSize = 80;  // フォントサイズ・兼・行間の高さ
+      context.font         = `bold ${fontSize}px HuiFont`;  // 登録したフォントを指定する
+      context.fillStyle    = '#ffffff';  // テキストの色
+      context.lineWidth    = 3;          // フチの太さ
+      context.strokeStyle  = '#000000';  // フチの色
+      context.textAlign    = 'start';    // テキストの位置
+      context.textBaseline = 'top';      // ベースライン
+      // テキストを描画する
+      const maxWidth = width - 4;  // マージンを引いた幅
+      const x = 2;  // 左端からの位置
+      const y = 0;  // 上端からの位置
+      const lines = this.wrapText(context, text, maxWidth);
+      // テキストを行ごとに描画する (ハミ出してもエラーにはならない・縦のハミ出しは無視する)
+      lines.forEach((line, index) => {
+        context.strokeText(line, x, y + index * fontSize);
+        context.fillText  (line, x, y + index * fontSize);
+      });
+      // canvas の内容をバッファに変換する
+      const textBuffer = canvas.toBuffer('image/png');
+      
+      const movaPicBuffer = await sharp(resizedBuffer)
+        .composite([{
+          input: textBuffer,
+          top  : 0,
+          left : 0
+        }])
+        .jpeg({ quality: 85 })
+        .toBuffer();
+      return { result: movaPicBuffer };
+    }
+    catch(error) {
+      this.logger.error('画像ファイルの携帯百景変換に失敗', error);
+      return { error: '画像ファイルの携帯百景変換に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+    }
+  }
+  
+  private wrapText(context: CanvasRenderingContext2D, text: string, maxWidth: number): Array<string> {
+    const characters = [...text];  // 文字ごとに分割する
+    const lines = [];
+    let currentLine = characters[0];
+    for(let i = 1; i < characters.length; i++) {
+      const character = characters[i];
+      const testLine = currentLine + character;
+      const metrics = context.measureText(testLine);
+      const testWidth = metrics.width;
+      if(testWidth > maxWidth) {
+        lines.push(currentLine);  // 現在の行を確定する
+        currentLine = character;  // 新しい行を開始する
+      }
+      else {
+        currentLine = testLine;  // 行に文字を追加する
+      }
+    }
+    lines.push(currentLine);  // 最後の行を追加する
+    return lines;
+  };
   
   private async convertAudio(buffer: Buffer): Promise<Result<Buffer>> {
     const tempInputFilePath  = path.join(__dirname, `temp-${Date.now()}.input`);

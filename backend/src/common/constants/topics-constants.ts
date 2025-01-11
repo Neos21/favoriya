@@ -109,5 +109,9 @@ export const commonTopicsConstants = {
   imageOnly: {
     id: 10,
     name: '画像のみモード'
+  },
+  movaPic: {
+    id: 11,
+    name: '携帯百景モード'
   }
 };

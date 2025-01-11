@@ -66,8 +66,9 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               {post.topicId === commonTopicsConstants.anonymous.id         && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25, borderColor: 'grey.500', color: 'grey.500' }}>匿名投稿モード</Alert>}
               {post.topicId === commonTopicsConstants.randomDecorations.id && <Alert severity="warning" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>ランダム装飾モード</Alert>}
               {post.topicId === commonTopicsConstants.randomLimit.id       && <Alert severity="error"   icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>ランダムリミットモード</Alert>}
-              {post.topicId === commonTopicsConstants.aiGenerated.id       && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>勝手に AI 生成モード</Alert>}
+              {post.topicId === commonTopicsConstants.aiGenerated.id       && <Alert severity="success" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>勝手に AI 生成モード</Alert>}
               {post.topicId === commonTopicsConstants.imageOnly.id         && <Alert severity="warning" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>画像のみモード</Alert>}
+              {post.topicId === commonTopicsConstants.movaPic.id           && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>携帯百景モード</Alert>}
               
               {/* ほとんどの通常モード */}
               {post.topicId !== commonTopicsConstants.imageOnly.id && <>

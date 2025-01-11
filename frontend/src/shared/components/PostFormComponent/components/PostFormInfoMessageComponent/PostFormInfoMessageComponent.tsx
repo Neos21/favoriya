@@ -28,5 +28,6 @@ export const PostFormInfoMessageComponent: FC<Props> = ({ selectedTopicId, rando
     </Alert>}
     {selectedTopicId === commonTopicsConstants.aiGenerated.id       && <Alert severity="info" sx={{ mt: 3 }}>「勝手に AI 生成モード」では投稿内容の一部が AI によって勝手に書き換えられます。結果は投稿してのお楽しみ！</Alert>}
     {selectedTopicId === commonTopicsConstants.imageOnly.id         && <Alert severity="info" sx={{ mt: 3 }}>「画像のみモード」では画像ファイルを必ずアップロードしてください。本文は未入力でも OK！</Alert>}
+    {selectedTopicId === commonTopicsConstants.movaPic.id           && <Alert severity="info" sx={{ mt: 3 }}>「携帯百景モード」では本文が画像に合成されます。</Alert>}
   </>;
 };

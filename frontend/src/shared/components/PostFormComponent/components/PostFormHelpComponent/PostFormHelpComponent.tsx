@@ -16,10 +16,9 @@ export const PostFormHelpComponent: FC = () => {
     
     <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <Box component="div" sx={modalStyleConstants}>
-        <Typography component="h2">投稿で使える機能</Typography>
-        <Box component="div" sx={{ mt: 2, maxHeight: '47vh', overflowY: 'auto' }}>
+        <Box component="div" sx={{ maxHeight: '47vh', overflowY: 'auto' }}>
           <Typography component="p">以下の HTML タグが利用できます :</Typography>
-          <ul style={{ margin: '1rem 0 0', paddingLeft: '1.25rem' }} className="font-parser-component">
+          <ul style={{ margin: '.75rem 0 0', paddingLeft: '1.25rem' }} className="font-parser-component">
             <li>font :
               <ul style={{ margin: '0', paddingLeft: '1rem' }}>
                 <li>size … 1 ～ 7・-4 ～ +4</li>
@@ -33,6 +32,7 @@ export const PostFormHelpComponent: FC = () => {
             <li><b>b</b>・<i>i</i>・<u>u</u>・<s>s</s>・<del>del</del>・<ins>ins</ins></li>
             <li><em>em</em>・<strong>strong</strong>・<mark>mark</mark></li>
             <li><code>code</code>・<var>var</var>・<samp>samp</samp>・<kbd>kbd</kbd></li>
+            <li><b>オリジナルタグ</b> : rtl・blur</li>
           </ul>
         </Box>
         <Box component="div" sx={{ mt: 2, textAlign: 'right' }}>

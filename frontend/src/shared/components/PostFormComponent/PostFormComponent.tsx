@@ -110,7 +110,8 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     // 入力チェックする
     const validationTextResult = validateText(text, topicId, randomLimit, formData.pollOptions);
     if(validationTextResult.error != null) return setErrorMessage(validationTextResult.error);
-    if(topicId === commonTopicsConstants.imageOnly.id) {
+    // 画像を必ず添付させるモード
+    if([commonTopicsConstants.imageOnly.id, commonTopicsConstants.movaPic.id].includes(topicId)) {
       if(formData.file == null) return setErrorMessage('ファイルが添付されていません。画像ファイルを添付してください');
       if(!formData.file.type.startsWith('image/') && !['.heic', 'heif'].some(extName => formData.file.name.toLowerCase().endsWith(extName))) return setErrorMessage('画像ファイルを添付してください');
     }
