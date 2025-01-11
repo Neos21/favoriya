@@ -1,6 +1,5 @@
 import { CanvasRenderingContext2D, createCanvas, registerFont } from 'canvas';
 import DOMPurify from 'dompurify';
-import exifReader from 'exif-reader';
 import ffmpeg from 'fluent-ffmpeg';
 import heicConvert from 'heic-convert';
 import { JSDOM } from 'jsdom';
