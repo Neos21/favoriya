@@ -4,12 +4,14 @@ import { Link } from 'react-router-dom';
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ModeIcon from '@mui/icons-material/Mode';
+import ReplyIcon from '@mui/icons-material/Reply';
 import StarIcon from '@mui/icons-material/Star';
 import { Alert, Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
 import { snakeToCamelCaseObject } from '../../common/helpers/convert-case';
 import { isEmptyString } from '../../common/helpers/is-empty-string';
 import { LoadingSpinnerComponent } from '../../shared/components/LoadingSpinnerComponent/LoadingSpinnerComponent';
+import { emojiConstants } from '../../shared/constants/emoji-constants';
 import { userConstants } from '../../shared/constants/user-constants';
 import { useApiGet, useApiPost } from '../../shared/hooks/use-api-fetch';
 import { epochTimeMsToJstString } from '../../shared/services/convert-date-to-jst';
@@ -90,8 +92,10 @@ export const NotificationsPage: FC = () => {
               <Link to={`/@${notification.actorUserId}`}>
                 <Avatar src={isEmptyString(notification.actorUser.avatarUrl) ? '' : `${userConstants.ossUrl}${notification.actorUser.avatarUrl}`} />
                 {notification.notificationType === 'favourite'    && <StarIcon             color="warning" sx={{ position: 'absolute', right: '.75rem', bottom: '-.25rem' }} />}
+                {notification.notificationType === 'emoji'        && <img src={`${emojiConstants.ossUrl}${notification.emoji.imageUrl}`} style={{ position: 'absolute', right: '.75rem', bottom: '-.25rem', width: '24px', height: '24px' }} />}
                 {notification.notificationType === 'follow'       && <AddCircleOutlineIcon color="success" sx={{ position: 'absolute', right: '.75rem', bottom: '-.25rem' }} />}
                 {notification.notificationType === 'introduction' && <ModeIcon             color="info"    sx={{ position: 'absolute', right: '.75rem', bottom: '-.25rem' }} />}
+                {notification.notificationType === 'reply'        && <ReplyIcon            color="success" sx={{ position: 'absolute', right: '.75rem', bottom: '-.25rem' }} />}
               </Link>
             </ListItemAvatar>
             <ListItemText
@@ -99,6 +103,7 @@ export const NotificationsPage: FC = () => {
               primary={<>
                 <Typography component="div" sx={{ color: 'grey.600', fontSize: '.86rem' }}>{epochTimeMsToJstString(notification.createdAt as string, 'YYYY-MM-DD HH:mm')}</Typography>
                 {notification.notificationType === 'favourite'    && <Link to={`/@${userState.id}/posts/${notification.postId}`} className="hover-underline">{notification.message}</Link>}
+                {notification.notificationType === 'emoji'        && <Link to={`/@${userState.id}/posts/${notification.postId}`} className="hover-underline">{notification.message}</Link>}
                 {notification.notificationType === 'follow'       && <Link to={`/@${notification.actorUserId}`}                  className="hover-underline">{notification.message}</Link>}
                 {notification.notificationType === 'introduction' && <Link to={`/@${userState.id}/introductions`}                className="hover-underline">{notification.message}</Link>}
                 {notification.notificationType === 'reply'        && <Link to={`/@${userState.id}/posts/${notification.postId}`} className="hover-underline">{notification.message}</Link>}

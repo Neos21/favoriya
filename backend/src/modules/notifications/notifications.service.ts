@@ -29,16 +29,22 @@ export class NotificationsService {
           message         : true,
           actorUserId     : true,
           postId          : true,
+          emojiId         : true,
           isRead          : true,
           createdAt       : true,
           actorUser: {  // 通知の送信者情報を一緒に返す
             id       : true,
             name     : true,
             avatarUrl: true
+          },
+          emoji: {
+            id      : true,
+            name    : true,
+            imageUrl: true
           }
         },
         where: { recipientUserId: userId },
-        relations: ['actorUser'],
+        relations: ['actorUser', 'emoji'],
         order: { id: 'DESC' }
       });
       return { result: notifications };

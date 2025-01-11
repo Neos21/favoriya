@@ -24,7 +24,6 @@ export class PostEmojisController {
     
     const emojiReactionApi = camelToSnakeCaseObject(result.result);
     return response.status(HttpStatus.OK).json({ result: emojiReactionApi });
-    
   }
   
   /** 絵文字リアクションを外す */
