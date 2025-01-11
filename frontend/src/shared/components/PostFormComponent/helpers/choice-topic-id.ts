@@ -12,7 +12,8 @@ const topicIds = [
   commonTopicsConstants.aiGenerated.id,
   commonTopicsConstants.imageOnly.id,
   commonTopicsConstants.movaPic.id,
-  commonTopicsConstants.balus.id
+  commonTopicsConstants.balus.id,
+  commonTopicsConstants.drawing.id
 ];
 
 /** トピックをランダムに選択する */

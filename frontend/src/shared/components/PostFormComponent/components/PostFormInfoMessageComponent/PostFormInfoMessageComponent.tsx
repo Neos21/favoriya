@@ -31,5 +31,6 @@ export const PostFormInfoMessageComponent: FC<Props> = ({ selectedTopicId, rando
     {selectedTopicId === commonTopicsConstants.imageOnly.id         && <Alert severity="info" sx={{ mt: 3 }}>「画像のみモード」では画像ファイルを必ずアップロードしてください。本文は未入力でも OK！</Alert>}
     {selectedTopicId === commonTopicsConstants.movaPic.id           && <Alert severity="info" sx={{ mt: 3 }}>「携帯百景モード」では本文が画像に合成されます。</Alert>}
     {selectedTopicId === commonTopicsConstants.balus.id             && <Alert severity="info" sx={{ mt: 3 }}>「40秒で支度しな！モード」ではあと {timeLeft} 秒以内に自動的に投稿が行われます。</Alert>}
+    {selectedTopicId === commonTopicsConstants.drawing.id           && <Alert severity="info" sx={{ mt: 3 }}>「お絵描きモード」ではイラストを描いて投稿できます。</Alert>}
   </>;
 };

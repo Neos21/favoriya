@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, Grid2, InputLabel, MenuItem, Select, TextField } from '@mui/material';
@@ -10,6 +10,7 @@ import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { FontParserComponent } from '../FontParserComponent/FontParserComponent';
 import { PostFormAttachmentComponent } from './components/PostFormAttachmentComponent/PostFormAttachmentComponent';
 import { PostFormDecorationComponent } from './components/PostFormDecorationComponent/PostFormDecorationComponent';
+import { PostFormDrawingComponent } from './components/PostFormDrawingComponent/PostFormDrawingComponent';
 import { PostFormHelpComponent } from './components/PostFormHelpComponent/PostFormHelpComponent';
 import { PostFormInfoMessageComponent } from './components/PostFormInfoMessageComponent/PostFormInfoMessageComponent';
 import { PostFormPollComponent } from './components/PostFormPollComponent/PostFormPollComponent';
@@ -210,7 +211,8 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       </Box>
     }
     
-    {![commonTopicsConstants.anonymous.id, commonTopicsConstants.poll.id].includes(formData.topicId) && <PostFormAttachmentComponent setFormData={setFormData} setErrorMessage={setErrorMessage} reloadTrigger={reloadTrigger} />}
+    {![commonTopicsConstants.anonymous.id, commonTopicsConstants.poll.id, commonTopicsConstants.drawing.id].includes(formData.topicId) && <PostFormAttachmentComponent setFormData={setFormData} setErrorMessage={setErrorMessage} reloadTrigger={reloadTrigger} />}
+    {formData.topicId === commonTopicsConstants.drawing.id && <PostFormDrawingComponent setFormData={setFormData} reloadTrigger={reloadTrigger} />}
     
     {formData.topicId === commonTopicsConstants.poll.id && <PostFormPollComponent formData={formData} setFormData={setFormData} />}
   </>;

@@ -117,5 +117,9 @@ export const commonTopicsConstants = {
   balus: {
     id: 12,
     name: '40秒で支度しな！'
+  },
+  drawing: {
+    id: 13,
+    name: 'お絵描きモード'
   }
 };

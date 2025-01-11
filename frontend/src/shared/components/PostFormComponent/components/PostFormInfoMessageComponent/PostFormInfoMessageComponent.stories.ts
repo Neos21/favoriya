@@ -17,6 +17,7 @@ export const PostFormInfoMessage: Story = {
       mode: 'minmax',
       min: 1,
       max: 2
-    }
+    },
+    timeLeft: 0
   }
 };
