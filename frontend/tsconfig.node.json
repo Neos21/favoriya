@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "incremental": true,  // インクリメンタルビルドを有効にする
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",  // キャッシュファイルの場所
     "target": "ES2022",
     "lib": ["ES2023"],
     "module": "ESNext",

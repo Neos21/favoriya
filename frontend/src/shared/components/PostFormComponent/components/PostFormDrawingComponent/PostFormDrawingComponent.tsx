@@ -121,8 +121,8 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
       <label style={{ marginRight: '.5rem' }}>太さ : <input type="range" min="1" max="20" value={lineWidth} onChange={event => setLineWidth(Number(event.target.value))} /></label>
       <Button variant="contained" size="small" color="error" onClick={clearCanvas} sx={{ verticalAlign: 'bottom' }}>リセット</Button>
     </Box>
-    <Box component="div" ref={containerRef} sx={{ mt: 1, minWidth: '250px', minHeight: '250px', maxWidth: '600px', maxHeight: '600px', border: '1px solid', borderColor: 'grey.500' }}>
-      <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }}
+    <Box component="div" ref={containerRef} sx={{ mt: 1, minWidth: '250px', minHeight: '250px', maxWidth: '600px', maxHeight: '600px', border: '1px solid', borderColor: 'grey.500', overflow: 'hidden' }}>
+      <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%', touchAction: 'pinch-zoom' }}
         onMouseDown={event => { const { x, y } = getPosition(event); startDrawing(x, y, event); }}
         onMouseMove={event => { const { x, y } = getPosition(event); draw(x, y, event); }}
         onMouseUp={stopDrawing}

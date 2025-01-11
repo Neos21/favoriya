@@ -10,6 +10,10 @@ export default defineConfig(props => {
     'process.env': `${JSON.stringify(env)}`
   };
   return {
+    cacheDir: 'node_modules/.vite',  // キャッシュのディレクトリを指定する
+    optimizeDeps: {
+      entries: ['src/main.tsx']  // エントリーポイントを最適化する
+    },
     plugins: [react()],
     server: {
       proxy: {
@@ -21,6 +25,10 @@ export default defineConfig(props => {
     },
     define: envWithProcessPrefix,
     build: {
+      sourcemap: false,
+      esbuild: {
+        jsxInject: 'import React from "react";'  // JSX のコンパイルを高速化する
+      },
       rollupOptions: {
         output: {
           manualChunks: {
