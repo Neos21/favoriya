@@ -140,6 +140,7 @@ export class PostAttachmentsService {
       const metadata = await sharp(convertedBuffer).metadata();
       const exif = metadata.exif ? exifReader(metadata.exif) : null;
       const orientation = exif?.Image?.Orientation ?? 1;
+      console.log('TEST', metadata.orientation, ' VS ', orientation);
       // Orientation に基づいて画像を回転する
       let rotatedImage = sharp(convertedBuffer);
       switch(orientation) {
@@ -188,6 +189,7 @@ export class PostAttachmentsService {
       const originalMetadata = await sharp(convertedBuffer).metadata();
       const exif = originalMetadata.exif ? exifReader(originalMetadata.exif) : null;
       const orientation = exif?.Image?.Orientation ?? 1;
+      console.log('TEST', originalMetadata.orientation, ' VS ', orientation);
       // Orientation に基づいて画像を回転する
       let rotatedImage = sharp(convertedBuffer);
       switch(orientation) {
