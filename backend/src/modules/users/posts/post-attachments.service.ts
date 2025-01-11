@@ -138,26 +138,24 @@ export class PostAttachmentsService {
         });
       }
       const metadata = await sharp(convertedBuffer).metadata();
-      const exif = metadata.exif ? exifReader(metadata.exif) : null;
-      const orientation = exif?.Image?.Orientation ?? 1;
-      console.log('TEST', metadata.orientation, ' VS ', orientation);
+      const orientation = metadata.orientation ?? 1;
       // Orientation に基づいて画像を回転する
       let rotatedImage = sharp(convertedBuffer);
       switch(orientation) {
-        case 3:  // 180度回転
-          console.log('180');
+        case 3:
+          this.logger.debug(`[Orientation ${orientation}] 180度回転する`);
           rotatedImage = rotatedImage.rotate(180);
           break;
-        case 6:  // 時計回りに90度回転
-          console.log('+90');
+        case 6:
+          this.logger.debug(`[Orientation ${orientation}] 時計回りに90度回転する`);
           rotatedImage = rotatedImage.rotate(90);
           break;
-        case 8:  // 反時計回りに90度回転
-          console.log('-90');
+        case 8:
+          this.logger.debug(`[Orientation ${orientation}] 反時計回りに90度回転する`);
           rotatedImage = rotatedImage.rotate(270);
           break;
-        default:  // 回転不要
-          console.log('000');
+        default:
+          this.logger.debug(`[Orientation ${orientation}] 回転不要`);
           break;
       }
       
@@ -186,27 +184,25 @@ export class PostAttachmentsService {
           quality: .9
         });
       }
-      const originalMetadata = await sharp(convertedBuffer).metadata();
-      const exif = originalMetadata.exif ? exifReader(originalMetadata.exif) : null;
-      const orientation = exif?.Image?.Orientation ?? 1;
-      console.log('TEST', originalMetadata.orientation, ' VS ', orientation);
+      const metadata = await sharp(convertedBuffer).metadata();
+      const orientation = metadata.orientation ?? 1;
       // Orientation に基づいて画像を回転する
       let rotatedImage = sharp(convertedBuffer);
       switch(orientation) {
-        case 3:  // 180度回転
-          console.log('180');
+        case 3:
+          this.logger.debug(`[Orientation ${orientation}] 180度回転する`);
           rotatedImage = rotatedImage.rotate(180);
           break;
-        case 6:  // 時計回りに90度回転
-          console.log('+90');
+        case 6:
+          this.logger.debug(`[Orientation ${orientation}] 時計回りに90度回転する`);
           rotatedImage = rotatedImage.rotate(90);
           break;
-        case 8:  // 反時計回りに90度回転
-          console.log('-90');
+        case 8:
+          this.logger.debug(`[Orientation ${orientation}] 反時計回りに90度回転する`);
           rotatedImage = rotatedImage.rotate(270);
           break;
-        default:  // 回転不要
-          console.log('000');
+        default:
+          this.logger.debug(`[Orientation ${orientation}] 回転不要`);
           break;
       }
       
@@ -214,10 +210,9 @@ export class PostAttachmentsService {
         .jpeg({ quality: 85 })
         .resize({ width: commonPostsConstants.maxImagePx, height: commonPostsConstants.maxImagePx, fit: 'inside', withoutEnlargement: true })  // 長辺を指定ピクセルにリサイズする・それ以下のサイズの場合は拡大はしない
         .toBuffer();
-      
-      const metadata = await sharp(resizedBuffer).metadata();
-      const width  = metadata.width!;
-      const height = metadata.height!;
+      const resizedMetadata = await sharp(resizedBuffer).metadata();
+      const width  = resizedMetadata.width!;
+      const height = resizedMetadata.height!;
       
       // Canvas を作成する
       const canvas = createCanvas(width, height);
