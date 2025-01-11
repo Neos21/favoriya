@@ -1,5 +1,6 @@
 import { CanvasRenderingContext2D, createCanvas, registerFont } from 'canvas';
 import DOMPurify from 'dompurify';
+import exifReader from 'exif-reader';
 import ffmpeg from 'fluent-ffmpeg';
 import heicConvert from 'heic-convert';
 import { JSDOM } from 'jsdom';
@@ -136,7 +137,30 @@ export class PostAttachmentsService {
           quality: .9
         });
       }
-      const resizedBuffer = await sharp(convertedBuffer)
+      const metadata = await sharp(convertedBuffer).metadata();
+      const exif = metadata.exif ? exifReader(metadata.exif) : null;
+      const orientation = exif?.Image?.Orientation ?? 1;
+      // Orientation に基づいて画像を回転する
+      let rotatedImage = sharp(convertedBuffer);
+      switch(orientation) {
+        case 3:  // 180度回転
+          console.log('180');
+          rotatedImage = rotatedImage.rotate(180);
+          break;
+        case 6:  // 時計回りに90度回転
+          console.log('+90');
+          rotatedImage = rotatedImage.rotate(90);
+          break;
+        case 8:  // 反時計回りに90度回転
+          console.log('-90');
+          rotatedImage = rotatedImage.rotate(270);
+          break;
+        default:  // 回転不要
+          console.log('000');
+          break;
+      }
+      
+      const resizedBuffer = await rotatedImage
         .jpeg({ quality: 85 })
         .resize({ width: commonPostsConstants.maxImagePx, height: commonPostsConstants.maxImagePx, fit: 'inside', withoutEnlargement: true })  // 長辺を指定ピクセルにリサイズする・それ以下のサイズの場合は拡大はしない
         .toBuffer();
@@ -161,7 +185,30 @@ export class PostAttachmentsService {
           quality: .9
         });
       }
-      const resizedBuffer = await sharp(convertedBuffer)
+      const originalMetadata = await sharp(convertedBuffer).metadata();
+      const exif = originalMetadata.exif ? exifReader(originalMetadata.exif) : null;
+      const orientation = exif?.Image?.Orientation ?? 1;
+      // Orientation に基づいて画像を回転する
+      let rotatedImage = sharp(convertedBuffer);
+      switch(orientation) {
+        case 3:  // 180度回転
+          console.log('180');
+          rotatedImage = rotatedImage.rotate(180);
+          break;
+        case 6:  // 時計回りに90度回転
+          console.log('+90');
+          rotatedImage = rotatedImage.rotate(90);
+          break;
+        case 8:  // 反時計回りに90度回転
+          console.log('-90');
+          rotatedImage = rotatedImage.rotate(270);
+          break;
+        default:  // 回転不要
+          console.log('000');
+          break;
+      }
+      
+      const resizedBuffer = await rotatedImage
         .jpeg({ quality: 85 })
         .resize({ width: commonPostsConstants.maxImagePx, height: commonPostsConstants.maxImagePx, fit: 'inside', withoutEnlargement: true })  // 長辺を指定ピクセルにリサイズする・それ以下のサイズの場合は拡大はしない
         .toBuffer();
@@ -185,7 +232,7 @@ export class PostAttachmentsService {
       // テキストを描画する
       const maxWidth = width - 4;  // マージンを引いた幅
       const x = 2;  // 左端からの位置
-      const y = 0;  // 上端からの位置
+      const y = 2;  // 上端からの位置
       const lines = this.wrapText(context, text, maxWidth);
       // テキストを行ごとに描画する (ハミ出してもエラーにはならない・縦のハミ出しは無視する)
       lines.forEach((line, index) => {
