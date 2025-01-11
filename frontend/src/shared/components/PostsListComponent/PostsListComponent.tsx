@@ -67,15 +67,30 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               {post.topicId === commonTopicsConstants.randomDecorations.id && <Alert severity="warning" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>ランダム装飾モード</Alert>}
               {post.topicId === commonTopicsConstants.randomLimit.id       && <Alert severity="error"   icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>ランダムリミットモード</Alert>}
               {post.topicId === commonTopicsConstants.aiGenerated.id       && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>勝手に AI 生成モード</Alert>}
-              <Typography component="div" sx={{ mt: .75, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
-                <FontParserComponent input={post.text} />
-              </Typography>
-              {post.attachment != null && <Box component="div" sx={{ mt: 1 }}>
-                {post.attachment.mimeType.startsWith('image/') && <img src={`${postConstants.ossUrl}${post.attachment.filePath}`} style={{ width: '64px', height: '64px', objectFit: 'cover', cursor: 'pointer' }} onClick={() => onOpenModal(`${postConstants.ossUrl}${post.attachment.filePath}`)} />}
-                {post.attachment.mimeType.startsWith('audio/') && <audio controls src={`${postConstants.ossUrl}${post.attachment.filePath}`} />}
-                {!post.attachment.mimeType.startsWith('image/') && !post.attachment.mimeType.startsWith('audio/') && <a href={`${postConstants.ossUrl}${post.attachment.filePath}`} target="_blank"><FileOpenIcon sx={{ color: 'grey.500', width: '64px', height: '64px' }} /></a>}
-              </Box>}
-              {post.topicId === commonTopicsConstants.poll.id && <PollComponent propPost={post} />}
+              {post.topicId === commonTopicsConstants.imageOnly.id         && <Alert severity="warning" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>画像のみモード</Alert>}
+              
+              {/* ほとんどの通常モード */}
+              {post.topicId !== commonTopicsConstants.imageOnly.id && <>
+                <Typography component="div" sx={{ mt: .75, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+                  <FontParserComponent input={post.text} />
+                </Typography>
+                
+                {post.attachment != null && <Box component="div" sx={{ mt: 1 }}>
+                  {post.attachment.mimeType.startsWith('image/') && <img src={`${postConstants.ossUrl}${post.attachment.filePath}`} style={{ width: '64px', height: '64px', objectFit: 'cover', cursor: 'pointer' }} onClick={() => onOpenModal(`${postConstants.ossUrl}${post.attachment.filePath}`)} />}
+                  {post.attachment.mimeType.startsWith('audio/') && <audio controls src={`${postConstants.ossUrl}${post.attachment.filePath}`} />}
+                  {!post.attachment.mimeType.startsWith('image/') && !post.attachment.mimeType.startsWith('audio/') && <a href={`${postConstants.ossUrl}${post.attachment.filePath}`} target="_blank"><FileOpenIcon sx={{ color: 'grey.500', width: '64px', height: '64px' }} /></a>}
+                </Box>}
+                {post.topicId === commonTopicsConstants.poll.id && <PollComponent propPost={post} />}
+              </>}
+              
+              {/* 画像のみモード */}
+              {post.topicId === commonTopicsConstants.imageOnly.id && <>
+                <Box component="div" sx={{ mt: 1 }}>
+                  <Tooltip title={post.text}>
+                    <img src={`${postConstants.ossUrl}${post.attachment.filePath}`} style={{ width: '64px', height: '64px', objectFit: 'cover', cursor: 'pointer' }} onClick={() => onOpenModal(`${postConstants.ossUrl}${post.attachment.filePath}`)} />
+                  </Tooltip>
+                </Box>
+              </>}
               
               <Typography component="div" sx={{ mt: .25 }}>
                 <Tooltip title="リプする" placement="top"><IconButton component={Link} to={`/@${post.userId}/posts/${post.id}`} sx={{ mr: .25, color: 'grey.600' }} size="small"><ReplyIcon fontSize="inherit" /></IconButton></Tooltip>

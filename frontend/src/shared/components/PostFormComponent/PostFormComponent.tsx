@@ -6,6 +6,7 @@ import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, Grid2, Inp
 import { commonTopicsConstants } from '../../../common/constants/topics-constants';
 import { camelToSnakeCaseObject } from '../../../common/helpers/convert-case';
 import { getRandomFromArray } from '../../../common/helpers/get-random-from-array';
+import { isEmptyString } from '../../../common/helpers/is-empty-string';
 import { FontParserComponent } from '../FontParserComponent/FontParserComponent';
 import { PostFormAttachmentComponent } from './components/PostFormAttachmentComponent/PostFormAttachmentComponent';
 import { PostFormDecorationComponent } from './components/PostFormDecorationComponent/PostFormDecorationComponent';
@@ -37,6 +38,8 @@ type FormData = {
   file       : File | null
 };
 
+const postDraftLocalStorageKey = 'post-draft';
+
 /** Post Form Component */
 export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inReplyToUserId }) => {
   const userState = useSelector((state: RootState) => state.user);
@@ -49,6 +52,12 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   
   const [cursorPosition, setCursorPosition] = useState(0);
   const textFieldRef = useRef<HTMLTextAreaElement>(null);
+  
+  // 初期表示時に入力内容を復元する
+  useEffect(() => {
+    const postDraft = localStorage.getItem(postDraftLocalStorageKey);
+    if(!isEmptyString(postDraft)) setFormData(previousFormData => ({ ...previousFormData, text: postDraft.trim() }));
+  }, []);
   
   // トピック ID を変更するたびにランダムリミットを更新する
   useEffect(() => {
@@ -63,9 +72,10 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     setFormData(previousFormData => ({ ...previousFormData, [event.target.name]: event.target.checked ? 'home': null }));
   };
   
-  /** カーソル位置を保持する */
+  /** カーソル位置を保持する・テキストを一時保存する */
   const onSaveCursorPosition = () => {
     if(textFieldRef.current != null) setCursorPosition(textFieldRef.current.selectionStart ?? 0);
+    localStorage.setItem(postDraftLocalStorageKey, formData.text);
   };
   /** On Insert */
   const onInsert = (rawStartTag: string, rawEndTag: string, replacements?: Array<string>) => {
@@ -96,8 +106,14 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     
     const text    = formData.text.trim();
     const topicId = formData.topicId;
+    
+    // 入力チェックする
     const validationTextResult = validateText(text, topicId, randomLimit, formData.pollOptions);
     if(validationTextResult.error != null) return setErrorMessage(validationTextResult.error);
+    if(topicId === commonTopicsConstants.imageOnly.id) {
+      if(formData.file == null) return setErrorMessage('ファイルが添付されていません。画像ファイルを添付してください');
+      if(!formData.file.type.startsWith('image/') && !['.heic', 'heif'].some(extName => formData.file.name.toLowerCase().endsWith(extName))) return setErrorMessage('画像ファイルを添付してください');
+    }
     
     // オブジェクトを用意する
     setIsSubmitting(true);
@@ -116,6 +132,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       setRandomLimit(commonTopicsConstants.randomLimit.generateLimit());
       setCursorPosition(0);
       setReloadTrigger(previousReloadTrigger => !previousReloadTrigger);
+      localStorage.setItem(postDraftLocalStorageKey, '');
     }
     catch(error) {
       setErrorMessage('投稿処理に失敗しました。もう一度やり直してください');
@@ -148,7 +165,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       
       <TextField
         multiline name="text" label="投稿" value={formData.text} onChange={onChange} onKeyDown={onKeyDown}
-        required fullWidth rows={4} margin="normal"
+        fullWidth rows={4} margin="normal"
         inputRef={input => { textFieldRef.current = input as HTMLTextAreaElement; }}
         onSelect={onSaveCursorPosition} onBlur={onSaveCursorPosition}
       />

@@ -21,11 +21,12 @@ export const PostFormInfoMessageComponent: FC<Props> = ({ selectedTopicId, rando
     {selectedTopicId === commonTopicsConstants.randomDecorations.id && <Alert severity="info" sx={{ mt: 3 }}>「ランダム装飾」モードでは行ごとに文字装飾を勝手に挿入したり、挿入しなかったりします。結果は投稿してのお楽しみ！</Alert>}
     {selectedTopicId === commonTopicsConstants.randomLimit.id       && <Alert severity="info" sx={{ mt: 3 }}>
       「ランダムリミット」モードではランダムに最低・最大文字数が決定されます。
-        {randomLimit.mode === 'min'    && `今回は最低 ${randomLimit.min} 文字`}
+        {randomLimit.mode === 'min'    && `今回は ${randomLimit.min} 文字以上`}
         {randomLimit.mode === 'max'    && `今回は ${randomLimit.max} 文字以内`}
-        {randomLimit.mode === 'minmax' && `今回は最低 ${randomLimit.min} 文字・${randomLimit.max} 文字以内`}
+        {randomLimit.mode === 'minmax' && `今回は ${randomLimit.min} 文字以上・${randomLimit.max} 文字以内`}
       で入力してください。
     </Alert>}
     {selectedTopicId === commonTopicsConstants.aiGenerated.id       && <Alert severity="info" sx={{ mt: 3 }}>「勝手に AI 生成モード」では投稿内容の一部が AI によって勝手に書き換えられます。結果は投稿してのお楽しみ！</Alert>}
+    {selectedTopicId === commonTopicsConstants.imageOnly.id         && <Alert severity="info" sx={{ mt: 3 }}>「画像のみモード」では画像ファイルを必ずアップロードしてください。本文は未入力でも OK！</Alert>}
   </>;
 };

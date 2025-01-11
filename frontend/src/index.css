@@ -307,3 +307,16 @@ html.light .font-parser-component kbd {
 .font-parser-component img.emoji-reaction {
   height: 1em;
 }
+
+.font-parser-component .rtl {
+  direction: rtl;
+  unicode-bidi: bidi-override;
+}
+
+.font-parser-component .blur {
+  filter: blur(5px);
+  transition: filter .15s;
+}
+  .font-parser-component .blur:hover {
+    filter: blur(0);
+  }

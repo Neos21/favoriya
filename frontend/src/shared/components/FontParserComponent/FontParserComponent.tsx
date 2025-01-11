@@ -66,6 +66,10 @@ const convertTags = (html: string) => {
     blink.replaceWith(span);
   });
   
+  // オリジナル HTML 要素
+  document.querySelectorAll('rtl').forEach(rtl => { rtl.className = 'rtl'; });
+  document.querySelectorAll('blur').forEach(blur => { blur.className = 'blur'; });
+  
   return document.body.innerHTML;
 };
 
@@ -101,7 +105,10 @@ export const FontParserComponent: React.FC<Props> = ({ input }) => {
   
   // DOMPurify でサニタイズした HTML を取得し、変換処理を適用する
   const tagSanitizedHtml = DOMPurify.sanitize(input, {
-    ALLOWED_TAGS: ['font', 'marquee', 'blink', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'b', 'i', 'u', 's', 'del', 'ins', 'em', 'strong', 'mark', 'code', 'var', 'samp', 'kbd'],  // 許可する要素名
+    ALLOWED_TAGS: [
+      'font', 'marquee', 'blink', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'b', 'i', 'u', 's', 'del', 'ins', 'em', 'strong', 'mark', 'code', 'var', 'samp', 'kbd',
+      'rtl', 'blur'
+    ],  // 許可する要素名
     ALLOWED_ATTR: ['color', 'size', 'face', 'direction', 'behavior', 'scrollamount', 'align']  // 許可する属性
   });
   const tagTransformedHtml    = convertTags(tagSanitizedHtml);

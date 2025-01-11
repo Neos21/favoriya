@@ -53,6 +53,13 @@ export const PostFormAttachmentComponent: FC<Props> = ({ setFormData, setErrorMe
       setErrorMessage(`不正なファイル形式です : [${file.name}] [${file.type}]`);
     }
   };
+  const onRemoveFile = () => {
+    setIsAudio(false);
+    setIsHeicImage(false);
+    setImagePreviewUrl(null);
+    setErrorMessage(null);
+    setFormData(previousFormData => ({ ...previousFormData, file: null }));
+  };
   
   return <Box component="div">
     {imagePreviewUrl != null && <Box component="div"><img src={imagePreviewUrl} style={{ width: '64px', height: '64px', objectFit: 'cover' }} /></Box>}
@@ -60,9 +67,10 @@ export const PostFormAttachmentComponent: FC<Props> = ({ setFormData, setErrorMe
     {isAudio                 && <Box component="div"><AudioFileIcon sx={{ color: 'grey.500', width: '64px', height: '64px' }} /></Box>}
     
     <Tooltip title="画像・音声を添付">
-      <Button component="label" variant="outlined" tabIndex={-1} startIcon={<AttachFileIcon />} sx={{ color: 'grey.500', borderColor: 'grey.500', minWidth: 'auto', px: 1, '& .MuiButton-startIcon': { m: 0 } }}>
+      <Button component="label" variant="outlined" tabIndex={-1} startIcon={<AttachFileIcon />} sx={{ color: 'grey.500', borderColor: 'grey.500', minWidth: 'auto', px: 1, mr: 1, '& .MuiButton-startIcon': { m: 0 } }}>
         <VisuallyHiddenInputComponent type="file" accept="image/*,.heic,.heif,audio/*,.m4a" onChange={onChangeFile} />
       </Button>
     </Tooltip>
+    {(imagePreviewUrl != null || isHeicImage || isAudio) && <Button variant="outlined" color="error" onClick={onRemoveFile}>削除</Button>}
   </Box>;
 };

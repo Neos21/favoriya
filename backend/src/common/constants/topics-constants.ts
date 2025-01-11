@@ -105,5 +105,9 @@ export const commonTopicsConstants = {
   aiGenerated: {
     id: 9,
     name: '勝手に AI 生成モード'
+  },
+  imageOnly: {
+    id: 10,
+    name: '画像のみモード'
   }
 };

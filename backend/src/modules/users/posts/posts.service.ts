@@ -39,12 +39,14 @@ export class PostsService {
     
     // 川柳モードの時にスタイリングできそうならする
     if(post.topicId === commonTopicsConstants.senryu.id) post.text = this.postDecorationService.senryuStyle(post.text);
+    // 匿名投稿モードの場合セキュリティのため投稿者情報をログ出ししておく
+    if(post.topicId === commonTopicsConstants.anonymous.id) this.logger.debug(`Anonymous 投稿 : [${post.userId}] [${post.text}]`);
     // ランダム装飾モードの場合に行ごとにタグを入れたり入れなかったりする
     if(post.topicId === commonTopicsConstants.randomDecorations.id) post.text = this.postDecorationService.decorateRandomly(post.text);
     // 勝手に AI 生成モードの場合にテキストを変更してもらう
     if(post.topicId === commonTopicsConstants.aiGenerated.id) post.text = await this.postDecorationService.generateByAi(post.text);
-    // 匿名投稿モードの場合セキュリティのため投稿者情報をログ出ししておく
-    if(post.topicId === commonTopicsConstants.anonymous.id) this.logger.debug(`Anonymous 投稿 : [${post.userId}] [${post.text}]`);
+    // 画像のみモードの場合は HTML タグを消す
+    if(post.topicId === commonTopicsConstants.imageOnly.id) post.text = this.postDecorationService.removeTags(post.text);
     
     try {
       const newPostEntity = new PostEntity({

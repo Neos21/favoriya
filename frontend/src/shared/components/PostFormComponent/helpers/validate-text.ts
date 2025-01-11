@@ -8,12 +8,15 @@ import type { RandomLimit } from '../../../types/random-limit';
 
 /** テキストの入力チェック */
 export const validateText = (text: string, topicId: number, randomLimit: RandomLimit, pollOptions: Array<string>): Result<boolean> => {
+  // 画像のみモードはテキストは未入力でも良い
+  if(topicId === commonTopicsConstants.imageOnly.id) return { result: true };
+  
   // 基本的な入力チェック
-  const validationText = isValidText(text);
-  if(validationText.error != null) return validateText as unknown as Result<boolean>;
+  const textContent = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  const baseValidationResult = isValidText(textContent);
+  if(baseValidationResult.error != null) return baseValidationResult;
   
   // トピックごとの入力チェック
-  const textContent = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
   const topic = Object.values(commonTopicsConstants).find(topic => topic.id === topicId);
   if(topic == null) return { error: '不正なトピックです' };
   

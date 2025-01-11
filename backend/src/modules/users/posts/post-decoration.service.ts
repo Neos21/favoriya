@@ -33,7 +33,7 @@ export class PostDecorationService {
   ];
   
   /** 川柳の1行目スタイリング用 */
-  private senryu1stLineChoices = [
+  private readonly senryu1stLineChoices: Array<{ start: string, end: string }> = [
     { start: '<h1><font face="serif">', end: '</font></h1>' },
     { start: '<h2><font face="serif">', end: '</font></h2>' },
     { start: '<h3><font face="serif">', end: '</font></h3>' },
@@ -43,7 +43,7 @@ export class PostDecorationService {
   ];
   
   /** 川柳の2行目スタイリング用 */
-  private senryu2ndLineChoices = [
+  private readonly senryu2ndLineChoices: Array<{ start: string, end: string }> = [
     { start: '<h1 align="center"><font face="serif">', end: '</font></h1>' },
     { start: '<h2 align="center"><font face="serif">', end: '</font></h2>' },
     { start: '<h3 align="center"><font face="serif">', end: '</font></h3>' },
@@ -53,13 +53,20 @@ export class PostDecorationService {
   ];
   
   /** 川柳の3行目スタイリング用 */
-  private senryu3rdLineChoices = [
+  private readonly senryu3rdLineChoices: Array<{ start: string, end: string }> = [
     { start: '<h1 align="right"><font face="serif">', end: '</font></h1>' },
     { start: '<h2 align="right"><font face="serif">', end: '</font></h2>' },
     { start: '<h3 align="right"><font face="serif">', end: '</font></h3>' },
     { start: '<h4 align="right"><font face="serif">', end: '</font></h4>' },
     { start: '<h5 align="right"><font face="serif">', end: '</font></h5>' },
     { start: '<h6 align="right"><font face="serif">', end: '</font></h6>' }
+  ];
+  
+  /** AI 生成モードのプロンプト */
+  private readonly promptChoices: Array<string> = [
+    '次の文章に任意の言葉を加筆修正して、変更後の文章のみを答えてください。',
+    '次の文章を「おじさん構文」に変換して、変更後の文章のみを答えてください。',
+    '次の文章を「ギャル語」に変換して、変更後の文章のみを答えてください。'
   ];
   
   /** 行ごとにランダムに HTML タグを装飾する */
@@ -103,6 +110,7 @@ export class PostDecorationService {
   /** AI にテキストを変換させる */
   public async generateByAi(beforeText: string): Promise<string> {
     try {
+      const prompt = getRandomFromArray(this.promptChoices);
       const textContent = DOMPurify(new JSDOM('').window).sanitize(beforeText, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
       const response = await fetch('https://api.rnilaweera.lk/api/v1/user/gpt', {  // Node.js 内蔵の Fetch API が使えている
         method: 'POST',
@@ -111,7 +119,7 @@ export class PostDecorationService {
           Authorization: 'Bearer rsnai_C5Y6ZSoUt3LRAWopF6PQ2Uef'
         },
         body: JSON.stringify({
-          prompt: `次の文章に任意の言葉を加筆修正したりして、変更後の文章のみを答えてください。\n\n${textContent}`
+          prompt: `${prompt}\n\n${textContent}`
         })
       });
       const json = await response.json();
@@ -124,5 +132,11 @@ export class PostDecorationService {
       this.logger.warn('AI 動作エラー', error);
       return beforeText;
     }
+  }
+  
+  /** HTML タグを除去する */
+  public removeTags(beforeText: string): string {
+    const afterText = DOMPurify(new JSDOM('').window).sanitize(beforeText, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+    return afterText;
   }
 }
