@@ -113,5 +113,9 @@ export const commonTopicsConstants = {
   movaPic: {
     id: 11,
     name: '携帯百景モード'
+  },
+  balus: {
+    id: 12,
+    name: '40秒で支度しな！'
   }
 };

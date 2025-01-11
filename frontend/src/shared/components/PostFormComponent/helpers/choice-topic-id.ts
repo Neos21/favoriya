@@ -9,7 +9,10 @@ const topicIds = [
   commonTopicsConstants.senryu.id,
   commonTopicsConstants.randomDecorations.id,
   commonTopicsConstants.randomLimit.id,
-  commonTopicsConstants.aiGenerated.id
+  commonTopicsConstants.aiGenerated.id,
+  commonTopicsConstants.imageOnly.id,
+  commonTopicsConstants.movaPic.id,
+  commonTopicsConstants.balus.id
 ];
 
 /** トピックをランダムに選択する */

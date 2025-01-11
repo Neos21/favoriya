@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, Grid2, InputLabel, MenuItem, Select, TextField } from '@mui/material';
@@ -38,7 +38,10 @@ type FormData = {
   file       : File | null
 };
 
-const postDraftLocalStorageKey = 'post-draft';
+/** 「40秒で支度しな！」モードの秒数 */
+const timeLeftSeconds: number = 40;
+/** 投稿の一時保存用 LocalStorage のキー */
+const postDraftLocalStorageKey: string = 'post-draft';
 
 /** Post Form Component */
 export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inReplyToUserId }) => {
@@ -48,6 +51,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [randomLimit, setRandomLimit] = useState<RandomLimit>(commonTopicsConstants.randomLimit.generateLimit());
+  const [timeLeft, setTimeLeft] = useState<number>(timeLeftSeconds);  // 「40秒で支度しな！」モードの残り秒数
   const [reloadTrigger, setReloadTrigger] = useState<boolean>(false);
   
   const [cursorPosition, setCursorPosition] = useState(0);
@@ -59,14 +63,17 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     if(!isEmptyString(postDraft)) setFormData(previousFormData => ({ ...previousFormData, text: postDraft.trim() }));
   }, []);
   
-  // トピック ID を変更するたびにランダムリミットを更新する
+  // トピック ID を変更するたびにランダムリミットを更新する・カウントダウンを設定 or 解除する
   useEffect(() => {
     setRandomLimit(commonTopicsConstants.randomLimit.generateLimit());
+    setTimeLeft(formData.topicId === commonTopicsConstants.balus.id ? timeLeftSeconds : null);
   }, [formData.topicId]);
   
   /** On Change */
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFormData(previousFormData => ({ ...previousFormData, [event.target.name]: event.target.value }));
+    // 「40秒で支度しな！」モードが選択されたら起動する
+    if(event.target.name === 'topicId') setTimeLeft(Number(event.target.value) === commonTopicsConstants.balus.id ? timeLeftSeconds : null);
   };
   const onChangeChecked = (event: ChangeEvent<HTMLInputElement>) => {
     setFormData(previousFormData => ({ ...previousFormData, [event.target.name]: event.target.checked ? 'home': null }));
@@ -100,12 +107,17 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     if((event.ctrlKey || event.metaKey) && event.key === 'Enter') handleSubmit(event as unknown as FormEvent<HTMLFormElement>);
   };
   /** Handle Submit */
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async (event?: FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
     setErrorMessage(null);
     
-    const text    = formData.text.trim();
+    let   text    = formData.text.trim();
     const topicId = formData.topicId;
+    
+    // 未入力ならバルスを入れる
+    if(topicId === commonTopicsConstants.balus.id && isEmptyString(text)) {
+      text = '<strong>バルス！</strong>';
+    }
     
     // 入力チェックする
     const validationTextResult = validateText(text, topicId, randomLimit, formData.pollOptions);
@@ -129,8 +141,10 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       await onSubmit(newPostApi, formData.file);  // Throws
       
       // 投稿成功
-      setFormData(initialFormData());
+      const newFormData = initialFormData();
+      setFormData(newFormData);
       setRandomLimit(commonTopicsConstants.randomLimit.generateLimit());
+      setTimeLeft(newFormData.topicId === commonTopicsConstants.balus.id ? timeLeftSeconds : null);
       setCursorPosition(0);
       setReloadTrigger(previousReloadTrigger => !previousReloadTrigger);
       localStorage.setItem(postDraftLocalStorageKey, '');
@@ -144,9 +158,21 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
     }
   };
   
+  // トピック ID が変更された時にバルスタイマーを設定する
+  useEffect(() => {
+    if(timeLeft == null) return;  // 何もしない
+    if(timeLeft <= 0) {
+      handleSubmit();  // フォームを送信する
+      return;  // クリーンアップ関数を実行させる
+    }
+    const timerId = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+    // クリーンアップ
+    return () => clearTimeout(timerId);
+  }, [timeLeft]);  // eslint-disable-line react-hooks/exhaustive-deps
+  
   return <>
     {errorMessage != null && <Alert severity="error" sx={{ mt: 3 }}>{errorMessage}</Alert>}
-    <PostFormInfoMessageComponent selectedTopicId={formData.topicId} randomLimit={randomLimit} />
+    <PostFormInfoMessageComponent selectedTopicId={formData.topicId} randomLimit={randomLimit} timeLeft={timeLeft} />
     
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
       <Grid2 container>

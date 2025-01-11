@@ -69,6 +69,7 @@ export const PostsListComponent: FC<Props> = ({ propPosts }) => {
               {post.topicId === commonTopicsConstants.aiGenerated.id       && <Alert severity="success" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>勝手に AI 生成モード</Alert>}
               {post.topicId === commonTopicsConstants.imageOnly.id         && <Alert severity="warning" icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>画像のみモード</Alert>}
               {post.topicId === commonTopicsConstants.movaPic.id           && <Alert severity="info"    icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>携帯百景モード</Alert>}
+              {post.topicId === commonTopicsConstants.balus.id             && <Alert severity="error"   icon={false} variant="outlined" sx={{ mt: 1, py: .25 }}>40秒で支度しな！モード</Alert>}
               
               {/* ほとんどの通常モード */}
               {post.topicId !== commonTopicsConstants.imageOnly.id && <>

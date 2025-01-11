@@ -8,11 +8,12 @@ import type { RandomLimit } from '../../../../types/random-limit';
 
 type Props = {
   selectedTopicId: number,
-  randomLimit: RandomLimit
+  randomLimit: RandomLimit,
+  timeLeft: number
 };
 
 /** Post Form Info Message Component */
-export const PostFormInfoMessageComponent: FC<Props> = ({ selectedTopicId, randomLimit }) => {
+export const PostFormInfoMessageComponent: FC<Props> = ({ selectedTopicId, randomLimit, timeLeft }) => {
   return <>
     {selectedTopicId === commonTopicsConstants.englishOnly.id       && <Alert severity="info" sx={{ mt: 3 }}>「英語のみ」モード is English only.</Alert>}
     {selectedTopicId === commonTopicsConstants.kanjiOnly.id         && <Alert severity="info" sx={{ mt: 3 }}>「漢字のみ」モード…之・漢字限定、投稿可能。</Alert>}
@@ -29,5 +30,6 @@ export const PostFormInfoMessageComponent: FC<Props> = ({ selectedTopicId, rando
     {selectedTopicId === commonTopicsConstants.aiGenerated.id       && <Alert severity="info" sx={{ mt: 3 }}>「勝手に AI 生成モード」では投稿内容の一部が AI によって勝手に書き換えられます。結果は投稿してのお楽しみ！</Alert>}
     {selectedTopicId === commonTopicsConstants.imageOnly.id         && <Alert severity="info" sx={{ mt: 3 }}>「画像のみモード」では画像ファイルを必ずアップロードしてください。本文は未入力でも OK！</Alert>}
     {selectedTopicId === commonTopicsConstants.movaPic.id           && <Alert severity="info" sx={{ mt: 3 }}>「携帯百景モード」では本文が画像に合成されます。</Alert>}
+    {selectedTopicId === commonTopicsConstants.balus.id             && <Alert severity="info" sx={{ mt: 3 }}>「40秒で支度しな！モード」ではあと {timeLeft} 秒以内に自動的に投稿が行われます。</Alert>}
   </>;
 };
