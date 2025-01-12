@@ -32,15 +32,17 @@ export class PostEmojisService {
       return { error: '絵文字リアクション登録処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
     
-    const notificationEntity = new NotificationEntity({
-      notificationType: 'emoji',
-      message         : `@${userId} さんがあなたの投稿に絵文字リアクションをしました`,
-      recipientUserId : reactedPostsUserId,
-      actorUserId     : userId,
-      postId          : reactedPostId,
-      emojiId         : emojiId
-    });
-    await this.notificationsService.create(notificationEntity);  // エラーは無視する
+    if(reactedPostsUserId !== userId && !['anonymous', 'shumai'].includes(reactedPostsUserId)) {
+      const notificationEntity = new NotificationEntity({
+        notificationType: 'emoji',
+        message         : `@${userId} さんがあなたの投稿に絵文字リアクションをしました`,
+        recipientUserId : reactedPostsUserId,
+        actorUserId     : userId,
+        postId          : reactedPostId,
+        emojiId         : emojiId
+      });
+      await this.notificationsService.create(notificationEntity);  // エラーは無視する
+    }
     
     return { result: createdEmojiReactionEntity };  // フロントエンドで ID を使用しているのでコレを返す
   }

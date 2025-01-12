@@ -107,13 +107,15 @@ export class FollowersService {
     }
     
     // フォロー通知を飛ばす
-    const notificationEntity = new NotificationEntity({
-      notificationType: 'follow',
-      message         : `@${followingUserId} さんがあなたをフォローしました`,
-      recipientUserId : followerUserId,
-      actorUserId     : followingUserId
-    });
-    await this.notificationsService.create(notificationEntity);  // エラーは無視する
+    if(!['anonymous', 'shumai'].includes(followerUserId)) {
+      const notificationEntity = new NotificationEntity({
+        notificationType: 'follow',
+        message         : `@${followingUserId} さんがあなたをフォローしました`,
+        recipientUserId : followerUserId,
+        actorUserId     : followingUserId
+      });
+      await this.notificationsService.create(notificationEntity);  // エラーは無視する
+    }
     
     return { result: true };
   }

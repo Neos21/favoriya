@@ -99,7 +99,6 @@ export const NotificationsPage: FC = () => {
               </Link>
             </ListItemAvatar>
             <ListItemText
-              sx={{ mr: 6 }}
               primary={<>
                 <Typography component="div" sx={{ color: 'grey.600', fontSize: '.86rem' }}>{epochTimeMsToJstString(notification.createdAt as string, 'YYYY-MM-DD HH:mm')}</Typography>
                 {notification.notificationType === 'favourite'    && <Link to={`/@${userState.id}/posts/${notification.postId}`} className="hover-underline">{notification.message}</Link>}

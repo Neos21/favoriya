@@ -47,7 +47,7 @@ export class RepliesService {
     if(postResult.error != null) return postResult;
     
     // 本人によるリプライや、システムユーザへのリプライを除いて通知を流す
-    if(inReplyToUserId !== post.userId || !['anonymous', 'shumai'].includes(inReplyToUserId)) {
+    if(inReplyToUserId !== post.userId && !['anonymous', 'shumai'].includes(inReplyToUserId)) {
       const notificationEntity = new NotificationEntity({
         notificationType: 'reply',
         message         : `@${post.userId} さんがあなたの投稿にリプしました`,

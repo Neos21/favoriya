@@ -47,14 +47,16 @@ export class FavouritesService {
       return { error: 'ふぁぼ付け処理に失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
     }
     
-    const notificationEntity = new NotificationEntity({
-      notificationType: 'favourite',
-      message         : `@${userId} さんがあなたの投稿をふぁぼりました`,
-      recipientUserId : favouritedPostsUserId,
-      actorUserId     : userId,
-      postId          : favouritedPostId
-    });
-    await this.notificationsService.create(notificationEntity);  // エラーは無視する
+    if(!['anonymous', 'shumai'].includes(favouritedPostsUserId)) {
+      const notificationEntity = new NotificationEntity({
+        notificationType: 'favourite',
+        message         : `@${userId} さんがあなたの投稿をふぁぼりました`,
+        recipientUserId : favouritedPostsUserId,
+        actorUserId     : userId,
+        postId          : favouritedPostId
+      });
+      await this.notificationsService.create(notificationEntity);  // エラーは無視する
+    }
     
     return { result: true };
   }
