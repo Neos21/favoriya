@@ -19,14 +19,13 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
   const resizeCanvas = () => {
     const canvas    = canvasRef.current;
     const container = containerRef.current;
-    if(canvas == null || container == null) return;
     const context = canvas.getContext('2d');
     // リサイズ前のキャンバス内容を保存する
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width  = canvas.width;
     tempCanvas.height = canvas.height;
     const tempContext = tempCanvas.getContext('2d');
-    if(tempContext != null) tempContext.drawImage(canvas, 0, 0);
+    tempContext.drawImage(canvas, 0, 0);
     // 親要素の最小辺を基に正方形サイズを設定する
     const size = Math.min(container.clientWidth, container.clientHeight);
     canvas.width  = size;
@@ -34,11 +33,12 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
     context.fillStyle = '#ffffff';  // 白背景
     context.fillRect(0, 0, canvas.width, canvas.height);
     // 保存した内容を再描画する
-    if(tempContext != null) context.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
+    context.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
   };
   // 初期設定とウィンドウサイズ変更時のリサイズに対応する
   useEffect(() => {
-    setTimeout(resizeCanvas, 1);  // 座標ズレ回避
+    resizeCanvas();
+    setTimeout(resizeCanvas, 1);  // 座標ズレ回避でもう一度発動させる
     window.addEventListener('resize', resizeCanvas);
     return () => window.removeEventListener('resize', resizeCanvas);
   }, []);
@@ -46,9 +46,7 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
   // 描画開始
   const startDrawing = (x: number, y: number, event?: React.MouseEvent | React.TouchEvent) => {
     const canvas = canvasRef.current;
-    if(canvas == null) return;
     const context = canvas.getContext('2d');
-    if(context == null) return;
     context.beginPath();
     context.moveTo(x, y);
     setIsDrawing(true);
@@ -60,9 +58,7 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
   const draw = (x: number, y: number, event?: React.MouseEvent | React.TouchEvent) => {
     if(!isDrawing) return;
     const canvas = canvasRef.current;
-    if(canvas == null) return;
     const context = canvas.getContext('2d');
-    if(context == null) return;
     context.lineTo(x, y);
     context.strokeStyle = lineColor;
     context.lineWidth   = lineWidth;
@@ -76,7 +72,6 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
   const stopDrawing = async () => {
     setIsDrawing(false);
     const canvas = canvasRef.current;
-    if(canvas == null) return;
     // キャンバスデータを File に変換する
     const file = await new Promise(resolve => {
       canvas.toBlob(blob => resolve(blob != null ? new File([blob], 'drawing.png', { type: 'image/png' }) : null), 'image/png', 1);
@@ -87,7 +82,6 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
   // 位置を計算する
   const getPosition = (event: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if(canvas == null) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
     if('touches' in event) {
       const touch = event.touches[0];
@@ -101,18 +95,14 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
   // リセットボタン
   const whiteCanvas = () => {
     const canvas = canvasRef.current;
-    if(canvas == null) return;
     const context = canvas.getContext('2d');
-    if(context == null) return;
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = '#ffffff';  // 白背景
     context.fillRect(0, 0, canvas.width, canvas.height);
   };
   const transparentCanvas = () => {
     const canvas = canvasRef.current;
-    if(canvas == null) return;
     const context = canvas.getContext('2d');
-    if(context == null) return;
     context.clearRect(0, 0, canvas.width, canvas.height);
   };
   
