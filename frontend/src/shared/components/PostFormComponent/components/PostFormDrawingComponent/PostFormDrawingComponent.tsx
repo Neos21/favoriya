@@ -27,8 +27,7 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
     tempCanvas.height = canvas.height;
     const tempContext = tempCanvas.getContext('2d');
     if(tempContext != null) tempContext.drawImage(canvas, 0, 0);
-    // キャンバスサイズを親要素に合わせて更新する
-    // 親要素の最小辺を基に正方形サイズを設定
+    // 親要素の最小辺を基に正方形サイズを設定する
     const size = Math.min(container.clientWidth, container.clientHeight);
     canvas.width  = size;
     canvas.height = size;
@@ -39,7 +38,7 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
   };
   // 初期設定とウィンドウサイズ変更時のリサイズに対応する
   useEffect(() => {
-    resizeCanvas();
+    setTimeout(resizeCanvas, 1);  // 座標ズレ回避
     window.addEventListener('resize', resizeCanvas);
     return () => window.removeEventListener('resize', resizeCanvas);
   }, []);
@@ -100,7 +99,7 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
   };
   
   // リセットボタン
-  const clearCanvas = () => {
+  const whiteCanvas = () => {
     const canvas = canvasRef.current;
     if(canvas == null) return;
     const context = canvas.getContext('2d');
@@ -109,17 +108,25 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
     context.fillStyle = '#ffffff';  // 白背景
     context.fillRect(0, 0, canvas.width, canvas.height);
   };
+  const transparentCanvas = () => {
+    const canvas = canvasRef.current;
+    if(canvas == null) return;
+    const context = canvas.getContext('2d');
+    if(context == null) return;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  };
   
   // Submit 後にリセットする
   useEffect(() => {
-    clearCanvas();
+    whiteCanvas();
   }, [reloadTrigger]);
   
   return <>
     <Box component="div">
       <label style={{ marginRight: '.5rem' }}>色 : <input type="color" value={lineColor} onChange={event => setLineColor(event.target.value)} /></label>
       <label style={{ marginRight: '.5rem' }}>太さ : <input type="range" min="1" max="20" value={lineWidth} onChange={event => setLineWidth(Number(event.target.value))} /></label>
-      <Button variant="contained" size="small" color="error" onClick={clearCanvas} sx={{ verticalAlign: 'bottom' }}>リセット</Button>
+      <Button variant="contained" size="small" color="error" onClick={whiteCanvas}       sx={{ verticalAlign: 'bottom', mr: 1 }}>白地リセット</Button>
+      <Button variant="outlined"  size="small" color="info"  onClick={transparentCanvas} sx={{ verticalAlign: 'bottom' }}>透明リセット</Button>
     </Box>
     <Box component="div" ref={containerRef} sx={{ mt: 1, minWidth: '250px', minHeight: '250px', maxWidth: '600px', maxHeight: '600px', border: '1px solid', borderColor: 'grey.500', overflow: 'hidden' }}>
       <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%', touchAction: 'pinch-zoom' }}
