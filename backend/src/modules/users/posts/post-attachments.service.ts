@@ -68,6 +68,13 @@ export class PostAttachmentsService {
         extName  = '.jpg';
         mimeType = 'image/jpeg';
       }
+      else if(createdPostEntity.topicId === commonTopicsConstants.drawing.id) {
+        const resizedBufferResult = await this.resizeDrawing(file.buffer);
+        if(resizedBufferResult.error != null) return resizedBufferResult as Result<string>;
+        convertedBuffer = resizedBufferResult.result;
+        extName  = '.png';
+        mimeType = 'image/png';
+      }
       else {
         // 通常時
         const resizedBufferResult = await this.resizeImage(file.buffer, file.originalname, file.mimetype);
@@ -274,6 +281,20 @@ export class PostAttachmentsService {
     lines.push(currentLine);  // 最後の行を追加する
     return lines;
   };
+  
+  private async resizeDrawing(buffer: Buffer): Promise<Result<Buffer>> {
+    try {
+      const resizedBuffer = await sharp(buffer)
+        .png()
+        .resize({ width: commonPostsConstants.maxImagePx, height: commonPostsConstants.maxImagePx, fit: 'inside', withoutEnlargement: true })  // 長辺を指定ピクセルにリサイズする・それ以下のサイズの場合は拡大はしない
+        .toBuffer();
+      return { result: resizedBuffer };
+    }
+    catch(error) {
+      this.logger.error('イラストのリサイズに失敗', error);
+      return { error: 'イラストのリサイズに失敗', code: HttpStatus.INTERNAL_SERVER_ERROR };
+    }
+  }
   
   private async convertAudio(buffer: Buffer): Promise<Result<Buffer>> {
     const tempInputFilePath  = path.join(__dirname, `temp-${Date.now()}.input`);
