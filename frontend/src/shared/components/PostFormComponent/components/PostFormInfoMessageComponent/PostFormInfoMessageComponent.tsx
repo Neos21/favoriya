@@ -27,10 +27,10 @@ export const PostFormInfoMessageComponent: FC<Props> = ({ selectedTopicId, rando
         {randomLimit.mode === 'minmax' && `今回は ${randomLimit.min} 文字以上・${randomLimit.max} 文字以内`}
       で入力してください。
     </Alert>}
-    {selectedTopicId === commonTopicsConstants.aiGenerated.id       && <Alert severity="info" sx={{ mt: 3 }}>「勝手に AI 生成モード」では投稿内容の一部が AI によって勝手に書き換えられます。結果は投稿してのお楽しみ！</Alert>}
-    {selectedTopicId === commonTopicsConstants.imageOnly.id         && <Alert severity="info" sx={{ mt: 3 }}>「画像のみモード」では画像ファイルを必ずアップロードしてください。本文は未入力でも OK！</Alert>}
-    {selectedTopicId === commonTopicsConstants.movaPic.id           && <Alert severity="info" sx={{ mt: 3 }}>「携帯百景モード」では本文が画像に合成されます。</Alert>}
-    {selectedTopicId === commonTopicsConstants.balus.id             && <Alert severity="info" sx={{ mt: 3 }}>「40秒で支度しな！モード」ではあと {timeLeft} 秒以内に自動的に投稿が行われます。</Alert>}
-    {selectedTopicId === commonTopicsConstants.drawing.id           && <Alert severity="info" sx={{ mt: 3 }}>「お絵描きモード」ではイラストを描いて投稿できます。</Alert>}
+    {selectedTopicId === commonTopicsConstants.aiGenerated.id       && <Alert severity="info" sx={{ mt: 3 }}>「勝手に AI 生成」モードでは投稿内容の一部が AI によって勝手に書き換えられます。結果は投稿してのお楽しみ！</Alert>}
+    {selectedTopicId === commonTopicsConstants.imageOnly.id         && <Alert severity="info" sx={{ mt: 3 }}>「画像のみ」モードでは画像ファイルを必ずアップロードしてください。本文は未入力でも OK！</Alert>}
+    {selectedTopicId === commonTopicsConstants.movaPic.id           && <Alert severity="info" sx={{ mt: 3 }}>「携帯百景」モードでは本文が画像に合成されます。</Alert>}
+    {selectedTopicId === commonTopicsConstants.balus.id             && <Alert severity="info" sx={{ mt: 3 }}>「40秒で支度しな！」モードではあと {timeLeft} 秒以内に自動的に投稿が行われます。</Alert>}
+    {selectedTopicId === commonTopicsConstants.drawing.id           && <Alert severity="info" sx={{ mt: 3 }}>「お絵描き」モードではイラストを描いて投稿できます。絵文字リアクションとして登録したい場合は「透明リセット」してから描くことをオススメします。</Alert>}
   </>;
 };

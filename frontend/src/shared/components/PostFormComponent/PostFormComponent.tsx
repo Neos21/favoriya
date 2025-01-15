@@ -31,12 +31,14 @@ type Props = {
 };
 
 type FormData = {
-  topicId    : number,
-  text       : string,
-  visibility : string | null,
-  pollOptions: Array<string>,
-  pollExpires: string,
-  file       : File | null
+  topicId      : number,
+  text         : string,
+  visibility   : string | null,
+  pollOptions  : Array<string>,
+  pollExpires  : string,
+  file         : File | null,
+  isCreateEmoji: boolean | null,
+  emojiName    : string | null
 };
 
 /** 「40秒で支度しな！」モードの秒数 */
@@ -129,6 +131,14 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       if(!formData.file.type.startsWith('image/') && !['.heic', 'heif'].some(extName => formData.file.name.toLowerCase().endsWith(extName))) return setErrorMessage('画像ファイルを添付してください');
     }
     
+    const isCreateEmoji = formData.isCreateEmoji;
+    const emojiName     = formData.emojiName;
+    console.log(formData);
+    if(isCreateEmoji && emojiName != null) {
+      if(isEmptyString(emojiName)) return setErrorMessage('絵文字リアクション名を入力してください');
+      if(!(/^[a-z0-9-]+$/).test(emojiName)) return setErrorMessage('絵文字リアクション名は英小文字・数字・ハイフンのみ利用可能です');
+    }
+    
     // オブジェクトを用意する
     setIsSubmitting(true);
     const newPostApi: PostApi = camelToSnakeCaseObject({ userId: userState.id, text, topicId, visibility: formData.visibility, inReplyToPostId, inReplyToUserId });
@@ -136,6 +146,10 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       newPostApi.has_poll = true;
       newPostApi.poll = { expires_at: formData.pollExpires };
       (newPostApi.poll as any).poll_options = formData.pollOptions.map(pollOption => ({ text: pollOption }));  // eslint-disable-line @typescript-eslint/no-explicit-any
+    }
+    if(topicId === commonTopicsConstants.drawing.id) {  // 無理やりパラメータを持たせる
+      (newPostApi as any).is_create_emoji = isCreateEmoji;  // eslint-disable-line @typescript-eslint/no-explicit-any
+      (newPostApi as any).emoji_name      = emojiName;      // eslint-disable-line @typescript-eslint/no-explicit-any
     }
     
     try {
@@ -151,7 +165,7 @@ export const PostFormComponent: FC<Props> = ({ onSubmit, inReplyToPostId, inRepl
       localStorage.setItem(postDraftLocalStorageKey, '');
     }
     catch(error) {
-      setErrorMessage('投稿処理に失敗しました。もう一度やり直してください');
+      setErrorMessage(error.toString());  // 絵文字リアクション名の重複などを考慮して Error メッセージをそのまま出すことにする
       console.error('投稿処理に失敗', error);
     }
     finally {

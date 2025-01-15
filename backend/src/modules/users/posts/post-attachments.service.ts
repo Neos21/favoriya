@@ -16,6 +16,7 @@ import { commonPostsConstants } from '../../../common/constants/posts-constants'
 import { commonTopicsConstants } from '../../../common/constants/topics-constants';
 import { AttachmentEntity } from '../../../shared/entities/attachment.entity';
 import { PostEntity } from '../../../shared/entities/post.entity';
+import { EmojisService } from '../../emojis/emojis.service';
 
 import type { Result } from '../../../common/types/result';
 
@@ -29,7 +30,8 @@ export class PostAttachmentsService {
   
   constructor(
     @InjectRepository(AttachmentEntity) private readonly attachmentsRepository: Repository<AttachmentEntity>,
-    private readonly nestMinioService: NestMinioService
+    private readonly nestMinioService: NestMinioService,
+    private readonly emojisService: EmojisService
   ) { }
   
   /** バケットがなければ作成する */
@@ -51,7 +53,7 @@ export class PostAttachmentsService {
   }
   
   /** ファイルをアップロードし DB 登録する */
-  public async save(file: Express.Multer.File, createdPostEntity: PostEntity): Promise<Result<string>> {
+  public async save(file: Express.Multer.File, createdPostEntity: PostEntity, options: { isCreateEmoji: boolean, emojiName: string }): Promise<Result<string>> {
     if(file.size > (commonPostsConstants.maxFileSizeKb * 1024)) return { error: `ファイルサイズが ${commonPostsConstants.maxFileSizeMb} MB を超えています`, code: HttpStatus.BAD_REQUEST };
     if(!file.mimetype.startsWith('image/') && !['.heic', 'heif'].some(extName => file.originalname.toLowerCase().endsWith(extName)) &&
        !file.mimetype.startsWith('audio/') && !file.originalname.toLowerCase().endsWith('.m4a')
@@ -69,7 +71,7 @@ export class PostAttachmentsService {
         mimeType = 'image/jpeg';
       }
       else if(createdPostEntity.topicId === commonTopicsConstants.drawing.id) {
-        const resizedBufferResult = await this.resizeDrawing(file.buffer);
+        const resizedBufferResult = await this.resizeDrawing(file.buffer, options.isCreateEmoji);
         if(resizedBufferResult.error != null) return resizedBufferResult as Result<string>;
         convertedBuffer = resizedBufferResult.result;
         extName  = '.png';
@@ -100,6 +102,13 @@ export class PostAttachmentsService {
     if(filePathResult.error != null) return filePathResult;
     const result = await this.saveAttachment(createdPostEntity.userId, createdPostEntity.id, filePathResult.result, mimeType);
     if(result.error != null) return result as Result<string>;
+    
+    // 絵文字リアクションとして登録する
+    if(options.isCreateEmoji) {
+      const imageUrlResult = await this.emojisService.createFromDrawing(options.emojiName, convertedBuffer);
+      if(imageUrlResult.error != null) return imageUrlResult;
+    }
+    
     return filePathResult;  // 登録したファイルパスを返しておく
   }
   
@@ -282,11 +291,18 @@ export class PostAttachmentsService {
     return lines;
   };
   
-  private async resizeDrawing(buffer: Buffer): Promise<Result<Buffer>> {
+  private async resizeDrawing(buffer: Buffer, isCreateEmoji: boolean): Promise<Result<Buffer>> {
     try {
+      const size = isCreateEmoji ? commonPostsConstants.maxDrawingToEmojiPx : commonPostsConstants.maxImagePx;
       const resizedBuffer = await sharp(buffer)
         .png()
-        .resize({ width: commonPostsConstants.maxImagePx, height: commonPostsConstants.maxImagePx, fit: 'inside', withoutEnlargement: true })  // 長辺を指定ピクセルにリサイズする・それ以下のサイズの場合は拡大はしない
+        .resize({
+          width: size,
+          height: size,
+          fit: 'inside',
+          withoutEnlargement: true,  // 長辺を指定ピクセルにリサイズする・それ以下のサイズの場合は拡大はしない
+          background: { r: 255, g: 255, b: 255, alpha: 1 }  // 背景を透過に保つ
+        })
         .toBuffer();
       return { result: resizedBuffer };
     }

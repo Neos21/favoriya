@@ -75,6 +75,24 @@ export class EmojisService {
     return imageUrlResult;
   }
   
+  /** お絵描きモードから絵文字リアクション画像をアップロードする */
+  public async createFromDrawing(name: string, buffer: Buffer): Promise<Result<string>> {
+    // 同名の絵文字リアクションがないか存在チェックする
+    const findOneByNameResult = await this.findOneByName(name);
+    if(findOneByNameResult.error != null) return findOneByNameResult as Result<string>;
+    // ファイル名を作成する
+    const fileNameResult = this.createFileName(name, 'drawing.png');
+    if(fileNameResult.error != null) return fileNameResult;
+    // MinIO にアップロードする
+    const imageUrlResult = await this.putObject(buffer, 'image/png', fileNameResult.result);
+    if(imageUrlResult.error != null) return imageUrlResult;
+    // データベースを登録する
+    const insertResult = await this.insertEmoji(name, imageUrlResult.result);
+    if(insertResult.error != null) return insertResult as Result<string>;
+    // 登録した絵文字リアクション画像のパスを返す
+    return imageUrlResult;
+  }
+  
   /** 存在チェック */
   private async findOneByName(name: string): Promise<Result<boolean>> {
     try {
