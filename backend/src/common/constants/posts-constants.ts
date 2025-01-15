@@ -11,6 +11,8 @@ export const commonPostsConstants = {
   maxFileSizeKb: 10 * 1024,
   /** 最大の幅 or 高さ (px 単位) */
   maxImagePx: 960,
+  /** イラストを絵文字にする際の最大の幅・高さ (px 単位) */
+  maxDrawingToEmojiPx: 128,
   /** バケット名 */
   bucketName: 'attachments'
 };

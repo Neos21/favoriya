@@ -1,6 +1,6 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useRef, useState } from 'react';
 
-import { Box, Button } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, TextField } from '@mui/material';
 
 type Props = {
   setFormData  : (previousFormData: any) => void,  // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -11,9 +11,11 @@ type Props = {
 export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger }) => {
   const canvasRef    = useRef<HTMLCanvasElement>(null);   // Canvas 要素の参照
   const containerRef = useRef<HTMLDivElement>(null);      // 親要素の参照
-  const [isDrawing, setIsDrawing] = useState(false);      // 描画中か否か
-  const [lineColor, setLineColor] = useState('#000000');  // 線の色
-  const [lineWidth, setLineWidth] = useState(5);          // 線の太さ
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);     // 描画中か否か
+  const [lineColor, setLineColor] = useState<string>('#000000');  // 線の色
+  const [lineWidth, setLineWidth] = useState<number>(5);          // 線の太さ
+  const [isCreateEmoji, setIsCreateEmoji] = useState<boolean>(false);  // 絵文字リアクションとして登録するか否か
+  const [emojiName, setEmojiName]         = useState<string>('');      // 絵文字リアクション名
 
   // Canvas のサイズを親要素に基づいてリサイズする
   const resizeCanvas = () => {
@@ -109,12 +111,26 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
   // Submit 後にリセットする
   useEffect(() => {
     whiteCanvas();
+    setIsCreateEmoji(false);
+    setEmojiName('');
   }, [reloadTrigger]);
   
+  const onChangeChecked = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setFormData(previousFormData => ({ ...previousFormData, [name]: checked }));
+    setIsCreateEmoji(checked);
+    if(!checked) setEmojiName('');
+  };
+  const onChangeText = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData(previousFormData => ({ ...previousFormData, [name]: value }));
+    setEmojiName(value);
+  };
+  
   return <>
-    <Box component="div">
-      <label style={{ marginRight: '.5rem' }}>色 : <input type="color" value={lineColor} onChange={event => setLineColor(event.target.value)} /></label>
-      <label style={{ marginRight: '.5rem' }}>太さ : <input type="range" min="1" max="20" value={lineWidth} onChange={event => setLineWidth(Number(event.target.value))} /></label>
+    <Box component="div" sx={{ '& > *': { mt: '.5rem !important' } }}>
+      <label style={{ display: 'inline-block', marginRight: '.5rem' }}>色 : <input type="color" value={lineColor} onChange={event => setLineColor(event.target.value)} /></label>
+      <label style={{ display: 'inline-block', marginRight: '.5rem' }}>太さ : <input type="range" min="1" max="25" value={lineWidth} onChange={event => setLineWidth(Number(event.target.value))} /></label>
       <Button variant="contained" size="small" color="error" onClick={whiteCanvas}       sx={{ verticalAlign: 'bottom', mr: 1 }}>白地リセット</Button>
       <Button variant="outlined"  size="small" color="info"  onClick={transparentCanvas} sx={{ verticalAlign: 'bottom' }}>透明リセット</Button>
     </Box>
@@ -128,6 +144,12 @@ export const PostFormDrawingComponent: FC<Props> = ({ setFormData, reloadTrigger
         onTouchMove={event => { event.preventDefault(); const { x, y } = getPosition(event); draw(x, y, event); }}
         onTouchEnd={event => { event.preventDefault(); stopDrawing(); }}
       />
+    </Box>
+    <Box component="div" sx={{ mt: .5 }}>
+      <FormControlLabel control={<Checkbox name="isCreateEmoji" checked={isCreateEmoji} onChange={onChangeChecked} />} label="絵文字リアクションとして登録する" />
+      {isCreateEmoji && <Box component="div">
+        <TextField type="text" name="emojiName" label="絵文字リアクション名" placeholder="emoji-name" value={emojiName} onChange={onChangeText} margin="normal" size="small" />
+      </Box>}
     </Box>
   </>;
 };

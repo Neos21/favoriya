@@ -67,7 +67,7 @@ export class PostsService {
       }
       
       if(file != null) {
-        const result = await this.postAttachmentsService.save(file, createdPostEntity);
+        const result = await this.postAttachmentsService.save(file, createdPostEntity, { isCreateEmoji: (post as any).isCreateEmoji, emojiName: (post as any).emojiName });
         if(result.error != null) return result as Result<boolean>;
       }
       
