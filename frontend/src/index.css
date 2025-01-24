@@ -29,6 +29,8 @@ html {
   height: 100%;
   overflow-y: scroll !important;  /* Drawer を開いた時に消させない */
   font-family: var(--font-family-sans-serif);
+          text-decoration-skip-ink: none;
+  -webkit-text-decoration-skip: objects;
   word-break: break-all;
   cursor: default;
   background-color: transparent !important;  /* `index.html` を打ち消す */
