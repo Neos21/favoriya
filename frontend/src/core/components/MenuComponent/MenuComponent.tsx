@@ -154,7 +154,7 @@ export const MenuComponent: FC<Props> = ({ onClickItem }) => {
     </ListItem>
     <ListItem disablePadding>
       <ListItemButton onClick={() => window.open('https://misskey.neos21.net')}>
-        <ListItemIcon><img src="/public/misskey-64.png" width="24" height="24" /></ListItemIcon>
+        <ListItemIcon><img src="/misskey-64.png" width="24" height="24" /></ListItemIcon>
         <ListItemText primary="ねゃおすきー" />
       </ListItemButton>
     </ListItem>
